@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.29.0)
+project(newEngine)
+add_executable(neweng "src/main.cpp"
+#math
+"src/include/cm_math/operations.cpp"
+
+#physics
+"src/include/physics/collisions.cpp"
+)
