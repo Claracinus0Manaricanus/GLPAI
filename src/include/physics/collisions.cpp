@@ -17,11 +17,11 @@
 // outputs a RayHit on intersection to RayHit* out
 int Physics::checkCollisionRaySurface(Ray ray, Surface surface, RayHit *out) {
 
-  float d = cm_Dot(surface.normal, ray.direction);
+  float d = Vector::Dot(surface.normal, ray.direction);
   if (d == 0)
     return 0;
 
-  float t = -(cm_Dot(surface.normal, ray.start) + surface.distance) / d;
+  float t = -(Vector::Dot(surface.normal, ray.start) + surface.distance) / d;
   Vec3 intersection = {ray.start.x + ray.direction.x * t,
                        ray.start.y + ray.direction.y * t,
                        ray.start.z + ray.direction.z * t};

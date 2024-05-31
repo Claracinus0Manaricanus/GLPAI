@@ -1,5 +1,7 @@
+#include "include/cm_math/operations.hpp"
 #include "include/physics/collisions.hpp"
 #include "include/types/physics.hpp"
+#include "rendering/opengl/include/cm_opengl.hpp"
 #include <cstdio>
 
 int main(int argc, char **arg) {
@@ -24,6 +26,8 @@ int main(int argc, char **arg) {
            out.hitPosition.x, out.hitPosition.y, out.hitPosition.z,
            out.hitNormal.x, out.hitNormal.y, out.hitNormal.z, out.tConstant);
   }
+
+  printf("%f", Vector::Length(Vector::Normalize(((Vec3){1, 1, 1}))));
 
   return 0;
 }
