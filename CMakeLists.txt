@@ -6,4 +6,7 @@ add_executable(neweng "src/main.cpp"
 
 #physics
 "src/include/physics/collisions.cpp"
+
+#types
+"src/include/types/vectors.cpp"
 )
