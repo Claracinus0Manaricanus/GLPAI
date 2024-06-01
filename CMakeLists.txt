@@ -9,4 +9,7 @@ add_executable(neweng "src/main.cpp"
 
 #types
 "src/include/types/vectors.cpp"
+
+#utilities
+"src/include/utility/printUtil.cpp"
 )
