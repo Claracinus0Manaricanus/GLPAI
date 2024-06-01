@@ -18,19 +18,21 @@ int main(int argc, char **arg) {
 
   triangle.vertices[2] = {{1, 0, -1}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
 
+  printf("\n");
+  printf("Triangle:\n");
+  print(triangle);
+  printf("\n");
+
+  printf("\nRay:\n");
+  print(ray);
+  printf("\n");
+
   int collided = Physics::checkCollisionRayTriangle(ray, triangle, &out);
 
   if (collided) {
-    printf("HIT!\nPosition: x:%f y:%f z:%f\nNormal: x:%f y:%f z:%f\ntConstant: "
-           "%f\n",
-           out.hitPosition.x, out.hitPosition.y, out.hitPosition.z,
-           out.hitNormal.x, out.hitNormal.y, out.hitNormal.z, out.tConstant);
+    printf("HIT!\n");
+    print(out);
   }
-
-  Vec3 a = {1, 1, 1};
-  println(a);
-
-  printf("Area: %f\n", Primitive::Area(triangle));
 
   return 0;
 }
