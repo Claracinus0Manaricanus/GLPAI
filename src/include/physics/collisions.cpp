@@ -22,6 +22,9 @@ int Physics::checkCollisionRaySurface(Ray ray, Surface surface, RayHit *out) {
     return 0;
 
   float t = -(Vector::Dot(surface.normal, ray.start) + surface.distance) / d;
+  if (t < 0) // if t is negative the ray has to go backwards to hit the surface
+    return 0;
+
   Vec3 intersection = {ray.start.x + ray.direction.x * t,
                        ray.start.y + ray.direction.y * t,
                        ray.start.z + ray.direction.z * t};
@@ -55,6 +58,20 @@ int Physics::checkCollisionRayTriangle(Ray ray, Triangle triangle,
     return 0;
 
   // check if intersection point is in the triangle
+  float totalArea =
+      Vector::Area(triangle.vertices[1].position -
+                       triangle.vertices[0].position,
+                   out->hitPosition - triangle.vertices[0].position) +
+      Vector::Area(triangle.vertices[2].position -
+                       triangle.vertices[1].position,
+                   out->hitPosition - triangle.vertices[1].position) +
+      Vector::Area(triangle.vertices[0].position -
+                       triangle.vertices[2].position,
+                   out->hitPosition - triangle.vertices[2].position);
+
+  float areaCheck = totalArea / Primitive::Area(triangle);
+  if (areaCheck > 1.0f)
+    return 0;
 
   return 1;
 }

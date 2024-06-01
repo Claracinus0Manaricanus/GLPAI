@@ -21,6 +21,12 @@ float Vector::Length(Vec2 a) { return sqrt(Vector::Dot(a, a)); }
 
 Vec3 Vector::Normalize(Vec3 a) { return (a / Vector::Length(a)); }
 
+// triangle area between two vectors ( Determinant / 2 )
+float Vector::Area(Vec2 a, Vec2 b) { return fabs(a.x * b.y - a.y * b.x) / 2; }
+float Vector::Area(Vec3 a, Vec3 b) {
+  return Vector::Length(Vector::Cross(a, b)) / 2;
+}
+
 // namsepace Primitive
 
 float Primitive::Area(Triangle &a) {

@@ -24,6 +24,10 @@ float Length(Vec2 a);
 Vec3 Normalize(Vec3 a);
 Vec2 Normalize(Vec2 a);
 
+// triangle area between two vectors
+float Area(Vec2 a, Vec2 b);
+float Area(Vec3 a, Vec3 b);
+
 } // namespace Vector
 
 namespace Primitive {
