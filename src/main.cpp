@@ -2,7 +2,6 @@
 #include "include/physics/collisions.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
-#include "rendering/opengl/include/cm_opengl.hpp"
 #include <cstdio>
 
 int main(int argc, char **arg) {
