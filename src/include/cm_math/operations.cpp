@@ -1,6 +1,8 @@
 #include "operations.hpp"
 #include <cmath>
 
+// namespace Vector
+
 // vector products
 
 Vec3 Vector::Cross(Vec3 a, Vec3 b) {
@@ -18,3 +20,12 @@ float Vector::Length(Vec2 a) { return sqrt(Vector::Dot(a, a)); }
 // vector utilities
 
 Vec3 Vector::Normalize(Vec3 a) { return (a / Vector::Length(a)); }
+
+// namsepace Primitive
+
+float Primitive::Area(Triangle &a) {
+  Vec3 v1 = a.vertices[1].position - a.vertices[0].position;
+  Vec3 v2 = a.vertices[2].position - a.vertices[0].position;
+
+  return Vector::Length(Vector::Cross(v1, v2)) / 2;
+}
