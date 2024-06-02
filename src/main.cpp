@@ -40,6 +40,7 @@ int main(int argc, char **arg) {
 
   while (!test.shouldClose()) {
     test.checkEvents();
+    test.updateScreen();
   }
 
   return 0;
