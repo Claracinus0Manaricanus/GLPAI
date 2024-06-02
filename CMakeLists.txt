@@ -12,4 +12,9 @@ add_executable(neweng "src/main.cpp"
 
 #utilities
 "src/include/utility/printUtil.cpp"
+
+#window
+"src/include/rendering/window/window.cpp"
 )
+
+target_link_libraries(neweng SDL2)
