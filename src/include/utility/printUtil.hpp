@@ -18,7 +18,6 @@ void print(Ray &a);
 void print(RayHit &a);
 
 // primitives
-
 void print(Vertex &a);
 void print(Triangle &a);
 

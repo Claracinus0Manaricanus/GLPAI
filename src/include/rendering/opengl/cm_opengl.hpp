@@ -5,8 +5,4 @@
 // functions for rendering usage with opengl
 // are defined here
 
-namespace CM_OpenGL {
-    
-}
-
 #endif

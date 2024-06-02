@@ -1,7 +1,7 @@
-#include "include/cm_math/operations.hpp"
 #include "include/physics/collisions.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
+#include "include/rendering/window/window.hpp"
 #include <cstdio>
 
 int main(int argc, char **arg) {
@@ -21,7 +21,6 @@ int main(int argc, char **arg) {
   printf("Triangle:\n");
   print(triangle);
   printf("\n");
-
   printf("\nRay:\n");
   print(ray);
   printf("\n");
@@ -31,6 +30,16 @@ int main(int argc, char **arg) {
   if (collided) {
     printf("HIT!\n");
     print(out);
+  }
+
+  Window test(800, 600, SDL_WINDOW_RESIZABLE);
+  if(!test.isFine()){
+    printf("window has a problem!\n%s\n", test.getError());
+    return 1;
+  }
+
+  while(!test.shouldClose()){
+    test.checkEvents();
   }
 
   return 0;
