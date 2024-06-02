@@ -7,32 +7,32 @@ class Window {
 private:
   // instance vars
   int latestError;
-    //window related
+  // window related
   int width, height;
-  SDL_Window* winHandler;
-  //event handling
+  SDL_Window *winHandler;
+  // event handling
   SDL_Event event;
   int winShouldClose;
 
 public:
   // constructor
-    Window(int width, int height, Uint32 flags);
+  Window(int width, int height, Uint32 flags);
 
-    //destructor
-    ~Window();
+  // destructor
+  ~Window();
 
-    //getters
-    int shouldClose();
+  // getters
+  int shouldClose();
 
-    //setters
-    void setShouldClose(int winShouldClose);
+  // setters
+  void setShouldClose(int winShouldClose);
 
-    //event handling
-    void checkEvents();
+  // event handling
+  void checkEvents();
 
-    //error control
-    int isFine();
-    const char* getError();
+  // error control
+  int isFine();
+  const char *getError();
 };
 
 #endif

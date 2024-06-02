@@ -1,7 +1,7 @@
 #include "include/physics/collisions.hpp"
+#include "include/rendering/window/window.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
-#include "include/rendering/window/window.hpp"
 #include <cstdio>
 
 int main(int argc, char **arg) {
@@ -33,12 +33,12 @@ int main(int argc, char **arg) {
   }
 
   Window test(800, 600, SDL_WINDOW_RESIZABLE);
-  if(!test.isFine()){
+  if (!test.isFine()) {
     printf("window has a problem!\n%s\n", test.getError());
     return 1;
   }
 
-  while(!test.shouldClose()){
+  while (!test.shouldClose()) {
     test.checkEvents();
   }
 
