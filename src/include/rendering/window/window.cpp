@@ -53,32 +53,50 @@ void Window::setShouldClose(int winShouldClose) {
 }
 
 // utility
-void Window::updateScreen() {
+int Window::updateScreen() {
   switch (rendererType) {
   case CM_OPENGL:
     SDL_GL_SwapWindow(winHandler);
     break;
   case CM_VULKAN:
+    return -1;
     break;
   case CM_SDL_RENDERER:
     SDL_RenderPresent(renderHandler);
     break;
   }
+
+  return rendererType;
 }
 
 // event handling
-void Window::checkEvents() {
-  SDL_PollEvent(&event);
+int Window::checkEvents(void (*keyCallback)(Uint32 type, SDL_Keysym key)) {
+  int retOfPollEvent = SDL_PollEvent(&event);
+
+  if (retOfPollEvent == 0)
+    return 0;
 
   switch (event.type) {
   case SDL_QUIT:
     winShouldClose = 1;
     break;
+
   case SDL_KEYDOWN:
+    if (keyCallback != NULL)
+      keyCallback(event.key.type, event.key.keysym);
     break;
+
   case SDL_KEYUP:
+    if (keyCallback != NULL)
+      keyCallback(event.key.type, event.key.keysym);
+    break;
+
+  case SDL_TEXTINPUT:
+    // WIP
     break;
   }
+
+  return retOfPollEvent;
 }
 
 // error control

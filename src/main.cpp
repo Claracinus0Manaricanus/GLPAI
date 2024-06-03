@@ -4,6 +4,12 @@
 #include "include/utility/printUtil.hpp"
 #include <cstdio>
 
+void keyCallback(Uint32 type, SDL_Keysym key) {
+  if (type == SDL_KEYDOWN) {
+    printf("%s\n", SDL_GetKeyName(key.sym));
+  }
+}
+
 int main(int argc, char **arg) {
   printf("starting\n");
 
@@ -39,7 +45,7 @@ int main(int argc, char **arg) {
   }
 
   while (!test.shouldClose()) {
-    test.checkEvents();
+    test.checkEvents(keyCallback);
     test.updateScreen();
   }
 

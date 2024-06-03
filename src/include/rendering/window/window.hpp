@@ -36,10 +36,10 @@ public:
   void setShouldClose(int winShouldClose);
 
   // utility
-  void updateScreen();
+  int updateScreen();
 
   // event handling
-  void checkEvents();
+  int checkEvents(void (*keyCallback)(Uint32 type, SDL_Keysym key));
 
   // error control
   int isFine();
