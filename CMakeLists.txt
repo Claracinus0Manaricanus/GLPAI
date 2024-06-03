@@ -15,6 +15,9 @@ add_executable(neweng "src/main.cpp"
 
 #window
 "src/include/rendering/window/window.cpp"
+
+#opengl
+"src/include/rendering/opengl/cm_opengl.cpp"
 )
 
 target_link_libraries(neweng SDL2)
