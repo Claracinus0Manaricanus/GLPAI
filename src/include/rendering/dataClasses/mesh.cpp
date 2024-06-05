@@ -24,13 +24,9 @@ int Mesh::addMultipleVertex(std::vector<Vertex>& toInsert) {
 }
 
 // getters
-int Mesh::getVertex(int index, Vertex& toStore) {
-  if (index < vertices.size()) {
-    toStore = vertices[index];
-    return 0;
-  }
-
-  return -1;
+Vertex Mesh::getVertex(int index) {
+  assert(index < vertices.size());
+  return vertices[index];
 }
 
 std::vector<Vertex>& Mesh::getAllVertices() { return vertices; }

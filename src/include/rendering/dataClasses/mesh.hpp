@@ -2,6 +2,7 @@
 #define CM_MESH
 
 #include "../../types/primitives.hpp"
+#include <cassert>
 #include <vector>
 
 class Mesh {
@@ -21,8 +22,8 @@ public:
   int addMultipleVertex(std::vector<Vertex>& toInsert);
 
   // getters
-  int getVertex(int index, Vertex& toStore);
-  std::vector<Vertex>& getAllVertices();//unsafe and WIP
+  Vertex getVertex(int index);
+  std::vector<Vertex>& getAllVertices(); // unsafe and WIP
 };
 
 #endif

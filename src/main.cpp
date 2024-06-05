@@ -38,6 +38,22 @@ int main(int argc, char** arg) {
   }
 
   //class tests
+  std::vector<Vertex> verVec = {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
+
+  Mesh newMesh;
+  newMesh.addVertex(triangle.vertices[0]);
+  newMesh.addVertex(triangle.vertices[1]);
+  newMesh.addVertex(triangle.vertices[2]);
+  newMesh.addMultipleVertex(verVec);
+
+  verVec = newMesh.getAllVertices();
+
+  printf("printing newMesh");
+  for(Vertex a : verVec){
+    printf("\n");
+    print(a);
+    printf("\n");
+  }
 
   Window test(800, 600, SDL_WINDOW_RESIZABLE);
   if (!test.isFine()) {
