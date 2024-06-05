@@ -17,7 +17,7 @@ add_executable(neweng "src/main.cpp"
 "src/include/rendering/window/window.cpp"
 
 #Mesh
-"src/include/rendering/dataClasses/mesh.cpp"
+"src/include/types/classes/mesh.cpp"
 
 #opengl
 "src/include/rendering/opengl/cm_opengl.cpp"
