@@ -46,6 +46,8 @@ public:
   const char* getError();
 
   // opengl specific stuff
+  void setClearColor(float r, float g, float b, float a);
+  void clearScreen();
 
   // vulkan specific stuff
 };

@@ -31,3 +31,5 @@ Vertex Mesh::getVertex(int index) {
 }
 
 std::vector<Vertex>& Mesh::getAllVertices() { return vertices; }
+
+std::vector<int>& Mesh::getIndexBuffer() { return indexBuffer; }

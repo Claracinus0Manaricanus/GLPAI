@@ -1,8 +1,8 @@
 #include "include/physics/collisions.hpp"
 #include "include/rendering/window/window.hpp"
+#include "include/types/classes/mesh.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
-#include "include/types/classes/mesh.hpp"
 #include <cstdio>
 
 void keyCallback(uint32_t type, SDL_Keysym key) {
@@ -37,8 +37,9 @@ int main(int argc, char** arg) {
     print(out);
   }
 
-  //class tests
-  std::vector<Vertex> verVec = {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
+  // class tests
+  std::vector<Vertex> verVec = {triangle.vertices[0], triangle.vertices[1],
+                                triangle.vertices[2]};
 
   Mesh newMesh;
   newMesh.addVertex(triangle.vertices[0]);
@@ -49,20 +50,23 @@ int main(int argc, char** arg) {
   verVec = newMesh.getAllVertices();
 
   printf("printing newMesh");
-  for(Vertex a : verVec){
+  for (Vertex a : verVec) {
     printf("\n");
     print(a);
     printf("\n");
   }
 
-  Window test(800, 600, SDL_WINDOW_RESIZABLE);
+  Window test(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
   if (!test.isFine()) {
     printf("window has a problem!\n%s\n", test.getError());
     return 1;
   }
 
+  test.setClearColor(0.34f, 0.2f, 0.67f, 1);
+
   while (!test.shouldClose()) {
     test.checkEvents(keyCallback);
+    test.clearScreen();
     test.updateScreen();
   }
 

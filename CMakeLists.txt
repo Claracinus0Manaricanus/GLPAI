@@ -23,4 +23,4 @@ add_executable(neweng "src/main.cpp"
 "src/include/rendering/opengl/cm_opengl.cpp"
 )
 
-target_link_libraries(neweng SDL2)
+target_link_libraries(neweng SDL2 GL GLEW)

@@ -1,4 +1,6 @@
 #include "window.hpp"
+#include <GL/glew.h>
+#include <cassert>
 
 // constructors
 Window::Window(int width, int height, uint32_t flags) {
@@ -25,6 +27,12 @@ Window::Window(int width, int height, uint32_t flags) {
   // renderer creation or setting up for other renderers
   if (flags & SDL_WINDOW_OPENGL) {
     rendererType = CM_OPENGL;
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                        SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_CreateContext(winHandler);
+    assert(glewInit() == GLEW_OK);
   } else if (flags & SDL_WINDOW_VULKAN) {
     rendererType = CM_VULKAN;
   } else {
@@ -103,3 +111,11 @@ int Window::checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key)) {
 int Window::isFine() { return (latestError == 0); }
 
 const char* Window::getError() { return SDL_GetError(); }
+
+// opengl specific stuff
+void Window::setClearColor(float r, float g, float b, float a) {
+  assert(rendererType == CM_OPENGL);
+  glClearColor(r, g, b, a);
+}
+
+void Window::clearScreen() { glClear(GL_COLOR_BUFFER_BIT); }
