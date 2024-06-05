@@ -1,7 +1,7 @@
 #ifndef CM_MESH
 #define CM_MESH
 
-#include "../../types/primitives.hpp"
+#include "../primitives.hpp"
 #include <vector>
 
 class Mesh {

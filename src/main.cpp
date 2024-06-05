@@ -2,7 +2,7 @@
 #include "include/rendering/window/window.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
-#include "include/rendering/dataClasses/mesh.hpp"
+#include "include/types/classes/mesh.hpp"
 #include <cstdio>
 
 void keyCallback(uint32_t type, SDL_Keysym key) {
