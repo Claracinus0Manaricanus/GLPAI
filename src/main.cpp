@@ -2,17 +2,16 @@
 #include "include/rendering/window/window.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
+#include "include/rendering/dataClasses/mesh.hpp"
 #include <cstdio>
 
-void keyCallback(Uint32 type, SDL_Keysym key) {
+void keyCallback(uint32_t type, SDL_Keysym key) {
   if (type == SDL_KEYDOWN) {
     printf("%s\n", SDL_GetKeyName(key.sym));
   }
 }
 
-int main(int argc, char **arg) {
-  printf("starting\n");
-
+int main(int argc, char** arg) {
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 10, 0}, {0, -1, 0}};
 
@@ -37,6 +36,8 @@ int main(int argc, char **arg) {
     printf("HIT!\n");
     print(out);
   }
+
+  //class tests
 
   Window test(800, 600, SDL_WINDOW_RESIZABLE);
   if (!test.isFine()) {

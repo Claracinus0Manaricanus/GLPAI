@@ -1,7 +1,7 @@
 #include "window.hpp"
 
 // constructors
-Window::Window(int width, int height, Uint32 flags) {
+Window::Window(int width, int height, uint32_t flags) {
   // instance vars
   winShouldClose = 0;
   renderHandler = NULL;
@@ -70,7 +70,7 @@ int Window::updateScreen() {
 }
 
 // event handling
-int Window::checkEvents(void (*keyCallback)(Uint32 type, SDL_Keysym key)) {
+int Window::checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key)) {
   int retOfPollEvent = SDL_PollEvent(&event);
 
   if (retOfPollEvent == 0)
@@ -102,4 +102,4 @@ int Window::checkEvents(void (*keyCallback)(Uint32 type, SDL_Keysym key)) {
 // error control
 int Window::isFine() { return (latestError == 0); }
 
-const char *Window::getError() { return SDL_GetError(); }
+const char* Window::getError() { return SDL_GetError(); }

@@ -13,18 +13,18 @@ private:
   int latestError;
   // window related
   int width, height;
-  SDL_Window *winHandler;
+  SDL_Window* winHandler;
   // event handling
   SDL_Event event;
   int winShouldClose;
   // for default rendering
-  SDL_Renderer *renderHandler;
+  SDL_Renderer* renderHandler;
   // graphics option being used (vulkan opengl and such)
   int rendererType;
 
 public:
   // constructor
-  Window(int width, int height, Uint32 flags);
+  Window(int width, int height, uint32_t flags);
 
   // destructor
   ~Window();
@@ -39,11 +39,11 @@ public:
   int updateScreen();
 
   // event handling
-  int checkEvents(void (*keyCallback)(Uint32 type, SDL_Keysym key));
+  int checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key));
 
   // error control
   int isFine();
-  const char *getError();
+  const char* getError();
 
   // opengl specific stuff
 
