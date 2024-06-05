@@ -2,7 +2,6 @@
 #define CM_MESH
 
 #include "../../types/primitives.hpp"
-#include <cassert>
 #include <vector>
 
 class Mesh {
