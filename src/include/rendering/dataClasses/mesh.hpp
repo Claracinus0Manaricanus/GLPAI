@@ -23,6 +23,7 @@ public:
   // getters
   Vertex getVertex(int index);
   std::vector<Vertex>& getAllVertices(); // unsafe and WIP
+  //add get*Size() functions
 };
 
 #endif
