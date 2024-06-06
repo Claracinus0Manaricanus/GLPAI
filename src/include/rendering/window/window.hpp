@@ -5,6 +5,7 @@
 #define CM_VULKAN 1
 #define CM_SDL_RENDERER 2
 
+#include "../../types/vectors.hpp"
 #include <SDL2/SDL.h>
 
 class Window {
@@ -31,9 +32,13 @@ public:
 
   // getters
   int shouldClose();
+  IVec2 getWindowResolution();
+  IVec2 getCursorPos();
+  Vec2 getCursorPosNormalized();
 
   // setters
   void setShouldClose(int winShouldClose);
+  int showCursor(int toggle);
 
   // utility
   int updateScreen();
@@ -48,6 +53,8 @@ public:
   // opengl specific stuff
   void setClearColor(float r, float g, float b, float a);
   void clearScreen();
+  void updateViewport();
+  int setSwapInterval(int interval);
 
   // vulkan specific stuff
 };

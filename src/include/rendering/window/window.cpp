@@ -55,10 +55,34 @@ Window::~Window() {
 // getters
 int Window::shouldClose() { return winShouldClose; }
 
+IVec2 Window::getWindowResolution() {
+  int w = 0, h = 0;
+  SDL_GetWindowSize(winHandler, &w, &h);
+
+  return (IVec2){w, h};
+}
+
+IVec2 Window::getCursorPos() {
+  int x = 0, y = 0;
+  SDL_GetMouseState(&x, &y);
+
+  return (IVec2){x, y};
+}
+
+Vec2 Window::getCursorPosNormalized() {
+  int x = 0, y = 0, w = 0, h = 0;
+  SDL_GetMouseState(&x, &y);
+  SDL_GetWindowSize(winHandler, &w, &h);
+
+  return (Vec2){2 * ((x + 1.0f) / w) - 1, 1 - 2 * ((y + 1.0f) / h)};
+}
+
 // setters
 void Window::setShouldClose(int winShouldClose) {
   this->winShouldClose = winShouldClose;
 }
+
+int Window::showCursor(int toggle) { return SDL_ShowCursor(toggle); }
 
 // utility
 int Window::updateScreen() {
@@ -119,3 +143,12 @@ void Window::setClearColor(float r, float g, float b, float a) {
 }
 
 void Window::clearScreen() { glClear(GL_COLOR_BUFFER_BIT); }
+
+void Window::updateViewport() {
+  IVec2 winRes = getWindowResolution();
+  glViewport(0, 0, winRes.x, winRes.y);
+}
+
+int Window::setSwapInterval(int interval){
+  return SDL_GL_SetSwapInterval(interval);
+}

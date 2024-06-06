@@ -1,6 +1,10 @@
 #ifndef CM_TYPES
 #define CM_TYPES
 
+struct IVec2{
+  int x,y;
+};
+
 struct Vec2 {
   float x, y;
 
