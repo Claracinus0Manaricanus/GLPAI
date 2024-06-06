@@ -1,5 +1,4 @@
 #include "cm_opengl.hpp"
-#include <cstdio>
 #include <vector>
 
 const char* vertSrc = "#version 450 core\n"
