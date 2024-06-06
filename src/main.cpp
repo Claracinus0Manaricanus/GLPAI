@@ -1,4 +1,5 @@
 #include "include/physics/collisions.hpp"
+#include "include/rendering/opengl/cm_opengl.hpp"
 #include "include/rendering/window/window.hpp"
 #include "include/types/classes/mesh.hpp"
 #include "include/types/physics.hpp"
@@ -13,14 +14,14 @@ void keyCallback(uint32_t type, SDL_Keysym key) {
 
 int main(int argc, char** arg) {
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
-  Ray ray = {{0, 10, 0}, {0, -1, 0}};
+  Ray ray = {{0, 0, 10}, {0, 0, -1}};
 
   Triangle triangle;
-  triangle.vertices[0] = {{0, 0, 1}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+  triangle.vertices[0] = {{-0.5f, -0.5f, 0}, {0, 0, 1}, {0, 0, 1, 1}, {0, 0}};
 
-  triangle.vertices[1] = {{-1, 0, -1}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+  triangle.vertices[1] = {{0.5f, -0.5f, 0}, {0, 0, 1}, {0, 1, 0, 1}, {0, 0}};
 
-  triangle.vertices[2] = {{1, 0, -1}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+  triangle.vertices[2] = {{0, 0.5f, 0}, {0, 0, 1}, {1, 0, 0, 1}, {0, 0}};
 
   printf("\n");
   printf("Triangle:\n");
@@ -42,14 +43,13 @@ int main(int argc, char** arg) {
                                 triangle.vertices[2]};
 
   Mesh newMesh;
-  newMesh.addVertex(triangle.vertices[0]);
-  newMesh.addVertex(triangle.vertices[1]);
-  newMesh.addVertex(triangle.vertices[2]);
-  newMesh.addMultipleVertex(verVec);
+  newMesh.addTriangle(triangle);
 
   verVec = newMesh.getAllVertices();
 
-  printf("printing newMesh");
+  std::vector<uint32_t> ind = newMesh.getIndexBuffer();
+
+  printf("\nprinting newMesh\n");
   for (Vertex a : verVec) {
     printf("\n");
     print(a);
@@ -62,11 +62,16 @@ int main(int argc, char** arg) {
     return 1;
   }
 
-  test.setClearColor(0.34f, 0.2f, 0.67f, 1);
+  test.setClearColor(0, 0, 0, 1);
+
+  OGL_Renderer newRen;
+
+  OGL_Renderable testRen = newRen.genRenderable(newMesh);
 
   while (!test.shouldClose()) {
     test.checkEvents(keyCallback);
     test.clearScreen();
+    newRen.renderOGL_Renderable(0, testRen);
     test.updateScreen();
   }
 

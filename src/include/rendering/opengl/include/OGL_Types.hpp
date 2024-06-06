@@ -8,6 +8,7 @@
 struct OGL_Renderable {
   uint32_t vertexDataBuffer;
   uint32_t indexbuffer;
+  uint32_t indexBufferlength;
   uint32_t vertexArray;
 };
 

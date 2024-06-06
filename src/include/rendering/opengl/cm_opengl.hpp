@@ -1,10 +1,9 @@
-#ifndef CM_OPENGL
-#define CM_OPENGL
+#ifndef CM_OPENGL_RENDERER
+#define CM_OPENGL_RENDERER
 
 #include "../../types/classes/mesh.hpp"
 #include "include/OGL_Types.hpp"
 #include <GL/glew.h>
-#include <vector>
 
 // header for using opengl at rendering
 // functions for rendering usage with opengl
@@ -13,17 +12,22 @@
 class OGL_Renderer {
 private:
   // instance vars
-  std::vector<uint32_t> programs;
+  // to add:
+  // camera
+  // lights
+  // material
+  uint32_t tempPRG;
 
 public:
   // constructors
   OGL_Renderer();
-  OGL_Renderer(std::vector<uint32_t>& programs);
 
   // getters
 
   // setters
-  int addProgram(uint32_t& programID);
+
+  // rendering
+  void renderOGL_Renderable(uint32_t programID, OGL_Renderable& toRender);
 
   // utility
   static OGL_Renderable genRenderable(Mesh genFrom);
