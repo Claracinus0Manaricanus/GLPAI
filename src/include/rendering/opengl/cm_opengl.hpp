@@ -3,6 +3,7 @@
 
 #include "../../types/classes/mesh.hpp"
 #include "include/OGL_Types.hpp"
+#include "include/OGL_Program.hpp"
 #include <GL/glew.h>
 
 // header for using opengl at rendering
@@ -16,7 +17,6 @@ private:
   // camera
   // lights
   // material
-  uint32_t tempPRG;
 
 public:
   // constructors
@@ -27,7 +27,7 @@ public:
   // setters
 
   // rendering
-  void renderOGL_Renderable(uint32_t programID, OGL_Renderable& toRender);
+  void renderOGL_Renderable(OGL_Program& program, OGL_Renderable& toRender);
 
   // utility
   static OGL_Renderable genRenderable(Mesh genFrom);

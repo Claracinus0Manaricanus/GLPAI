@@ -1,0 +1,11 @@
+#version 450 core
+
+in vec4 fragCol;
+
+out vec4 col;
+
+void main(){
+
+    col = fragCol;
+
+}

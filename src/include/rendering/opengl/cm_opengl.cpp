@@ -1,52 +1,17 @@
 #include "cm_opengl.hpp"
 #include <vector>
 
-const char* vertSrc = "#version 450 core\n"
-                      "layout(location=0) in vec3 pos;\n"
-                      "layout(location=2) in vec4 col;\n"
-                      "out vec4 fragCol;\n"
-                      "void main(){\n"
-                      "fragCol = col;\n"
-                      "gl_Position = vec4(pos.xyz, 1);\n"
-                      "}\n";
-
-const char* fragSrc = "#version 450 core\n"
-                      "in vec4 fragCol;"
-                      "out vec4 col;"
-                      "void main(){\n"
-                      "col = fragCol;\n"
-                      "}";
-
 // constructors
-OGL_Renderer::OGL_Renderer() {
-  // this part is for testing so it is temporary
-  tempPRG = glCreateProgram();
-
-  uint32_t vertSha = 0, fragSha = 0;
-  vertSha = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertSha, 1, &vertSrc, NULL);
-  glCompileShader(vertSha);
-
-  fragSha = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragSha, 1, &fragSrc, NULL);
-  glCompileShader(fragSha);
-
-  glAttachShader(tempPRG, vertSha);
-  glAttachShader(tempPRG, fragSha);
-  glLinkProgram(tempPRG);
-
-  glDeleteShader(vertSha);
-  glDeleteShader(fragSha);
-}
+OGL_Renderer::OGL_Renderer() {}
 
 // getters
 
 // setters
 
 // rendering
-void OGL_Renderer::renderOGL_Renderable(uint32_t programID,
+void OGL_Renderer::renderOGL_Renderable(OGL_Program& program,
                                         OGL_Renderable& toRender) {
-  glUseProgram(tempPRG);
+  program.use();
   glBindVertexArray(toRender.vertexArray);
   glDrawElements(GL_TRIANGLES, toRender.indexBufferlength, GL_UNSIGNED_INT,
                  (void*)0);

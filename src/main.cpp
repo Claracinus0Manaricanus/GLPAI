@@ -68,10 +68,14 @@ int main(int argc, char** arg) {
 
   OGL_Renderable testRen = newRen.genRenderable(newMesh);
 
+  OGL_Program prg({"src/include/rendering/opengl/shaders/basic/vert.sha", "src/include/rendering/opengl/shaders/basic/frag.sha", NULL});
+  if(prg.getError() != NULL)
+    printf("%s\n", prg.getError());
+
   while (!test.shouldClose()) {
     test.checkEvents(keyCallback);
     test.clearScreen();
-    newRen.renderOGL_Renderable(0, testRen);
+    newRen.renderOGL_Renderable(prg, testRen);
     test.updateScreen();
   }
 

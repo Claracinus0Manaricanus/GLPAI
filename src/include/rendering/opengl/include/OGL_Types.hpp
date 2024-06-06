@@ -12,4 +12,10 @@ struct OGL_Renderable {
   uint32_t vertexArray;
 };
 
+struct OGL_ProgramInitData {
+  const char* vertexSourcePath;
+  const char* fragSourcePath;
+  const char* geometrySourcePath;
+};
+
 #endif
