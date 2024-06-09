@@ -10,14 +10,15 @@ add_executable(neweng "src/main.cpp"
 #types
 "src/include/types/vectors.cpp"
 
+#types/classes
+"src/include/types/classes/transform.cpp"
+"src/include/types/classes/mesh.cpp"
+
 #utilities
 "src/include/utility/printUtil.cpp"
 
 #window
 "src/include/rendering/window/window.cpp"
-
-#Mesh
-"src/include/types/classes/mesh.cpp"
 
 #opengl
 "src/include/rendering/opengl/cm_opengl.cpp"
