@@ -28,7 +28,7 @@ char* getFileData(const char* path) {
 }
 
 // constructor
-OGL_Program::OGL_Program(OGL_ProgramInitData initData) {
+OGL_Program::OGL_Program(OGL_ProgramData initData) {
   programID = glCreateProgram();
 
   // shader sources
@@ -109,6 +109,15 @@ OGL_Program::OGL_Program(OGL_ProgramInitData initData) {
 
 // destructor
 OGL_Program::~OGL_Program() { glDeleteProgram(programID); }
+
+// setters
+int OGL_Program::setMat4(const char* uniformName, Mat4& a) {
+  use();
+  glUniformMatrix4fv(glGetUniformLocation(programID, uniformName), 1, GL_TRUE,
+                     (float*)&a);
+
+  return 0; // add error check
+}
 
 // utility
 void OGL_Program::use() { glUseProgram(programID); }

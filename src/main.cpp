@@ -1,7 +1,7 @@
 #include "include/physics/collisions.hpp"
 #include "include/rendering/opengl/cm_opengl.hpp"
 #include "include/rendering/window/window.hpp"
-#include "include/types/classes/mesh.hpp"
+#include "include/types/classes/transform.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
 #include <cstdio>
@@ -38,6 +38,10 @@ int main(int argc, char** arg) {
     print(out);
   }
 
+  // Transform tests
+  Transform tr;
+  print(tr);
+
   // class tests
   Mesh newMesh;
   newMesh.addTriangle(triangle);
@@ -50,17 +54,22 @@ int main(int argc, char** arg) {
   }
 
   test.setClearColor(0, 0, 0, 1);
-  test.setSwapInterval(0);
+  test.setSwapInterval(1);
 
   // OpenGL
-  OGL_Renderer newRen;
-
-  OGL_Renderable testRen = newRen.genRenderable(newMesh);
   OGL_Program prg({"src/include/rendering/opengl/shaders/basic/vert.sha",
                    "src/include/rendering/opengl/shaders/basic/frag.sha",
                    NULL});
   if (prg.getError() != NULL)
     printf("%s\n", prg.getError());
+
+  Camera cam({60});
+
+  OGL_RendererData renData = {&prg, &cam};
+  OGL_Renderer newRen(renData);
+
+  OGL_Renderable testRen = newRen.genRenderable(newMesh);
+  newRen.setProgram(&prg);
 
   // vars
   Vec2 mousePos = {0, 0};
@@ -76,14 +85,14 @@ int main(int argc, char** arg) {
     ray.start.y = mousePos.y;
 
     collided = Physics::checkCollisionRayTriangle(ray, triangle, &out);
-    printf("\n%f, %f\n", mousePos.x, mousePos.y);
-    if(collided)
+    // printf("\n%f, %f\n", mousePos.x, mousePos.y);
+    if (collided)
       print(out);
 
     // testing
     test.checkEvents(keyCallback);
     test.clearScreen();
-    newRen.renderOGL_Renderable(prg, testRen);
+    newRen.render(testRen);
     test.updateScreen();
   }
 

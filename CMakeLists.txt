@@ -13,6 +13,7 @@ add_executable(neweng "src/main.cpp"
 #types/classes
 "src/include/types/classes/transform.cpp"
 "src/include/types/classes/mesh.cpp"
+"src/include/types/classes/camera.cpp"
 
 #utilities
 "src/include/utility/printUtil.cpp"

@@ -2,37 +2,43 @@
 #include <cstdio>
 
 // vectors
-
-void print(Vec2 &a) { printf("X: %f, Y: %f", a.x, a.y); }
-void println(Vec2 &a) {
+void print(Vec2& a) { printf("X: %f, Y: %f", a.x, a.y); }
+void println(Vec2& a) {
   print(a);
   printf("\n");
 }
 
-void print(Vec3 &a) { printf("X: %f, Y: %f, Z: %f", a.x, a.y, a.z); }
-void println(Vec3 &a) {
+void print(Vec3& a) { printf("X: %f, Y: %f, Z: %f", a.x, a.y, a.z); }
+void println(Vec3& a) {
   print(a);
   printf("\n");
 }
 
-void print(Vec4 &a) {
+void print(Vec4& a) {
   printf("X: %f, Y: %f, Z: %f, W: %f", a.x, a.y, a.z, a.w);
 }
-void println(Vec4 &a) {
+void println(Vec4& a) {
   print(a);
   printf("\n");
+}
+
+// matrices
+void print(Mat4& a) {
+  for (int i = 0; i < 4; i++) {
+    printf("row %d: ", i);
+    println(a.row[i]);
+  }
 }
 
 // physics
-
-void print(Ray &a) {
+void print(Ray& a) {
   printf("Start: ");
   println(a.start);
   printf("Direction: ");
   println(a.direction);
 }
 
-void print(RayHit &a) {
+void print(RayHit& a) {
   printf("hitPosition: ");
   println(a.hitPosition);
   printf("hitNormal: ");
@@ -40,9 +46,18 @@ void print(RayHit &a) {
   printf("tConstant: %f\n", a.tConstant);
 }
 
-// primitives
+// classes
+void print(Transform& tr) {
+  printf("Position: ");
+  println(tr.getPosition());
+  printf("Rotation: ");
+  println(tr.getRotation());
+  printf("Scale: ");
+  println(tr.getScale());
+}
 
-void print(Vertex &a) {
+// primitives
+void print(Vertex& a) {
   printf("Position: X: %f, Y: %f, Z: %f\n"
          "Normal:   X: %f, Y: %f, Z: %f\n"
          "Color:    R: %f, G: %f, B: %f, A: %f\n"
@@ -52,7 +67,7 @@ void print(Vertex &a) {
          a.uv.y);
 }
 
-void print(Triangle &a) {
+void print(Triangle& a) {
   printf("V0:\n");
   print(a.vertices[0]);
 

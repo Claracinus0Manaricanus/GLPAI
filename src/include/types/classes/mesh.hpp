@@ -6,7 +6,7 @@
 #include <cstdint>
 
 class Mesh {
-private:
+protected:
   // instance vars
   std::vector<Vertex> vertices;
   std::vector<uint32_t> indexBuffer;

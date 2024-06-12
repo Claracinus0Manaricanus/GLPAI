@@ -1,6 +1,7 @@
 #ifndef CM_OGL_PROGRAM
 #define CM_OGL_PROGRAM
 
+#include "../../../types/vectors.hpp"
 #include "OGL_Types.hpp"
 #include <cstdint>
 
@@ -12,7 +13,7 @@
 #define CM_ERROR_PATH 5
 
 class OGL_Program {
-private:
+protected:
   // instance vars
   uint32_t programID;
   char errorBuffer[256];
@@ -20,10 +21,13 @@ private:
 
 public:
   // constructor
-  OGL_Program(OGL_ProgramInitData initData);
+  OGL_Program(OGL_ProgramData initData);
 
   // destuctor
   ~OGL_Program();
+
+  // setters
+  int setMat4(const char* uniformName, Mat4& a);
 
   // utility
   void use();

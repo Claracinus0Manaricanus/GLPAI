@@ -2,16 +2,23 @@
 #include <vector>
 
 // constructors
-OGL_Renderer::OGL_Renderer() {}
+OGL_Renderer::OGL_Renderer(OGL_RendererData data) {
+  this->program = data.program;
+  this->camera = data.camera;
+
+  if (camera != NULL)
+    program->setMat4("CVM", camera->getOVM());
+}
 
 // getters
 
 // setters
+void OGL_Renderer::setProgram(OGL_Program* program) { this->program = program; }
 
 // rendering
-void OGL_Renderer::renderOGL_Renderable(OGL_Program& program,
-                                        OGL_Renderable& toRender) {
-  program.use();
+void OGL_Renderer::render(OGL_Renderable& toRender) {
+  program->use();
+  program->setMat4("CVM", camera->getOVM());
   glBindVertexArray(toRender.vertexArray);
   glDrawElements(GL_TRIANGLES, toRender.indexBufferlength, GL_UNSIGNED_INT,
                  (void*)0);
