@@ -89,6 +89,9 @@ int main(int argc, char** arg) {
     if (collided)
       print(out);
 
+
+    cam.setPosition({mousePos.x, mousePos.y, 0});
+
     // testing
     test.checkEvents(keyCallback);
     test.clearScreen();

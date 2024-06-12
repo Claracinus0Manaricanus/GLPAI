@@ -26,8 +26,18 @@ Transform::Transform(TransformData data) {
 }
 
 // setters
+void Transform::setPosition(Vec3 position) {
+  this->position = position;
+  calculateOVM();
+}
+
 void Transform::move(Vec3 movement) {
   this->position += movement;
+  calculateOVM();
+}
+
+void Transform::setRotation(Vec3 rotation) {
+  this->rotation = rotation;
   calculateOVM();
 }
 
