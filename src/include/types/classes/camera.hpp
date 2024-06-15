@@ -15,6 +15,7 @@ protected:
 
 public:
   // constructor
+  Camera();
   Camera(CameraData caData);
 
 

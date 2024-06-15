@@ -26,6 +26,7 @@ protected:
   Vec3 up;
 
   Mat4 OVM;
+  Mat4 rotMat;
 
 public:
   // constructors
@@ -35,6 +36,7 @@ public:
   // setters
   void setPosition(Vec3 position);
   void move(Vec3 movement);
+  void localMove(Vec3 movement);
   void setRotation(Vec3 rotation);
   void rotate(Vec3 rotation);
 
@@ -51,6 +53,7 @@ public:
 
 protected:
   // utility
+  virtual void calculateDirections(); // calculates direction vectors
   virtual void calculateOVM();
 };
 

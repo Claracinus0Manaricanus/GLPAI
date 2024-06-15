@@ -1,6 +1,7 @@
 #include "window.hpp"
 #include <GL/glew.h>
 #include <cassert>
+#include <cstdio>
 
 // constructors
 Window::Window(int width, int height, uint32_t flags) {
@@ -33,6 +34,7 @@ Window::Window(int width, int height, uint32_t flags) {
                         SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_CreateContext(winHandler);
     assert(glewInit() == GLEW_OK);
+    glEnable(GL_DEPTH_TEST);
   } else if (flags & SDL_WINDOW_VULKAN) {
     rendererType = CM_VULKAN;
   } else {
@@ -148,7 +150,7 @@ void Window::setClearColor(float r, float g, float b, float a) {
   glClearColor(r, g, b, a);
 }
 
-void Window::clearScreen() { glClear(GL_COLOR_BUFFER_BIT); }
+void Window::clearScreen() { glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); }
 
 void Window::updateViewport() {
   IVec2 winRes = getWindowResolution();

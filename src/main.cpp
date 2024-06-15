@@ -23,6 +23,13 @@ int main(int argc, char** arg) {
 
   triangle.vertices[2] = {{0, 0.5f, 0}, {0, 0, 1}, {1, 0, 0, 1}, {0, 0}};
 
+  Triangle ground;
+  ground.vertices[0] = {{-20.0f, 0, 20.0f}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+
+  ground.vertices[1] = {{20.0f, 0, 20.0f}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+
+  ground.vertices[2] = {{0.0f, 0, -20.0f}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+
   printf("\n");
   printf("Triangle:\n");
   print(triangle);
@@ -45,6 +52,7 @@ int main(int argc, char** arg) {
   // class tests
   Mesh newMesh;
   newMesh.addTriangle(triangle);
+  newMesh.addTriangle(ground);
 
   // Window
   Window test(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -65,9 +73,7 @@ int main(int argc, char** arg) {
     printf("%s\n", prg.getError());
 
   // camera
-  CameraData caData;
-  caData.trData.position = {0, 0, 0};
-  Camera cam(caData);
+  Camera cam;
 
   OGL_RendererData renData = {&prg, &cam};
   OGL_Renderer newRen(renData);
@@ -98,7 +104,15 @@ int main(int argc, char** arg) {
             deltaTime,
         ((float)keyStates[SDL_SCANCODE_S] - (float)keyStates[SDL_SCANCODE_W]) *
             deltaTime};
-    cam.move(movementDirection);
+    cam.localMove(movementDirection);
+
+    cam.rotate({-((float)keyStates[SDL_SCANCODE_UP] -
+                  (float)keyStates[SDL_SCANCODE_DOWN]) *
+                    deltaTime,
+                -((float)keyStates[SDL_SCANCODE_LEFT] -
+                  (float)keyStates[SDL_SCANCODE_RIGHT]) *
+                    deltaTime,
+                0});
 
     // ray
     ray.start.x = cam.getPosition().x;
@@ -109,6 +123,9 @@ int main(int argc, char** arg) {
     collided = Physics::checkCollisionRayTriangle(ray, triangle, &out);
     if (collided)
       print(out);
+
+    println(cam.getPosition());
+    println(cam.getRotation());
 
     // testing
     test.checkEvents(keyCallback);

@@ -104,3 +104,24 @@ Mat4 Mat4::operator*(Mat4 a) {
 
   return tempRet;
 }
+
+Vec4 Mat4::operator*(Vec4 a){
+  Vec4 temp = {0,0,0,0};
+
+  temp.x = row[0].x * a.x + row[0].y * a.y + row[0].z * a.z + row[0].w * a.w;
+  temp.y = row[1].x * a.x + row[1].y * a.y + row[1].z * a.z + row[1].w * a.w;
+  temp.z = row[2].x * a.x + row[2].y * a.y + row[2].z * a.z + row[2].w * a.w;
+  temp.w = row[3].x * a.x + row[3].y * a.y + row[3].z * a.z + row[3].w * a.w;
+
+  return temp;
+}
+
+Vec3 Mat4::operator*(Vec3 a){
+  Vec3 temp = {0,0,0};
+
+  temp.x = row[0].x * a.x + row[0].y * a.y + row[0].z * a.z;
+  temp.y = row[1].x * a.x + row[1].y * a.y + row[1].z * a.z;
+  temp.z = row[2].x * a.x + row[2].y * a.y + row[2].z * a.z;
+
+  return temp;
+}

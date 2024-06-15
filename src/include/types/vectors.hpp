@@ -39,6 +39,8 @@ struct Mat4{
     Vec4 row[4];
 
     Mat4 operator*(Mat4 a);
+    Vec4 operator*(Vec4 a);
+    Vec3 operator*(Vec3 a);
 };
 
 #endif
