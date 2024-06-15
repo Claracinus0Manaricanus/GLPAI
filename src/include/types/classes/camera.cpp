@@ -1,11 +1,7 @@
 #include "camera.hpp"
 
 // constructors
-Camera::Camera(CameraData caData) : Transform() { this->fov = caData.fov; }
-
-Camera::Camera(CameraData caData, TransformData trData) : Transform(trData) {
-  this->fov = caData.fov;
-}
+Camera::Camera(CameraData caData) : Transform(caData.trData) { this->fov = caData.fov; }
 
 //CVM generation
 void Camera::calculateOVM(){

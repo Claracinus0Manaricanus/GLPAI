@@ -5,7 +5,8 @@
 
 // data structures
 struct CameraData {
-  float fov;
+  TransformData trData={{0,0,0}, {0,0,0}, {0,0,0}};
+  float fov = 60;
 };
 
 class Camera : public Transform {
@@ -15,7 +16,6 @@ protected:
 public:
   // constructor
   Camera(CameraData caData);
-  Camera(CameraData caData, TransformData trData);
 
 
 protected:

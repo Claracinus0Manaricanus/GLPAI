@@ -77,6 +77,12 @@ Vec2 Window::getCursorPosNormalized() {
   return (Vec2){2 * ((x + 1.0f) / w) - 1, 1 - 2 * ((y + 1.0f) / h)};
 }
 
+const uint8_t* Window::getKeyboardState() { return SDL_GetKeyboardState(NULL); }
+
+uint32_t Window::getTicks() { return SDL_GetTicks(); }
+
+uint32_t Window::getTicks64() { return SDL_GetTicks64(); }
+
 // setters
 void Window::setShouldClose(int winShouldClose) {
   this->winShouldClose = winShouldClose;
@@ -149,6 +155,6 @@ void Window::updateViewport() {
   glViewport(0, 0, winRes.x, winRes.y);
 }
 
-int Window::setSwapInterval(int interval){
+int Window::setSwapInterval(int interval) {
   return SDL_GL_SetSwapInterval(interval);
 }

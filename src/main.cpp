@@ -14,7 +14,7 @@ void keyCallback(uint32_t type, SDL_Keysym key) {
 
 int main(int argc, char** arg) {
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
-  Ray ray = {{0, 0, 10}, {0, 0, -1}};
+  Ray ray = {{0, 0, 0}, {0, 0, -1}};
 
   Triangle triangle;
   triangle.vertices[0] = {{-0.5f, -0.5f, 0}, {0, 0, 1}, {0, 0, 1, 1}, {0, 0}};
@@ -55,6 +55,7 @@ int main(int argc, char** arg) {
 
   test.setClearColor(0, 0, 0, 1);
   test.setSwapInterval(1);
+  const uint8_t* keyStates = test.getKeyboardState();
 
   // OpenGL
   OGL_Program prg({"src/include/rendering/opengl/shaders/basic/vert.sha",
@@ -63,7 +64,10 @@ int main(int argc, char** arg) {
   if (prg.getError() != NULL)
     printf("%s\n", prg.getError());
 
-  Camera cam({60});
+  // camera
+  CameraData caData;
+  caData.trData.position = {0, 0, 0};
+  Camera cam(caData);
 
   OGL_RendererData renData = {&prg, &cam};
   OGL_Renderer newRen(renData);
@@ -73,24 +77,38 @@ int main(int argc, char** arg) {
 
   // vars
   Vec2 mousePos = {0, 0};
+  uint32_t lastMiliSec = test.getTicks();
+  float deltaTime = 0;
 
   // main loop
   while (!test.shouldClose()) {
     // update resolution
     test.updateViewport();
 
+    // get deltaTime
+    deltaTime = (test.getTicks() - lastMiliSec) / 1000.0f;
+    lastMiliSec = test.getTicks();
+
     // mouse test
     mousePos = test.getCursorPosNormalized();
-    ray.start.x = mousePos.x;
-    ray.start.y = mousePos.y;
+    Vec3 movementDirection = {
+        ((float)keyStates[SDL_SCANCODE_D] - (float)keyStates[SDL_SCANCODE_A]) *
+            deltaTime,
+        ((float)keyStates[SDL_SCANCODE_E] - (float)keyStates[SDL_SCANCODE_Q]) *
+            deltaTime,
+        ((float)keyStates[SDL_SCANCODE_S] - (float)keyStates[SDL_SCANCODE_W]) *
+            deltaTime};
+    cam.move(movementDirection);
 
+    // ray
+    ray.start.x = cam.getPosition().x;
+    ray.start.y = cam.getPosition().y;
+    ray.start.z = cam.getPosition().z;
+
+    // collision testing
     collided = Physics::checkCollisionRayTriangle(ray, triangle, &out);
-    // printf("\n%f, %f\n", mousePos.x, mousePos.y);
     if (collided)
       print(out);
-
-
-    cam.setPosition({mousePos.x, mousePos.y, 0});
 
     // testing
     test.checkEvents(keyCallback);

@@ -35,6 +35,9 @@ public:
   IVec2 getWindowResolution();
   IVec2 getCursorPos();
   Vec2 getCursorPosNormalized();
+  const uint8_t* getKeyboardState();
+  uint32_t getTicks();
+  uint32_t getTicks64();
 
   // setters
   void setShouldClose(int winShouldClose);
@@ -44,7 +47,7 @@ public:
   int updateScreen();
 
   // event handling
-  int checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key));
+  int checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key) = NULL);
 
   // error control
   int isFine();
