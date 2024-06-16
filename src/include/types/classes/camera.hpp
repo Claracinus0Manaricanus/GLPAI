@@ -26,6 +26,7 @@ public:
 public:
   // CVM generation
   void calculateOVM() override;
+  void calculateDirections() override;
 };
 
 #endif

@@ -20,6 +20,32 @@ void Camera::setAspectRatio(float aspectRatio) {
 }
 
 // CVM generation
+void Camera::calculateDirections() {
+  Mat4 rotX = {{
+      {1, 0, 0, 0},
+      {0, cos(rotation.x), sin(rotation.x), 0},
+      {0, -sin(rotation.x), cos(rotation.x), 0},
+      {0, 0, 0, 1},
+  }};
+
+  Mat4 rotY = {{
+      {cos(rotation.y), 0, -sin(rotation.y), 0},
+      {0, 1, 0, 0},
+      {sin(rotation.y), 0, cos(rotation.y), 0},
+      {0, 0, 0, 1},
+  }};
+
+  rotMat = rotX * rotY;
+
+  // I have no idea WTF is going on here
+  // Even though I wrote the math down
+  // It works as if this was the transpose of
+  // the rotation matrix and that is what I don't understand
+  right = {rotMat.row[0].x, rotMat.row[0].y, -rotMat.row[0].z};
+  up = {rotMat.row[1].x, rotMat.row[1].y, -rotMat.row[1].z};
+  forward = {rotMat.row[2].x, rotMat.row[2].y, -rotMat.row[2].z};
+}
+
 void Camera::calculateOVM() {
   Mat4 tra = {{
       {1, 0, 0, -position.x},
