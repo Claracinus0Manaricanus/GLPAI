@@ -22,6 +22,9 @@ void OGL_Renderer::render(OGL_Renderable& toRender) {
   // setting matrices
   camera->calculateOVM();
   program->setMat4("CVM", camera->getOVM());
+  if(toRender.dataStorage != NULL){
+    program->setMat4("OVM", ((Transform*)toRender.dataStorage)->getOVM());
+  }
 
   glBindVertexArray(toRender.vertexArray);
   glDrawElements(GL_TRIANGLES, toRender.indexBufferlength, GL_UNSIGNED_INT,
@@ -31,7 +34,7 @@ void OGL_Renderer::render(OGL_Renderable& toRender) {
 }
 
 // utility
-OGL_Renderable OGL_Renderer::genRenderable(Mesh genFrom) {
+OGL_Renderable OGL_Renderer::genRenderable(Mesh genFrom, void* dataStorage) {
   OGL_Renderable temp = {0, 0, 0};
   std::vector<Vertex> vertexData = genFrom.getAllVertices();
   std::vector<uint32_t> indexData = genFrom.getIndexBuffer();
@@ -69,6 +72,8 @@ OGL_Renderable OGL_Renderer::genRenderable(Mesh genFrom) {
   glEnableVertexAttribArray(3);
 
   glBindVertexArray(0);
+
+  temp.dataStorage = dataStorage;
 
   return temp;
 }

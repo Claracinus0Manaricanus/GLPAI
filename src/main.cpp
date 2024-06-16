@@ -67,7 +67,7 @@ int main(int argc, char** arg) {
   OGL_RendererData renData = {&prg, &cam};
   OGL_Renderer newRen(renData);
 
-  OGL_Renderable testRen = newRen.genRenderable(newMesh);
+  OGL_Renderable testRen = newRen.genRenderable(newMesh, &newMesh);
   newRen.setProgram(&prg);
 
   // vars

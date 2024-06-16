@@ -10,6 +10,9 @@ struct OGL_Renderable {
   uint32_t indexbuffer;
   uint32_t indexBufferlength;
   uint32_t vertexArray;
+  void* dataStorage; // a wrapper class for data such as material and transform
+  // used by casting required data (as class)
+  // example ((Transform)dataStorage->)getOVM()
 };
 
 struct OGL_ProgramData {

@@ -40,7 +40,7 @@ public:
   void render(OGL_Renderable& toRender);
 
   // utility
-  static OGL_Renderable genRenderable(Mesh genFrom);
+  static OGL_Renderable genRenderable(Mesh genFrom, void* dataStorage);
 };
 
 #endif

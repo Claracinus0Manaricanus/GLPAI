@@ -8,3 +8,7 @@ GameObject::GameObject(GameObjectData data)
 
 // destructor
 GameObject::~GameObject() {}
+
+// setters
+
+// getters
