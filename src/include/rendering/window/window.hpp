@@ -9,7 +9,7 @@
 #include <SDL2/SDL.h>
 
 class Window {
-private:
+protected:
   // instance vars
   int latestError;
   // window related
@@ -33,6 +33,7 @@ public:
   // getters
   int shouldClose();
   IVec2 getWindowResolution();
+  float getAspectRatio();
   IVec2 getCursorPos();
   Vec2 getCursorPosNormalized();
   const uint8_t* getKeyboardState();

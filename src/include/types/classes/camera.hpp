@@ -5,22 +5,26 @@
 
 // data structures
 struct CameraData {
-  TransformData trData={{0,0,0}, {0,0,0}, {0,0,0}};
+  TransformData trData = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
   float fov = 60;
+  float aspectRatio = 1;
 };
 
 class Camera : public Transform {
 protected:
   float fov;
+  float aspectRatio;
 
 public:
   // constructor
   Camera();
   Camera(CameraData caData);
 
+  // setters
+  void setAspectRatio(float aspectRatio);
 
-protected:
-  //CVM generation
+public:
+  // CVM generation
   void calculateOVM() override;
 };
 

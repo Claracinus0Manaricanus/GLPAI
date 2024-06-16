@@ -64,6 +64,11 @@ IVec2 Window::getWindowResolution() {
   return (IVec2){w, h};
 }
 
+float Window::getAspectRatio() {
+  IVec2 wRes = getWindowResolution();
+  return (float)wRes.y / (float)wRes.x;
+}
+
 IVec2 Window::getCursorPos() {
   int x = 0, y = 0;
   SDL_GetMouseState(&x, &y);
@@ -150,7 +155,9 @@ void Window::setClearColor(float r, float g, float b, float a) {
   glClearColor(r, g, b, a);
 }
 
-void Window::clearScreen() { glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); }
+void Window::clearScreen() {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
 void Window::updateViewport() {
   IVec2 winRes = getWindowResolution();

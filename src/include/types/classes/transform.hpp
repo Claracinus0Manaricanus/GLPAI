@@ -51,7 +51,7 @@ public:
 
   Mat4& getOVM();
 
-protected:
+public:
   // utility
   virtual void calculateDirections(); // calculates direction vectors
   virtual void calculateOVM();

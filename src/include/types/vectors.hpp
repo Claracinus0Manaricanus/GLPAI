@@ -13,6 +13,7 @@ struct Vec2 {
   Vec2& operator-=(Vec2 a);
   Vec2 operator-(Vec2 a);
   Vec2 operator-();
+  Vec2 operator*(float a);
 };
 
 struct Vec3 {
@@ -23,6 +24,7 @@ struct Vec3 {
   Vec3& operator-=(Vec3 a);
   Vec3 operator-(Vec3 a);
   Vec3 operator-();
+  Vec3 operator*(float a);
 };
 
 struct Vec4 {
@@ -33,6 +35,7 @@ struct Vec4 {
   Vec4& operator-=(Vec4 a);
   Vec4 operator-(Vec4 a);
   Vec4 operator-();
+  Vec4 operator*(float a);
 };
 
 struct Mat4{

@@ -15,7 +15,7 @@
 // returns 1 if intersects
 // 0 otherwise
 // outputs a RayHit on intersection to RayHit* out
-int Physics::checkCollisionRaySurface(Ray ray, Surface surface, RayHit *out) {
+int Physics::checkCollisionRaySurface(Ray& ray, Surface surface, RayHit* out) {
 
   float d = Vector::Dot(surface.normal, ray.direction);
   if (d == 0)
@@ -43,8 +43,8 @@ int Physics::checkCollisionRaySurface(Ray ray, Surface surface, RayHit *out) {
 // return 1 if intersects
 // 0 otherwise
 // outputs a RayHit on intersection to RayHit* out
-int Physics::checkCollisionRayTriangle(Ray ray, Triangle triangle,
-                                       RayHit *out) {
+int Physics::checkCollisionRayTriangle(Ray& ray, Triangle triangle,
+                                       RayHit* out) {
   // finding surfaces distance from origin using the triangle
   float distance =
       -(triangle.vertices[0].normal.x * triangle.vertices[0].position.x +
@@ -74,4 +74,37 @@ int Physics::checkCollisionRayTriangle(Ray ray, Triangle triangle,
     return 0;
 
   return 1;
+}
+
+// uses checkCollisionRayTriangle to iterate over every
+// triangle on a mesh and find the closest intersection
+int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, RayHit* out) {
+  Triangle temp;
+  std::vector<Vertex> vertices = mesh.getAllVertices();
+  std::vector<uint32_t> indices = mesh.getIndexBuffer();
+  RayHit tempClosest;
+  int collided = 0;
+  int collidedGlobal = 0;
+
+  for (int i = 0; i < indices.size(); i += 3) {
+    temp.vertices[0] = vertices[indices[i]];
+    temp.vertices[1] = vertices[indices[i + 1]];
+    temp.vertices[2] = vertices[indices[i + 2]];
+
+    collided = checkCollisionRayTriangle(ray, temp, out);
+
+    if (collided) {
+      if (collidedGlobal == 0) {
+        tempClosest = *out;
+        collidedGlobal = 1;
+      } else if (tempClosest.tConstant > out->tConstant) {
+        tempClosest = *out;
+      }
+    }
+  }
+
+  if (collidedGlobal)
+    (*out) = tempClosest;
+
+  return collidedGlobal;
 }

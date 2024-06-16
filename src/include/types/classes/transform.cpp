@@ -11,6 +11,13 @@ Transform::Transform() {
   right = {1, 0, 0};
   up = {0, 1, 0};
 
+  rotMat = {{
+      {right.x, up.x, -forward.x, 0},
+      {right.y, up.y, -forward.y, 0},
+      {right.z, up.z, -forward.z, 0},
+      {0, 0, 0, 1},
+  }};
+
   calculateOVM();
 }
 
@@ -23,35 +30,35 @@ Transform::Transform(TransformData data) {
   right = {1, 0, 0};
   up = {0, 1, 0};
 
+  rotMat = {{
+      {right.x, up.x, -forward.x, 0},
+      {right.y, up.y, -forward.y, 0},
+      {right.z, up.z, -forward.z, 0},
+      {0, 0, 0, 1},
+  }};
+
   calculateOVM();
 }
 
 // setters
-void Transform::setPosition(Vec3 position) {
-  this->position = position;
-  calculateOVM();
-}
+void Transform::setPosition(Vec3 position) { this->position = position; }
 
-void Transform::move(Vec3 movement) {
-  this->position += movement;
-  calculateOVM();
-}
+void Transform::move(Vec3 movement) { this->position += movement; }
 
 void Transform::localMove(Vec3 movement) {
-  this->position += rotMat * movement;
-  calculateOVM();
+  this->position += right * movement.x;
+  this->position += up * movement.y;
+  this->position += forward * movement.z;
 }
 
 void Transform::setRotation(Vec3 rotation) {
   this->rotation = rotation;
   calculateDirections();
-  calculateOVM();
 }
 
 void Transform::rotate(Vec3 rotation) {
   this->rotation += rotation;
   calculateDirections();
-  calculateOVM();
 }
 
 // getters
@@ -81,19 +88,18 @@ void Transform::calculateDirections() {
       {0, 0, 0, 1},
   }};
 
-  forward = rotX * rotY * (Vec3){0, 0, -1};
-  right = rotX * rotY * (Vec3){1, 0, 0};
-  up = rotX * rotY * (Vec3){0, 1, 0};
+  rotMat = rotX * rotY;
+
+  // I have no idea WTF is going on here
+  // Even though I wrote the math down
+  // It works as if this was the transpose of
+  // the rotation matrix and that is what I don't understand
+  right = {rotMat.row[0].x, rotMat.row[0].y, -rotMat.row[0].z};
+  up = {rotMat.row[1].x, rotMat.row[1].y, -rotMat.row[1].z};
+  forward = {rotMat.row[2].x, rotMat.row[2].y, -rotMat.row[2].z};
 }
 
 void Transform::calculateOVM() {
-  rotMat = {{
-      {right.x, up.x, -forward.x, 0},
-      {right.y, up.y, -forward.y, 0},
-      {right.z, up.z, -forward.z, 0},
-      {0, 0, 0, 1},
-  }};
-
   Mat4 tra = {{
       {1, 0, 0, position.x},
       {0, 1, 0, position.y},
