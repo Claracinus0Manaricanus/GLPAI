@@ -4,11 +4,9 @@
 // constructor
 Mesh::Mesh() {}
 
-Mesh::Mesh(std::vector<Vertex>& toInsert) { vertices = toInsert; }
-
-Mesh::Mesh(std::vector<Vertex>& toInsert, std::vector<uint32_t>& toIndex) {
-  vertices = toInsert;
-  indexBuffer = toIndex;
+Mesh::Mesh(MeshData& data) {
+  this->vertices = data.vertices;
+  this->indexBuffer = data.indexBuffer;
 }
 
 // setters

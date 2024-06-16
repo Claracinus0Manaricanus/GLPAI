@@ -2,8 +2,13 @@
 #define CM_MESH
 
 #include "../primitives.hpp"
-#include <vector>
 #include <cstdint>
+#include <vector>
+
+struct MeshData {
+  std::vector<Vertex> vertices;
+  std::vector<uint32_t> indexBuffer;
+};
 
 class Mesh {
 protected:
@@ -14,8 +19,7 @@ protected:
 public:
   // constructor
   Mesh();
-  Mesh(std::vector<Vertex>& toInsert);
-  Mesh(std::vector<Vertex>& toInsert, std::vector<uint32_t>& toIndex);
+  Mesh(MeshData& data);
 
   // setters
   int addVertex(Vertex& toInsert);
@@ -28,7 +32,7 @@ public:
   Vertex getVertex(int index);
   std::vector<Vertex>& getAllVertices(); // unsafe and WIP
   std::vector<uint32_t>& getIndexBuffer();
-  //add get*Size() functions
+  // add get*Size() functions
 };
 
 #endif

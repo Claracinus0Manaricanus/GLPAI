@@ -3,6 +3,7 @@
 #include "include/rendering/window/window.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
+#include "include/types/classes/gameObject.hpp"
 #include <cstdio>
 
 void keyCallback(uint32_t type, SDL_Keysym key) {
@@ -16,7 +17,7 @@ int main(int argc, char** arg) {
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
 
   // class tests
-  Mesh newMesh;
+  GameObject newMesh;
   Triangle triangle;
   triangle.vertices[0] = {{-0.5f, -0.5f, 0}, {0, 0, 1}, {1, 0, 0, 1}, {0, 0}};
 

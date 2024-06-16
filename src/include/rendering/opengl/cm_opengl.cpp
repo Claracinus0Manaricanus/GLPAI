@@ -18,11 +18,15 @@ void OGL_Renderer::setProgram(OGL_Program* program) { this->program = program; }
 // rendering
 void OGL_Renderer::render(OGL_Renderable& toRender) {
   program->use();
+
+  // setting matrices
   camera->calculateOVM();
   program->setMat4("CVM", camera->getOVM());
+
   glBindVertexArray(toRender.vertexArray);
   glDrawElements(GL_TRIANGLES, toRender.indexBufferlength, GL_UNSIGNED_INT,
                  (void*)0);
+
   glBindVertexArray(0);
 }
 
