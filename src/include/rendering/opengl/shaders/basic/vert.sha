@@ -6,10 +6,11 @@ layout(location=2) in vec4 col;
 out vec4 fragCol;
 
 uniform mat4 CVM;
+uniform mat4 OVM;
 
 void main(){
 
     fragCol = col;
-    gl_Position = CVM * vec4(pos.xyz, 1.0);
+    gl_Position = CVM * OVM * vec4(pos.xyz, 1.0);
 
 }

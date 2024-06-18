@@ -23,6 +23,7 @@ void OGL_Renderer::render(OGL_Renderable& toRender) {
   camera->calculateOVM();
   program->setMat4("CVM", camera->getOVM());
   if(toRender.dataStorage != NULL){
+    ((Transform*)toRender.dataStorage)->calculateOVM();
     program->setMat4("OVM", ((Transform*)toRender.dataStorage)->getOVM());
   }
 

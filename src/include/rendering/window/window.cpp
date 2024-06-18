@@ -15,9 +15,6 @@ Window::Window(int width, int height, uint32_t flags) {
     return;
 
   // window creation
-  this->width = width;
-  this->height = height;
-
   winHandler = SDL_CreateWindow("default", SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED, width, height, flags);
   if (winHandler == NULL) {
@@ -96,6 +93,22 @@ void Window::setShouldClose(int winShouldClose) {
 }
 
 int Window::showCursor(int toggle) { return SDL_ShowCursor(toggle); }
+
+void Window::setGrab(SDL_bool grabbed) {
+  SDL_SetWindowGrab(winHandler, grabbed);
+}
+
+int Window::setRelativeMouseMode(SDL_bool enabled) {
+  return SDL_SetRelativeMouseMode(enabled);
+}
+
+void Window::setMousePos(float x, float y) {
+  IVec2 res = getWindowResolution();
+  int mouseX = ((x + 1.0f) / 2.0f) * res.x;
+  int mouseY = ((-y + 1.0f) / 2.0f) * res.y;
+
+  SDL_WarpMouseInWindow(winHandler, mouseX, mouseY);
+}
 
 // utility
 int Window::updateScreen() {

@@ -13,7 +13,6 @@ protected:
   // instance vars
   int latestError;
   // window related
-  int width, height;
   SDL_Window* winHandler;
   // event handling
   SDL_Event event;
@@ -43,6 +42,9 @@ public:
   // setters
   void setShouldClose(int winShouldClose);
   int showCursor(int toggle);
+  void setGrab(SDL_bool grabbed);
+  int setRelativeMouseMode(SDL_bool enabled);
+  void setMousePos(float x, float y);
 
   // utility
   int updateScreen();

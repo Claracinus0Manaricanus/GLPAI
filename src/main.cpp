@@ -1,9 +1,9 @@
 #include "include/physics/collisions.hpp"
 #include "include/rendering/opengl/cm_opengl.hpp"
 #include "include/rendering/window/window.hpp"
+#include "include/types/classes/gameObject.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
-#include "include/types/classes/gameObject.hpp"
 #include <cstdio>
 
 void keyCallback(uint32_t type, SDL_Keysym key) {
@@ -53,6 +53,8 @@ int main(int argc, char** arg) {
   test.setClearColor(0, 0, 0, 1);
   test.setSwapInterval(1);
   const uint8_t* keyStates = test.getKeyboardState();
+  test.setRelativeMouseMode(SDL_TRUE);
+  test.setMousePos(0, 0);
 
   // OpenGL
   OGL_Program prg({"src/include/rendering/opengl/shaders/basic/vert.sha",
@@ -64,6 +66,7 @@ int main(int argc, char** arg) {
   // camera
   Camera cam;
 
+  // OGL_Renderer
   OGL_RendererData renData = {&prg, &cam};
   OGL_Renderer newRen(renData);
 
@@ -75,6 +78,7 @@ int main(int argc, char** arg) {
   uint32_t lastMiliSec = test.getTicks();
   float deltaTime = 0;
   int collided = 0;
+  char captureMouse = 1, escA = 1;
 
   // main loop
   while (!test.shouldClose()) {
@@ -86,7 +90,32 @@ int main(int argc, char** arg) {
     lastMiliSec = test.getTicks();
 
     // mouse test
-    mousePos = test.getCursorPosNormalized();
+    if (keyStates[SDL_SCANCODE_ESCAPE] && captureMouse && escA) {
+      captureMouse = 0;
+      test.setRelativeMouseMode(SDL_FALSE);
+      escA = 0;
+    } else if (keyStates[SDL_SCANCODE_ESCAPE] && escA) {
+      captureMouse = 1;
+      test.setRelativeMouseMode(SDL_TRUE);
+      test.setMousePos(0, 0);
+      escA = 0;
+    }
+
+    if (!keyStates[SDL_SCANCODE_ESCAPE])
+      escA = 1;
+
+    if (captureMouse) {
+      mousePos = test.getCursorPosNormalized();
+      test.setMousePos(0, 0);
+    } else {
+      mousePos = {0, 0};
+    }
+
+    abs(mousePos.x) > 0.004f ? mousePos.x = mousePos.x : mousePos.x = 0;
+    abs(mousePos.y) > 0.004f ? mousePos.y = mousePos.y : mousePos.y = 0;
+    cam.rotate({-mousePos.y, mousePos.x, 0});
+
+    // movement
     Vec3 movement = {
         ((float)keyStates[SDL_SCANCODE_D] - (float)keyStates[SDL_SCANCODE_A]) *
             deltaTime,
@@ -96,14 +125,6 @@ int main(int argc, char** arg) {
             deltaTime};
     cam.localMove(movement);
 
-    cam.rotate({-((float)keyStates[SDL_SCANCODE_UP] -
-                  (float)keyStates[SDL_SCANCODE_DOWN]) *
-                    deltaTime,
-                -((float)keyStates[SDL_SCANCODE_LEFT] -
-                  (float)keyStates[SDL_SCANCODE_RIGHT]) *
-                    deltaTime,
-                0});
-
     if (keyStates[SDL_SCANCODE_R])
       cam.setRotation({0, 0, 0});
 
@@ -112,7 +133,7 @@ int main(int argc, char** arg) {
     ray.direction = cam.getForward();
 
     // collision testing
-    collided = Physics::checkCollisionRayMesh(ray, newMesh, &out);
+    collided = Physics::checkCollisionRayGameObject(ray, newMesh, &out);
     if (collided)
       print(out);
 
@@ -123,6 +144,7 @@ int main(int argc, char** arg) {
     // testing
     test.checkEvents();
     test.clearScreen();
+    // newMesh.move({0,0,deltaTime});
     newRen.render(testRen);
     test.updateScreen();
   }

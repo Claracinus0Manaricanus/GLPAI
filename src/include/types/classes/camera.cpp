@@ -37,10 +37,8 @@ void Camera::calculateDirections() {
 
   rotMat = rotX * rotY;
 
-  // I have no idea WTF is going on here
-  // Even though I wrote the math down
-  // It works as if this was the transpose of
-  // the rotation matrix and that is what I don't understand
+  // Because camera and worlds rotations are transposes of each other
+  // We take the transpose of this matrix for direction vectors
   right = {rotMat.row[0].x, rotMat.row[0].y, -rotMat.row[0].z};
   up = {rotMat.row[1].x, rotMat.row[1].y, -rotMat.row[1].z};
   forward = {rotMat.row[2].x, rotMat.row[2].y, -rotMat.row[2].z};
