@@ -16,32 +16,31 @@ int main(int argc, char** arg) {
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
 
-  // class tests
-  GameObject newMesh;
+  // GameObject
+  GameObjectData gobjData;
+  gobjData.materialD.color = {1, 0, 0, 1};
+  GameObject newGOBJ(gobjData);
   Triangle triangle;
-  triangle.vertices[0] = {{-0.5f, -0.5f, 0}, {0, 0, 1}, {1, 0, 0, 1}, {0, 0}};
+  triangle.vertices[0] = {{-0.5f, -0.5f, 0}, {0, 0, 1}, {0, 0}};
 
-  triangle.vertices[1] = {{0.5f, -0.5f, 0}, {0, 0, 1}, {1, 0, 0, 1}, {0, 0}};
+  triangle.vertices[1] = {{0.5f, -0.5f, 0}, {0, 0, 1}, {0, 0}};
 
-  triangle.vertices[2] = {{0, 0.5f, 0}, {0, 0, 1}, {1, 0, 0, 1}, {0, 0}};
-  newMesh.addTriangle(triangle);
+  triangle.vertices[2] = {{0, 0.5f, 0}, {0, 0, 1}, {0, 0}};
+  newGOBJ.addTriangle(triangle);
 
-  triangle.vertices[0] = {
-      {-20.0f, -0.5f, 20.0f}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+  triangle.vertices[0] = {{-20.0f, -0.5f, 20.0f}, {0, 1, 0}, {0, 0}};
 
-  triangle.vertices[1] = {
-      {20.0f, -0.5f, 20.0f}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
+  triangle.vertices[1] = {{20.0f, -0.5f, 20.0f}, {0, 1, 0}, {0, 0}};
 
-  triangle.vertices[2] = {
-      {0.0f, -0.5f, -20.0f}, {0, 1, 0}, {1, 1, 1, 1}, {0, 0}};
-  newMesh.addTriangle(triangle);
+  triangle.vertices[2] = {{0.0f, -0.5f, -20.0f}, {0, 1, 0}, {0, 0}};
+  newGOBJ.addTriangle(triangle);
 
-  triangle.vertices[0] = {{-0.5f, -0.5f, -1}, {0, 0, 1}, {0, 1, 0, 1}, {0, 0}};
+  triangle.vertices[0] = {{-0.5f, -0.5f, -1}, {0, 0, 1}, {0, 0}};
 
-  triangle.vertices[1] = {{0.5f, -0.5f, -1}, {0, 0, 1}, {0, 1, 0, 1}, {0, 0}};
+  triangle.vertices[1] = {{0.5f, -0.5f, -1}, {0, 0, 1}, {0, 0}};
 
-  triangle.vertices[2] = {{0, 0.5f, -1}, {0, 0, 1}, {0, 1, 0, 1}, {0, 0}};
-  newMesh.addTriangle(triangle);
+  triangle.vertices[2] = {{0, 0.5f, -1}, {0, 0, 1}, {0, 0}};
+  newGOBJ.addTriangle(triangle);
 
   // Window
   Window test(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -70,7 +69,7 @@ int main(int argc, char** arg) {
   OGL_RendererData renData = {&prg, &cam};
   OGL_Renderer newRen(renData);
 
-  OGL_Renderable testRen = newRen.genRenderable(newMesh, &newMesh);
+  OGL_Renderable testRen = newRen.genRenderable(newGOBJ, &newGOBJ);
   newRen.setProgram(&prg);
 
   // vars
@@ -125,15 +124,17 @@ int main(int argc, char** arg) {
             deltaTime};
     cam.localMove(movement);
 
-    if (keyStates[SDL_SCANCODE_R])
+    if (keyStates[SDL_SCANCODE_R]) {
       cam.setRotation({0, 0, 0});
+      cam.setPosition({0, 0, 0});
+    }
 
     // ray
     ray.start = cam.getPosition();
     ray.direction = cam.getForward();
 
     // collision testing
-    collided = Physics::checkCollisionRayGameObject(ray, newMesh, &out);
+    collided = Physics::checkCollisionRayGameObject(ray, newGOBJ, &out);
     if (collided)
       print(out);
 
@@ -144,7 +145,7 @@ int main(int argc, char** arg) {
     // testing
     test.checkEvents();
     test.clearScreen();
-    // newMesh.move({0,0,deltaTime});
+    // newGOBJ.move({0,0,deltaTime});
     newRen.render(testRen);
     test.updateScreen();
   }

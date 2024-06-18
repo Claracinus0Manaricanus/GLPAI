@@ -15,6 +15,7 @@ add_executable(neweng "src/main.cpp"
 "src/include/types/classes/mesh.cpp"
 "src/include/types/classes/camera.cpp"
 "src/include/types/classes/gameObject.cpp"
+"src/include/types/classes/material.cpp"
 
 #utilities
 "src/include/utility/printUtil.cpp"

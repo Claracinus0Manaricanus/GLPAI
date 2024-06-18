@@ -11,8 +11,8 @@
 // functions for rendering usage with opengl
 // are defined here
 
-//data structures
-struct OGL_RendererData{
+// data structures
+struct OGL_RendererData {
   OGL_Program* program;
   Camera* camera;
 };
@@ -23,7 +23,6 @@ protected:
   // to add:
   Camera* camera;
   // lights
-  // material
   OGL_Program* program;
 
 public:

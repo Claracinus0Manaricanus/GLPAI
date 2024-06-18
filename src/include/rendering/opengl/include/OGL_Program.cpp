@@ -23,6 +23,7 @@ char* getFileData(const char* path) {
   char* src = (char*)malloc(tmpStat.st_size + 1);
 
   read(fd, src, tmpStat.st_size);
+  src[tmpStat.st_size] = 0;
 
   return src;
 }
@@ -115,6 +116,20 @@ int OGL_Program::setMat4(const char* uniformName, Mat4& a) {
   use();
   glUniformMatrix4fv(glGetUniformLocation(programID, uniformName), 1, GL_TRUE,
                      (float*)&a);
+
+  return 0; // add error check
+}
+
+int OGL_Program::setVec4(const char* uniformName, Vec4& a) {
+  use();
+  glUniform4fv(glGetUniformLocation(programID, uniformName), 1, (float*)&a);
+
+  return 0; // add error check
+}
+
+int OGL_Program::setFloat(const char* uniformName, float& a) {
+  use();
+  glUniform1f(glGetUniformLocation(programID, uniformName), a);
 
   return 0; // add error check
 }

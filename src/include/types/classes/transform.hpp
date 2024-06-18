@@ -5,9 +5,9 @@
 
 // data structs
 struct TransformData {
-  Vec3 position;
-  Vec3 rotation; // ? might change
-  Vec3 scale;
+  Vec3 position = {0, 0, 0};
+  Vec3 rotation = {0, 0, 0}; // ? might change
+  Vec3 scale = {1, 1, 1};
 };
 
 // OVM function is to be overridden by the extending

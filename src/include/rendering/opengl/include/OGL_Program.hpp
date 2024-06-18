@@ -28,6 +28,8 @@ public:
 
   // setters
   int setMat4(const char* uniformName, Mat4& a);
+  int setVec4(const char* uniformName, Vec4& a);
+  int setFloat(const char* uniformName, float& a);
 
   // utility
   void use();

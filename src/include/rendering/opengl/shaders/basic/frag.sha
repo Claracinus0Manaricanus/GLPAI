@@ -1,6 +1,7 @@
 #version 450 core
 
 in vec4 fragCol;
+in float fragMet;
 
 out vec4 col;
 

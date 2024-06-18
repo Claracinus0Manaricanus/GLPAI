@@ -1,16 +1,20 @@
 #version 450 core
 
 layout(location=0) in vec3 pos;
-layout(location=2) in vec4 col;
-
-out vec4 fragCol;
 
 uniform mat4 CVM;
 uniform mat4 OVM;
+uniform vec4 color;
+uniform float metalness;
+
+out vec4 fragCol;
+out float fragMet;
 
 void main(){
 
-    fragCol = col;
+    fragCol = color;
+    fragMet = metalness;
     gl_Position = CVM * OVM * vec4(pos.xyz, 1.0);
 
+    return;
 }

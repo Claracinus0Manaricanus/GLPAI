@@ -4,7 +4,7 @@
 GameObject::GameObject() {}
 
 GameObject::GameObject(GameObjectData data)
-    : Transform(data.transformD), Mesh(data.meshD) {}
+    : Transform(data.transformD), Mesh(data.meshD), Material(data.materialD) {}
 
 // destructor
 GameObject::~GameObject() {}

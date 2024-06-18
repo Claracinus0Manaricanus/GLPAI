@@ -60,11 +60,9 @@ void print(Transform& tr) {
 void print(Vertex& a) {
   printf("Position: X: %f, Y: %f, Z: %f\n"
          "Normal:   X: %f, Y: %f, Z: %f\n"
-         "Color:    R: %f, G: %f, B: %f, A: %f\n"
          "UV:       U: %f, V: %f\n",
          a.position.x, a.position.y, a.position.z, a.normal.x, a.normal.y,
-         a.normal.z, a.color.x, a.color.y, a.color.z, a.color.w, a.uv.x,
-         a.uv.y);
+         a.normal.z, a.uv.x, a.uv.y);
 }
 
 void print(Triangle& a) {

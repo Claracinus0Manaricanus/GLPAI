@@ -1,13 +1,13 @@
 #include "cm_opengl.hpp"
 #include <vector>
 
+#include "../../types/classes/gameObject.hpp"
+#define STORAGE_CLASS GameObject*
+
 // constructors
 OGL_Renderer::OGL_Renderer(OGL_RendererData data) {
   this->program = data.program;
   this->camera = data.camera;
-
-  if (camera != NULL)
-    program->setMat4("CVM", camera->getOVM());
 }
 
 // getters
@@ -20,11 +20,19 @@ void OGL_Renderer::render(OGL_Renderable& toRender) {
   program->use();
 
   // setting matrices
-  camera->calculateOVM();
-  program->setMat4("CVM", camera->getOVM());
-  if(toRender.dataStorage != NULL){
-    ((Transform*)toRender.dataStorage)->calculateOVM();
-    program->setMat4("OVM", ((Transform*)toRender.dataStorage)->getOVM());
+  if (camera != NULL) {
+    camera->calculateOVM();
+    program->setMat4("CVM", camera->getOVM());
+  }
+  if (toRender.dataStorage != NULL) {
+    // OVM
+    ((STORAGE_CLASS)toRender.dataStorage)->calculateOVM();
+    program->setMat4("OVM", ((STORAGE_CLASS)toRender.dataStorage)->getOVM());
+
+    program->setVec4("color",
+                     ((STORAGE_CLASS)toRender.dataStorage)->getColor());
+    program->setFloat("metalness",
+                      ((STORAGE_CLASS)toRender.dataStorage)->getMetalness());
   }
 
   glBindVertexArray(toRender.vertexArray);
@@ -64,13 +72,9 @@ OGL_Renderable OGL_Renderer::genRenderable(Mesh genFrom, void* dataStorage) {
                         (void*)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (void*)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
-
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (void*)(10 * sizeof(float)));
-  glEnableVertexAttribArray(3);
 
   glBindVertexArray(0);
 
