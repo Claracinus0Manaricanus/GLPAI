@@ -28,4 +28,4 @@ add_executable(neweng "src/main.cpp"
 "src/include/rendering/opengl/include/OGL_Program.cpp"
 )
 
-target_link_libraries(neweng SDL2 GL GLEW)
+target_link_libraries(neweng SDL2 GL GLEW assimp)
