@@ -1,6 +1,7 @@
 #version 450 core
 
 layout(location=0) in vec3 pos;
+layout(location=1) in vec3 nor;
 
 uniform mat4 CVM;
 uniform mat4 OVM;
@@ -9,11 +10,15 @@ uniform float metalness;
 
 out vec4 fragCol;
 out float fragMet;
+out vec3 fragPos;
+out vec3 fragNor;
 
 void main(){
 
     fragCol = color;
     fragMet = metalness;
+    fragPos = (OVM * vec4(pos.xyz, 1.0)).xyz;
+    fragNor = nor;
     gl_Position = CVM * OVM * vec4(pos.xyz, 1.0);
 
     return;

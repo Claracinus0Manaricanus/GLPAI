@@ -1,3 +1,4 @@
+#include "include/cm_math/operations.hpp"
 #include "include/physics/collisions.hpp"
 #include "include/rendering/opengl/cm_opengl.hpp"
 #include "include/rendering/window/window.hpp"
@@ -79,6 +80,9 @@ int main(int argc, char** arg) {
   int collided = 0;
   char captureMouse = 1, escA = 1;
 
+  float G = -9.8f;
+  float upVel = 0;
+
   // main loop
   while (!test.shouldClose()) {
     // update resolution
@@ -116,14 +120,18 @@ int main(int argc, char** arg) {
 
     // movement
     Vec3 movement = {
-        ((float)keyStates[SDL_SCANCODE_D] - (float)keyStates[SDL_SCANCODE_A]) *
-            deltaTime,
-        ((float)keyStates[SDL_SCANCODE_E] - (float)keyStates[SDL_SCANCODE_Q]) *
-            deltaTime,
-        ((float)keyStates[SDL_SCANCODE_W] - (float)keyStates[SDL_SCANCODE_S]) *
-            deltaTime};
-    cam.localMove(movement);
+        ((float)keyStates[SDL_SCANCODE_D] - (float)keyStates[SDL_SCANCODE_A]),
+        0,
+        ((float)keyStates[SDL_SCANCODE_W] - (float)keyStates[SDL_SCANCODE_S])};
 
+    Vec3 dir = Vector::Normalize({cam.getRight().x, 0, cam.getRight().z}) *
+                   movement.x +
+               Vector::Normalize({cam.getForward().x, 0, cam.getForward().z}) *
+                   movement.z;
+
+    cam.move(Vector::Normalize(dir) * deltaTime);
+
+    // camera reset
     if (keyStates[SDL_SCANCODE_R]) {
       cam.setRotation({0, 0, 0});
       cam.setPosition({0, 0, 0});
@@ -131,22 +139,37 @@ int main(int argc, char** arg) {
 
     // ray
     ray.start = cam.getPosition();
-    ray.direction = cam.getForward();
+    ray.direction = {0, -1, 0};
 
     // collision testing
     collided = Physics::checkCollisionRayGameObject(ray, newGOBJ, &out);
     if (collided)
       print(out);
 
+    upVel += G * deltaTime;
+    if (collided && out.tConstant < 1.7f && keyStates[SDL_SCANCODE_SPACE]) {
+      upVel = 4.5f;
+    } else if (collided && out.tConstant < 1.7f) {
+      upVel = 0;
+      cam.setPosition(
+          {cam.getPosition().x, out.hitPosition.y + 1.7f, cam.getPosition().z});
+    }
+
+    cam.move({0, upVel * deltaTime, 0});
+
+    // print debug
     println(cam.getPosition());
     println(cam.getRotation());
-    cam.setAspectRatio(test.getAspectRatio());
 
-    // testing
+    // event polling
     test.checkEvents();
+
+    // rendering
     test.clearScreen();
-    // newGOBJ.move({0,0,deltaTime});
+    cam.setAspectRatio(test.getAspectRatio());
     newRen.render(testRen);
+
+    // swap buffers
     test.updateScreen();
   }
 

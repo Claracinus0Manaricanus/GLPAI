@@ -11,6 +11,11 @@ Vec2& Vec2::operator+=(Vec2 a) {
   return *this;
 }
 
+Vec2 Vec2::operator+(Vec2 a) {
+  Vec2 temp = {x + a.x, y + a.y};
+  return temp;
+}
+
 Vec2& Vec2::operator-=(Vec2 a) {
   x -= a.x;
   y -= a.y;
@@ -36,6 +41,11 @@ Vec3& Vec3::operator+=(Vec3 a) {
   z += a.z;
 
   return *this;
+}
+
+Vec3 Vec3::operator+(Vec3 a) {
+  Vec3 temp = {x + a.x, y + a.y, z + a.z};
+  return temp;
 }
 
 Vec3& Vec3::operator-=(Vec3 a) {
@@ -67,6 +77,11 @@ Vec4& Vec4::operator+=(Vec4 a) {
   w += a.w;
 
   return *this;
+}
+
+Vec4 Vec4::operator+(Vec4 a) {
+  Vec4 temp = {x + a.x, y + a.y, z + a.z, w + a.w};
+  return temp;
 }
 
 Vec4& Vec4::operator-=(Vec4 a) {

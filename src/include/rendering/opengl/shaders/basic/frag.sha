@@ -2,11 +2,13 @@
 
 in vec4 fragCol;
 in float fragMet;
+in vec3 fragPos;
+in vec3 fragNor;
 
 out vec4 col;
 
 void main(){
 
-    col = fragCol;
+    col = fragCol * cos(fragPos.y * 3.14159265 / 2.0);
 
 }

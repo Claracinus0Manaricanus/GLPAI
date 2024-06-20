@@ -17,9 +17,14 @@ float Vector::Dot(Vec2 a, Vec2 b) { return a.x * b.x + a.y * b.y; }
 float Vector::Length(Vec3 a) { return sqrt(Vector::Dot(a, a)); }
 float Vector::Length(Vec2 a) { return sqrt(Vector::Dot(a, a)); }
 
-// vector utilities
-
-Vec3 Vector::Normalize(Vec3 a) { return (a / Vector::Length(a)); }
+Vec3 Vector::Normalize(Vec3 a) {
+  float len;
+  return ((len = Vector::Length(a)) != 0) ? (a / len) : (Vec3){0, 0, 0};
+}
+Vec2 Vector::Normalize(Vec2 a) {
+  float len;
+  return ((len = Vector::Length(a)) != 0) ? (a / len) : (Vec2){0, 0};
+}
 
 // triangle area between two vectors ( Determinant / 2 )
 float Vector::Area(Vec2 a, Vec2 b) { return fabs(a.x * b.y - a.y * b.x) / 2; }
@@ -29,7 +34,7 @@ float Vector::Area(Vec3 a, Vec3 b) {
 
 // namsepace Primitive
 
-float Primitive::Area(Triangle &a) {
+float Primitive::Area(Triangle& a) {
   Vec3 v1 = a.vertices[1].position - a.vertices[0].position;
   Vec3 v2 = a.vertices[2].position - a.vertices[0].position;
 
