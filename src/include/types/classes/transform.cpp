@@ -75,6 +75,13 @@ Mat4& Transform::getOVM() { return OVM; }
 void Transform::calculateDirections() {}
 
 void Transform::calculateOVM() {
+  Mat4 scMat = {{
+      {scale.x, 0, 0, 0},
+      {0, scale.y, 0, 0},
+      {0, 0, scale.z, 0},
+      {0, 0, 0, 1},
+  }};
+
   Mat4 tra = {{
       {1, 0, 0, position.x},
       {0, 1, 0, position.y},
@@ -82,5 +89,5 @@ void Transform::calculateOVM() {
       {0, 0, 0, 1},
   }};
 
-  OVM = tra * rotMat;
+  OVM = tra * rotMat * scMat;
 }
