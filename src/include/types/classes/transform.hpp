@@ -39,6 +39,7 @@ public:
   void localMove(Vec3 movement);
   void setRotation(Vec3 rotation);
   void rotate(Vec3 rotation);
+  void setScale(Vec3 scale);
 
   // getters
   Vec3& getPosition();

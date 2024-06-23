@@ -32,6 +32,7 @@ Window::Window(int width, int height, uint32_t flags) {
     SDL_GL_CreateContext(winHandler);
     assert(glewInit() == GLEW_OK);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
   } else if (flags & SDL_WINDOW_VULKAN) {
     rendererType = CM_VULKAN;
   } else {

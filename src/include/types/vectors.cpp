@@ -103,6 +103,17 @@ Vec4 Vec4::operator-() {
 
 Vec4 Vec4::operator*(float a) { return (Vec4){x * a, y * a, z * a, w * a}; }
 
+Vec4 Vec4::operator*(Vec4 a) {
+  Vec4 temp;
+
+  temp.x = w * a.x + a.w * x + y * a.z - a.y * z;
+  temp.y = w * a.y + a.w * y + a.x * z - x * a.z;
+  temp.z = w * a.z + a.w * z + x * a.y - a.x * y;
+  temp.w = w * a.w - x * a.x - y * a.y - z * a.z;
+
+  return temp;
+}
+
 // Mat4
 Mat4 Mat4::operator*(Mat4 a) {
   Mat4 tempRet = {{

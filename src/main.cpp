@@ -3,6 +3,7 @@
 #include "include/rendering/opengl/cm_opengl.hpp"
 #include "include/rendering/window/window.hpp"
 #include "include/types/classes/gameObject.hpp"
+#include "include/types/classes/scene.hpp"
 #include "include/types/physics.hpp"
 #include "include/utility/printUtil.hpp"
 #include <cstdio>
@@ -11,6 +12,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+
+#define PI 3.14159265f
 
 void keyCallback(uint32_t type, SDL_Keysym key) {
   if (type == SDL_KEYDOWN) {
@@ -35,42 +38,14 @@ int main(int argc, char** arg) {
   newGOBJ.addTriangle(triangle);
 
   // imports
-  Assimp::Importer importer;
-  const aiScene* imported =
-      importer.ReadFile("assets/models/dragon_vrip.ply", aiProcess_Triangulate | aiProcess_GenNormals);
-  if (imported == nullptr) {
-    printf("import error!\n");
+  Scene mainScene;
+  if (mainScene.loadFrom("assets/models/dragon_vrip.ply") != 0) {
+    printf("something!\n");
   }
 
-  uint32_t faceNum = imported->mMeshes[0]->mNumFaces;
-  uint32_t vertNum = imported->mMeshes[0]->mNumVertices;
-
-  std::vector<uint32_t> indBuff(faceNum * 3);
-  std::vector<Vertex> vertices(vertNum);
-
-  for (int i = 0; i < vertNum; i++) {
-    vertices[i].position = {imported->mMeshes[0]->mVertices[i].x,
-                            imported->mMeshes[0]->mVertices[i].y,
-                            imported->mMeshes[0]->mVertices[i].z};
-    vertices[i].normal = {imported->mMeshes[0]->mNormals[i].x,
-                          imported->mMeshes[0]->mNormals[i].y,
-                          imported->mMeshes[0]->mNormals[i].z};
-    vertices[i].uv = {0, 0};
-  }
-
-  for (int i = 0; i < faceNum; i++) {
-    indBuff[i * 3] = imported->mMeshes[0]->mFaces[i].mIndices[0];
-    indBuff[i * 3 + 1] = imported->mMeshes[0]->mFaces[i].mIndices[1];
-    indBuff[i * 3 + 2] = imported->mMeshes[0]->mFaces[i].mIndices[2];
-  }
-
-  GameObjectData gData;
-  gData.meshD.vertices = vertices;
-  gData.meshD.indexBuffer = indBuff;
-  gData.transformD.position = {0, 0, 0};
-  gData.transformD.scale = {10, 10, 10};
-
-  GameObject importedOBJ(gData);
+  mainScene.getGameObject(0).setScale({10, 10, 10});
+  mainScene.getGameObject(0).setPosition({0, 0, 0});
+  mainScene.getGameObject(0).setRotation({0, 0, 0});
 
   // Window
   Window test(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -100,8 +75,12 @@ int main(int argc, char** arg) {
   OGL_Renderer newRen(renData);
 
   OGL_Renderable testRen = newRen.genRenderable(newGOBJ, &newGOBJ);
-  OGL_Renderable testRen2 = newRen.genRenderable(importedOBJ, &importedOBJ);
-  newRen.setProgram(&prg);
+
+  std::vector<GameObject>& objs = mainScene.getGameObjects();
+  OGL_Renderable renderables[objs.size()];
+  for (int i = 0; i < objs.size(); i++) {
+    renderables[i] = newRen.genRenderable(objs[i], &objs[i]);
+  }
 
   // vars
   Vec2 mousePos = {0, 0};
@@ -116,6 +95,9 @@ int main(int argc, char** arg) {
 
   // main loop
   while (!test.shouldClose()) {
+    // testing area //
+    // testing area //
+
     // update resolution
     test.updateViewport();
 
@@ -147,7 +129,9 @@ int main(int argc, char** arg) {
 
     abs(mousePos.x) > 0.004f ? mousePos.x = mousePos.x : mousePos.x = 0;
     abs(mousePos.y) > 0.004f ? mousePos.y = mousePos.y : mousePos.y = 0;
-    cam.rotate({-mousePos.y, mousePos.x, 0});
+    cam.rotate(
+        {mousePos.y, -mousePos.x,
+         (keyStates[SDL_SCANCODE_Q] - keyStates[SDL_SCANCODE_E]) * deltaTime});
 
     // movement
     Vec3 movement = {
@@ -155,10 +139,11 @@ int main(int argc, char** arg) {
         0,
         ((float)keyStates[SDL_SCANCODE_W] - (float)keyStates[SDL_SCANCODE_S])};
 
-    Vec3 dir = Vector::Normalize({cam.getRight().x, 0, cam.getRight().z}) *
-                   movement.x +
-               Vector::Normalize({cam.getForward().x, 0, cam.getForward().z}) *
-                   movement.z;
+    Vec3 dir =
+        Vector::Normalize((Vec3){cam.getRight().x, 0, cam.getRight().z}) *
+            movement.x +
+        Vector::Normalize((Vec3){cam.getForward().x, 0, cam.getForward().z}) *
+            movement.z;
 
     cam.move(Vector::Normalize(dir) * deltaTime);
 
@@ -175,16 +160,19 @@ int main(int argc, char** arg) {
     // collision testing
     collided = Physics::checkCollisionRayGameObject(ray, newGOBJ, &out);
 
-    if(keyStates[SDL_SCANCODE_LCTRL]) camHeight = 0.85f;
-    else camHeight = 1.7f;
+    if (keyStates[SDL_SCANCODE_LCTRL])
+      camHeight = 0.85f;
+    else
+      camHeight = 1.7f;
 
     upVel += G * deltaTime;
-    if (collided && out.tConstant < camHeight && keyStates[SDL_SCANCODE_SPACE]) {
+    if (collided && out.tConstant < camHeight &&
+        keyStates[SDL_SCANCODE_SPACE]) {
       upVel = 4.5f;
     } else if (collided && out.tConstant < camHeight) {
       upVel = 0;
-      cam.setPosition(
-          {cam.getPosition().x, out.hitPosition.y + camHeight, cam.getPosition().z});
+      cam.setPosition({cam.getPosition().x, out.hitPosition.y + camHeight,
+                       cam.getPosition().z});
     }
 
     cam.move({0, upVel * deltaTime, 0});
@@ -196,7 +184,9 @@ int main(int argc, char** arg) {
     test.clearScreen();
     cam.setAspectRatio(test.getAspectRatio());
     newRen.render(testRen);
-    newRen.render(testRen2);
+    for (int i = 0; i < objs.size(); i++) {
+      newRen.render(renderables[i]);
+    }
 
     // swap buffers
     test.updateScreen();

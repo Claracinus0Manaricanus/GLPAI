@@ -18,7 +18,7 @@ void main(){
     fragCol = color;
     fragMet = metalness;
     fragPos = (OVM * vec4(pos.xyz, 1.0)).xyz;
-    fragNor = nor;
+    fragNor = normalize((OVM * vec4(nor.xyz, 0)).xyz);
     gl_Position = CVM * OVM * vec4(pos.xyz, 1.0);
 
     return;

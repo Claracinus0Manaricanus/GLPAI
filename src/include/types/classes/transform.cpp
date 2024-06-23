@@ -1,4 +1,6 @@
 #include "transform.hpp"
+#include "../../cm_math/operations.hpp"
+#include <cmath>
 
 // constructors
 Transform::Transform() {
@@ -60,6 +62,8 @@ void Transform::rotate(Vec3 rotation) {
   calculateDirections();
 }
 
+void Transform::setScale(Vec3 scale) { this->scale = scale; }
+
 // getters
 Vec3& Transform::getPosition() { return position; }
 Vec3& Transform::getRotation() { return rotation; }
@@ -72,7 +76,48 @@ Vec3& Transform::getUp() { return up; }
 Mat4& Transform::getOVM() { return OVM; }
 
 // utility
-void Transform::calculateDirections() {}
+void Transform::calculateDirections() {
+  float sinVal = sin(rotation.x / 2);
+  float cosVal = cos(rotation.x / 2);
+
+  Vec4 q1 = Vector::Normalize({sinVal, 0, 0, cosVal});
+  Vec4 q2 = Vector::Normalize({-sinVal, 0, 0, cosVal});
+
+  Vec4 fV4 = q1 * (Vec4){0, 0, 1, 0} * q2;
+  Vec4 rV4 = q1 * (Vec4){1, 0, 0, 0} * q2;
+  Vec4 uV4 = q1 * (Vec4){0, 1, 0, 0} * q2;
+
+  sinVal = sin(rotation.y / 2);
+  cosVal = cos(rotation.y / 2);
+
+  q1 = Vector::Normalize({0, sinVal, 0, cosVal});
+  q2 = Vector::Normalize({0, -sinVal, 0, cosVal});
+
+  fV4 = q1 * fV4 * q2;
+  rV4 = q1 * rV4 * q2;
+  uV4 = q1 * uV4 * q2;
+
+  sinVal = sin(rotation.z / 2);
+  cosVal = cos(rotation.z / 2);
+
+  q1 = Vector::Normalize({0, 0, sinVal, cosVal});
+  q2 = Vector::Normalize({0, 0, -sinVal, cosVal});
+
+  fV4 = q1 * fV4 * q2;
+  rV4 = q1 * rV4 * q2;
+  uV4 = q1 * uV4 * q2;
+
+  forward = {-fV4.x, -fV4.y, -fV4.z};
+  right = {rV4.x, rV4.y, rV4.z};
+  up = {uV4.x, uV4.y, uV4.z};
+
+  rotMat = {{
+      {rV4.x, uV4.x, fV4.x, 0},
+      {rV4.y, uV4.y, fV4.y, 0},
+      {rV4.z, uV4.z, fV4.z, 0},
+      {0, 0, 0, 1},
+  }};
+}
 
 void Transform::calculateOVM() {
   Mat4 scMat = {{

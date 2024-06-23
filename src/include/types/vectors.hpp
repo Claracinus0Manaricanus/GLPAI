@@ -39,6 +39,7 @@ struct Vec4 {
   Vec4 operator-(Vec4 a);
   Vec4 operator-();
   Vec4 operator*(float a);
+  Vec4 operator*(Vec4 a); // quaternion multiplication
 };
 
 struct Mat4 {
