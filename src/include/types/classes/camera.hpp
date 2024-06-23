@@ -12,7 +12,7 @@ struct CameraData {
 
 class Camera : public Transform {
 protected:
-  float fov;
+  float fov; // half of field of view for optimization
   float aspectRatio;
 
 public:

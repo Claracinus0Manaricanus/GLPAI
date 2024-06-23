@@ -6,7 +6,7 @@
 // data structs
 struct TransformData {
   Vec3 position = {0, 0, 0};
-  Vec3 rotation = {0, 0, 0}; // ? might change
+  Vec3 rotation = {0, 0, 0};
   Vec3 scale = {1, 1, 1};
 };
 
@@ -54,7 +54,18 @@ public:
 
 public:
   // utility
-  virtual void calculateDirections(); // calculates direction vectors
+
+  /* calculates forward, right and up vectors
+   * for the transform. Uses quaternions to rotate
+   * around x, y and z axis (i, j, k)
+   * generates a rotation matrix named rotMat according to
+   * the transforms direction vectors.
+   */
+  virtual void calculateDirections();
+
+  /* generates Object View Matrix (OVM) using
+   * matrix multiplication.
+   */
   virtual void calculateOVM();
 };
 
