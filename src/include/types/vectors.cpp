@@ -2,6 +2,8 @@
 
 // Vec2
 
+float& Vec2::operator[](int index) { return ((float*)this)[index]; }
+
 Vec2 Vec2::operator/(float c) { return {this->x / c, this->y / c}; }
 
 Vec2& Vec2::operator+=(Vec2 a) {
@@ -30,6 +32,8 @@ Vec2 Vec2::operator-() { return {-(this->x), -(this->y)}; }
 Vec2 Vec2::operator*(float a) { return (Vec2){x * a, y * a}; }
 
 // Vec3
+
+float& Vec3::operator[](int index) { return ((float*)this)[index]; }
 
 Vec3 Vec3::operator/(float c) {
   return {this->x / c, this->y / c, this->z / c};
@@ -65,6 +69,8 @@ Vec3 Vec3::operator-() { return {-(this->x), -(this->y), -(this->z)}; }
 Vec3 Vec3::operator*(float a) { return (Vec3){x * a, y * a, z * a}; }
 
 // Vec4
+
+float& Vec4::operator[](int index) { return ((float*)this)[index]; }
 
 Vec4 Vec4::operator/(float c) {
   return {this->x / c, this->y / c, this->z / c, this->w / c};
@@ -156,4 +162,14 @@ Vec3 Mat4::operator*(Vec3 a) {
   temp.z = row[2].x * a.x + row[2].y * a.y + row[2].z * a.z;
 
   return temp;
+}
+
+void Mat4::transpose() {
+  for (int i = 0; i < 3; i++) {
+    for (int k = i + 1; k < 4; k++) {
+      float temp = row[k][i];
+      row[k][i] = row[i][k];
+      row[i][k] = temp;
+    }
+  }
 }

@@ -9,6 +9,6 @@ out vec4 col;
 
 void main(){
 
-    col = fragCol * dot(vec3(1,1,1), fragNor);
+    col = fragCol * dot(vec3(1/1.7,1/1.7,1/1.7), fragNor);
 
 }

@@ -4,6 +4,10 @@
 #include "../types/primitives.hpp"
 #include "../types/vectors.hpp"
 
+//constants
+#define PI 3.14159265f
+#define PI_D 3.14159265
+
 // This file includes operations for
 // vectors primitives and such
 // it uses namespaces to divide operations

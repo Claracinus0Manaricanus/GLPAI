@@ -13,52 +13,32 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#define PI 3.14159265f
-
-void keyCallback(uint32_t type, SDL_Keysym key) {
-  if (type == SDL_KEYDOWN) {
-    printf("%s\n", SDL_GetKeyName(key.sym));
-  }
-}
-
 int main(int argc, char** arg) {
-  RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
-  Ray ray = {{0, 0, 0}, {0, 0, -1}};
-
-  // GameObject
-  GameObjectData gobjData;
-  gobjData.materialD.color = {1, 0, 0, 1};
-  GameObject newGOBJ(gobjData);
-  Triangle triangle;
-  triangle.vertices[0] = {{-20.0f, -0.5f, 20.0f}, {0, 1, 0}, {0, 0}};
-
-  triangle.vertices[1] = {{20.0f, -0.5f, 20.0f}, {0, 1, 0}, {0, 0}};
-
-  triangle.vertices[2] = {{0.0f, -0.5f, -20.0f}, {0, 1, 0}, {0, 0}};
-  newGOBJ.addTriangle(triangle);
-
   // imports
   Scene mainScene;
   if (mainScene.loadFrom("assets/models/dragon_vrip.ply") != 0) {
-    printf("something!\n");
+    printf("dragon couldn't fly!\n");
+  }
+  if (mainScene.loadFrom("assets/models/terrain.obj") != 0) {
+    printf("you got no standing ground!\n");
   }
 
+  GameObject& ground = mainScene.getLastLoadedGameObject();
+  ground.setScale({10, 10, 10});
   mainScene.getGameObject(0).setScale({10, 10, 10});
-  mainScene.getGameObject(0).setPosition({0, 0, 0});
-  mainScene.getGameObject(0).setRotation({0, 0, 0});
 
   // Window
-  Window test(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-  if (!test.isFine()) {
-    printf("window has a problem!\n%s\n", test.getError());
+  Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+  if (!mainWin.isFine()) {
+    printf("window has a problem!\n%s\n", mainWin.getError());
     return 1;
   }
 
-  test.setClearColor(0, 0, 0, 1);
-  test.setSwapInterval(1);
-  const uint8_t* keyStates = test.getKeyboardState();
-  test.setRelativeMouseMode(SDL_TRUE);
-  test.setMousePos(0, 0);
+  mainWin.setClearColor(0, 0, 0, 1);
+  mainWin.setSwapInterval(1);
+  const uint8_t* keyStates = mainWin.getKeyboardState();
+  mainWin.setRelativeMouseMode(SDL_TRUE);
+  mainWin.setMousePos(0, 0);
 
   // OpenGL
   OGL_Program prg({"src/include/rendering/opengl/shaders/basic/vert.sha",
@@ -69,12 +49,11 @@ int main(int argc, char** arg) {
 
   // camera
   Camera cam;
+  cam.setPosition({0, 10, 0});
 
   // OGL_Renderer
   OGL_RendererData renData = {&prg, &cam};
   OGL_Renderer newRen(renData);
-
-  OGL_Renderable testRen = newRen.genRenderable(newGOBJ, &newGOBJ);
 
   std::vector<GameObject>& objs = mainScene.getGameObjects();
   OGL_Renderable renderables[objs.size()];
@@ -84,7 +63,7 @@ int main(int argc, char** arg) {
 
   // vars
   Vec2 mousePos = {0, 0};
-  uint32_t lastMiliSec = test.getTicks();
+  uint32_t lastMiliSec = mainWin.getTicks();
   float deltaTime = 0;
   int collided = 0;
   char captureMouse = 1, escA = 1;
@@ -93,27 +72,30 @@ int main(int argc, char** arg) {
   float upVel = 0;
   float camHeight = 1.7f;
 
+  RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
+  Ray ray = {{0, 0, 0}, {0, 0, -1}};
+
   // main loop
-  while (!test.shouldClose()) {
+  while (!mainWin.shouldClose()) {
     // testing area //
     // testing area //
 
     // update resolution
-    test.updateViewport();
+    mainWin.updateViewport();
 
     // get deltaTime
-    deltaTime = (test.getTicks() - lastMiliSec) / 1000.0f;
-    lastMiliSec = test.getTicks();
+    deltaTime = (mainWin.getTicks() - lastMiliSec) / 1000.0f;
+    lastMiliSec = mainWin.getTicks();
 
     // mouse test
     if (keyStates[SDL_SCANCODE_ESCAPE] && captureMouse && escA) {
       captureMouse = 0;
-      test.setRelativeMouseMode(SDL_FALSE);
+      mainWin.setRelativeMouseMode(SDL_FALSE);
       escA = 0;
     } else if (keyStates[SDL_SCANCODE_ESCAPE] && escA) {
       captureMouse = 1;
-      test.setRelativeMouseMode(SDL_TRUE);
-      test.setMousePos(0, 0);
+      mainWin.setRelativeMouseMode(SDL_TRUE);
+      mainWin.setMousePos(0, 0);
       escA = 0;
     }
 
@@ -121,8 +103,8 @@ int main(int argc, char** arg) {
       escA = 1;
 
     if (captureMouse) {
-      mousePos = test.getCursorPosNormalized();
-      test.setMousePos(0, 0);
+      mousePos = mainWin.getCursorPosNormalized();
+      mainWin.setMousePos(0, 0);
     } else {
       mousePos = {0, 0};
     }
@@ -151,14 +133,20 @@ int main(int argc, char** arg) {
     if (keyStates[SDL_SCANCODE_R] || cam.getPosition().y < -100.0f) {
       cam.setRotation({0, 0, 0});
       cam.setPosition({0, camHeight, 0});
+      upVel = 0;
     }
 
     // ray
     ray.start = cam.getPosition();
     ray.direction = {0, -1, 0};
 
-    // collision testing
-    collided = Physics::checkCollisionRayGameObject(ray, newGOBJ, &out);
+    // collision test
+    collided = Physics::checkCollisionRayGameObject(ray, ground, &out);
+
+    if (collided) {
+      print(out);
+      println(cam.getPosition());
+    }
 
     if (keyStates[SDL_SCANCODE_LCTRL])
       camHeight = 0.85f;
@@ -178,18 +166,17 @@ int main(int argc, char** arg) {
     cam.move({0, upVel * deltaTime, 0});
 
     // event polling
-    test.checkEvents();
+    mainWin.checkEvents();
 
     // rendering
-    test.clearScreen();
-    cam.setAspectRatio(test.getAspectRatio());
-    newRen.render(testRen);
+    mainWin.clearScreen();
+    cam.setAspectRatio(mainWin.getAspectRatio());
     for (int i = 0; i < objs.size(); i++) {
       newRen.render(renderables[i]);
     }
 
     // swap buffers
-    test.updateScreen();
+    mainWin.updateScreen();
   }
 
   return 0;

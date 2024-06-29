@@ -31,6 +31,7 @@ public:
 
   // getters
   GameObject& getGameObject(uint32_t index);
+  GameObject& getLastLoadedGameObject();
   std::vector<GameObject>& getGameObjects();
 
   // loaders ( import )

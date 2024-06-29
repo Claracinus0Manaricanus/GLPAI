@@ -34,6 +34,11 @@ GameObject& Scene::getGameObject(uint32_t index) {
   assert(index < gameObjects.size());
   return gameObjects[index];
 }
+
+GameObject& Scene::getLastLoadedGameObject() {
+  return gameObjects[gameObjects.size() - 1];
+}
+
 std::vector<GameObject>& Scene::getGameObjects() { return gameObjects; }
 
 // loaders ( import )

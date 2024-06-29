@@ -74,6 +74,7 @@ Vec3& Transform::getRight() { return right; }
 Vec3& Transform::getUp() { return up; }
 
 Mat4& Transform::getOVM() { return OVM; }
+Mat4& Transform::getRotMat() { return rotMat; }
 
 // utility
 void Transform::calculateDirections() {

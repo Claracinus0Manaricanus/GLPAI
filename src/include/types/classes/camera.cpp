@@ -2,8 +2,6 @@
 #include "../../cm_math/operations.hpp"
 #include <math.h>
 
-#define PI 3.14159265f
-
 // constructors
 Camera::Camera() : Transform() {
   this->fov = 60;

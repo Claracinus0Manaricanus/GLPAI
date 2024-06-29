@@ -51,6 +51,7 @@ public:
   Vec3& getUp();
 
   Mat4& getOVM();
+  Mat4& getRotMat();
 
 public:
   // utility

@@ -1,6 +1,9 @@
 #include "collisions.hpp"
 #include "../cm_math/operations.hpp"
 
+// !! CAUTION !!
+// currently these functions are unoptimized and in a test stage
+
 // {A, B, C} is the surfaces normal
 // D is the surfaces distance from origin
 // {x, y, z} is rays start position
@@ -69,8 +72,8 @@ int Physics::checkCollisionRayTriangle(Ray& ray, Triangle triangle,
                        triangle.vertices[2].position,
                    out->hitPosition - triangle.vertices[2].position);
 
-  float areaCheck = totalArea / Primitive::Area(triangle);
-  if (areaCheck > 1.0f)
+  float areaCheck = totalArea - Primitive::Area(triangle);
+  if (areaCheck > 0.1f)
     return 0;
 
   return 1;
@@ -78,14 +81,23 @@ int Physics::checkCollisionRayTriangle(Ray& ray, Triangle triangle,
 
 // uses checkCollisionRayTriangle to iterate over every
 // triangle on a mesh and find the closest intersection
-int Physics::checkCollisionRayGameObject(Ray& ray, GameObject& mesh, RayHit* out) {
+int Physics::checkCollisionRayGameObject(Ray& ray, GameObject& mesh,
+                                         RayHit* out) {
   Triangle temp;
   std::vector<Vertex> vertices = mesh.getAllVertices();
   std::vector<uint32_t> indices = mesh.getIndexBuffer();
-  
+
   RayHit tempClosest;
   int collided = 0;
   int collidedGlobal = 0;
+
+  mesh.calculateOVM();
+  Mat4& ovm = mesh.getOVM();
+
+  for (int i = 0; i < vertices.size(); i++) {
+    vertices[i].position = ovm * vertices[i].position;
+    vertices[i].normal = Vector::Normalize(ovm * vertices[i].normal);
+  }
 
   for (int i = 0; i < indices.size(); i += 3) {
     temp.vertices[0] = vertices[indices[i]];
