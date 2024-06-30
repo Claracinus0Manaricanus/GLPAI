@@ -27,6 +27,9 @@ add_executable(neweng "src/main.cpp"
 #opengl
 "src/include/rendering/opengl/cm_opengl.cpp"
 "src/include/rendering/opengl/include/OGL_Program.cpp"
+
+#osDependent
+"src/include/osDependent/linux/filesystem/fileImport.cpp"
 )
 
 target_link_libraries(neweng SDL2 GL GLEW assimp)

@@ -1,31 +1,8 @@
 #include "OGL_Program.hpp"
-#include <cstdlib>
+#include "../../../osDependent/linux/filesystem/fileImport.hpp"
+
 extern "C" {
 #include <GL/glew.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-}
-
-// file import function
-char* getFileData(const char* path) {
-  if (path == NULL)
-    return NULL;
-
-  int fd = open(path, O_RDONLY);
-  if (fd == -1) {
-    return NULL;
-  }
-
-  struct stat tmpStat;
-  fstat(fd, &tmpStat);
-
-  char* src = (char*)malloc(tmpStat.st_size + 1);
-
-  read(fd, src, tmpStat.st_size);
-  src[tmpStat.st_size] = 0;
-
-  return src;
 }
 
 // constructor
@@ -33,9 +10,9 @@ OGL_Program::OGL_Program(OGL_ProgramData initData) {
   programID = glCreateProgram();
 
   // shader sources
-  char* vertSrc = getFileData(initData.vertexSourcePath);
-  char* fragSrc = getFileData(initData.fragSourcePath);
-  char* geomSrc = getFileData(initData.geometrySourcePath);
+  char* vertSrc = readFile(initData.vertexSourcePath, NULL);
+  char* fragSrc = readFile(initData.fragSourcePath, NULL);
+  char* geomSrc = readFile(initData.geometrySourcePath, NULL);
 
   if (vertSrc == NULL || fragSrc == NULL) {
     errorStatus = CM_ERROR_PATH;

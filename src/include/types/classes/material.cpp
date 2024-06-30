@@ -1,4 +1,5 @@
 #include "material.hpp"
+#include "../../osDependent/linux/filesystem/stb_image.h"
 
 // constructors
 Material::Material() {
