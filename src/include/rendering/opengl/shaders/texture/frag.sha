@@ -12,6 +12,6 @@ uniform sampler2D tex;
 
 void main(){
 
-    col = fragCol * dot(vec3(1/1.7,1/1.7,1/1.7), fragNor);
+    col = fragCol * texture(tex, fragUV) * dot(vec3(1/1.7,1/1.7,1/1.7), fragNor);
 
 }

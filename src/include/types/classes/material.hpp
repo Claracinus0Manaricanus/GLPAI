@@ -8,6 +8,13 @@ struct MaterialData {
   float metalness = 0;
 };
 
+struct TextureData {
+  unsigned char* data = nullptr;
+  int width = 0;
+  int height = 0;
+  int channel = 0;
+};
+
 class Material {
 protected:
   // holds data in an array
@@ -15,6 +22,7 @@ protected:
   // RGBA is the color format, CCCC means color, M is metalness
   // if the data held changes with an update the
   // new data types will be added after the existing ones
+  TextureData texData;
   float dataArray[5];
 
 public:
@@ -29,11 +37,18 @@ public:
   void setData(MaterialData& data);
   void setColor(Vec4 color);
   void setMetalness(float metalness);
+  int loadTexture(const char* path);
+  void resetTexture();
 
   // getters
   const float* getDataAsArray();
   Vec4& getColor();
   float& getMetalness();
+  char hasTexture();
+  int getTextureWidth();
+  int getTextureHeight();
+  int getTextureChannel();
+  unsigned char* getTextureData();
 };
 
 #endif

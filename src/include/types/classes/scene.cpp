@@ -62,7 +62,14 @@ void searchNode(aiNode* node, const aiScene* impScene,
       vertices[i].normal = {impScene->mMeshes[node->mMeshes[0]]->mNormals[i].x,
                             impScene->mMeshes[node->mMeshes[0]]->mNormals[i].y,
                             impScene->mMeshes[node->mMeshes[0]]->mNormals[i].z};
-      vertices[i].uv = {0, 0};
+      if (impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0] != nullptr) {
+        vertices[i].uv.x =
+            impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].y;
+        vertices[i].uv.y =
+            impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].x;
+      }else{
+        vertices[i].uv = {0,0};
+      }
     }
     for (int i = 0; i < numFaces; i++) {
       indices[i * 3] =

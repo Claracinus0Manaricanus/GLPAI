@@ -29,7 +29,9 @@ public:
   // setters
   int setMat4(const char* uniformName, Mat4& a);
   int setVec4(const char* uniformName, Vec4& a);
-  int setFloat(const char* uniformName, float& a);
+  int setFloat(const char* uniformName, float a);
+  int setUnsignedInt(const char* uniformName, unsigned int a);
+  int setInt(const char* uniformName, int a);
 
   // utility
   void use();

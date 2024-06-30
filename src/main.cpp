@@ -24,8 +24,14 @@ int main(int argc, char** arg) {
   }
 
   GameObject& ground = mainScene.getLastLoadedGameObject();
+  if (ground.loadTexture("assets/images/arkKnightsChars.jpg") != 0) {
+    printf("no tex!\n");
+    return -1;
+  }
+
   ground.setScale({10, 10, 10});
   mainScene.getGameObject(0).setScale({10, 10, 10});
+  mainScene.getGameObject(0).setPosition({0, 1, 0});
 
   // Window
   Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -41,18 +47,24 @@ int main(int argc, char** arg) {
   mainWin.setMousePos(0, 0);
 
   // OpenGL
-  OGL_Program prg({"src/include/rendering/opengl/shaders/basic/vert.sha",
-                   "src/include/rendering/opengl/shaders/basic/frag.sha",
-                   NULL});
-  if (prg.getError() != NULL)
-    printf("%s\n", prg.getError());
+  OGL_Program prg_basic({"src/include/rendering/opengl/shaders/basic/vert.sha",
+                         "src/include/rendering/opengl/shaders/basic/frag.sha",
+                         NULL});
+  if (prg_basic.getError() != NULL)
+    printf("%s\n", prg_basic.getError());
+
+  OGL_Program prg_texture(
+      {"src/include/rendering/opengl/shaders/texture/vert.sha",
+       "src/include/rendering/opengl/shaders/texture/frag.sha", NULL});
+  if (prg_texture.getError() != NULL)
+    printf("%s\n", prg_texture.getError());
 
   // camera
   Camera cam;
   cam.setPosition({0, 10, 0});
 
   // OGL_Renderer
-  OGL_RendererData renData = {&prg, &cam};
+  OGL_RendererData renData = {&prg_texture, &cam};
   OGL_Renderer newRen(renData);
 
   std::vector<GameObject>& objs = mainScene.getGameObjects();
@@ -143,10 +155,10 @@ int main(int argc, char** arg) {
     // collision test
     collided = Physics::checkCollisionRayGameObject(ray, ground, &out);
 
-    if (collided) {
+    /*if (collided) {
       print(out);
       println(cam.getPosition());
-    }
+    }*/
 
     if (keyStates[SDL_SCANCODE_LCTRL])
       camHeight = 0.85f;
@@ -172,6 +184,11 @@ int main(int argc, char** arg) {
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
     for (int i = 0; i < objs.size(); i++) {
+      if (((GameObject*)renderables[i].dataStorage)->hasTexture())
+        newRen.setProgram(&prg_texture);
+      else
+        newRen.setProgram(&prg_basic);
+
       newRen.render(renderables[i]);
     }
 

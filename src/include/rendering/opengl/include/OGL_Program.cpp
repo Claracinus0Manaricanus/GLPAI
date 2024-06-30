@@ -104,7 +104,21 @@ int OGL_Program::setVec4(const char* uniformName, Vec4& a) {
   return 0; // add error check
 }
 
-int OGL_Program::setFloat(const char* uniformName, float& a) {
+int OGL_Program::setFloat(const char* uniformName, float a) {
+  use();
+  glUniform1f(glGetUniformLocation(programID, uniformName), a);
+
+  return 0; // add error check
+}
+
+int OGL_Program::setUnsignedInt(const char* uniformName, unsigned int a) {
+  use();
+  glUniform1f(glGetUniformLocation(programID, uniformName), a);
+
+  return 0; // add error check
+}
+
+int OGL_Program::setInt(const char* uniformName, int a) {
   use();
   glUniform1f(glGetUniformLocation(programID, uniformName), a);
 

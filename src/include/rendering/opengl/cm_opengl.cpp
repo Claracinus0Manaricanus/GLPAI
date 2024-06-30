@@ -35,10 +35,17 @@ void OGL_Renderer::render(OGL_Renderable& toRender) {
                       ((STORAGE_CLASS)toRender.dataStorage)->getMetalness());
   }
 
+  // texture
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(toRender.texture.target, toRender.texture.texID);
+  program->setUnsignedInt("tex", 0);
+
+  // vertex array
   glBindVertexArray(toRender.vertexArray);
   glDrawElements(GL_TRIANGLES, toRender.indexBufferlength, GL_UNSIGNED_INT,
                  (void*)0);
 
+  glBindTexture(toRender.texture.target, 0);
   glBindVertexArray(0);
 }
 
@@ -79,6 +86,40 @@ OGL_Renderable OGL_Renderer::genRenderable(Mesh genFrom, void* dataStorage) {
   glBindVertexArray(0);
 
   temp.dataStorage = dataStorage;
+
+  // texture
+  if (((GameObject*)dataStorage)->hasTexture()) {
+    glGenTextures(1, &temp.texture.texID);
+    temp.texture.target = GL_TEXTURE_2D;
+    temp.texture.width = ((GameObject*)dataStorage)->getTextureWidth();
+    temp.texture.height = ((GameObject*)dataStorage)->getTextureHeight();
+
+    if (((GameObject*)dataStorage)->getTextureChannel() == 3) {
+      temp.texture.format = GL_RGB;
+    } else {
+      temp.texture.format = GL_RGBA;
+    }
+
+    glBindTexture(temp.texture.target, temp.texture.texID);
+    glTexImage2D(temp.texture.target, 0, temp.texture.format,
+                 temp.texture.width, temp.texture.height, 0,
+                 temp.texture.format, GL_UNSIGNED_BYTE,
+                 ((GameObject*)dataStorage)->getTextureData());
+
+    glTexParameteri(temp.texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(temp.texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(temp.texture.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTextureParameteri(temp.texture.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glBindTexture(temp.texture.target, 0);
+
+  } else {
+    temp.texture.texID = 0;
+    temp.texture.target = 0;
+    temp.texture.format = 0;
+    temp.texture.width = 0;
+    temp.texture.height = 0;
+  }
 
   return temp;
 }
