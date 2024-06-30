@@ -155,10 +155,10 @@ int main(int argc, char** arg) {
     // collision test
     collided = Physics::checkCollisionRayGameObject(ray, ground, &out);
 
-    /*if (collided) {
+    if (collided) {
       print(out);
       println(cam.getPosition());
-    }*/
+    }
 
     if (keyStates[SDL_SCANCODE_LCTRL])
       camHeight = 0.85f;

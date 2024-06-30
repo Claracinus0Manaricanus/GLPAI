@@ -17,7 +17,9 @@ Material::Material(MaterialData& data) {
 }
 
 // destructors
-Material::~Material() {}
+Material::~Material() {
+  stbi_image_free(texData.data);
+}
 
 // setters
 void Material::setData(MaterialData& data) {
