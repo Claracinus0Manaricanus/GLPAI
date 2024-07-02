@@ -16,10 +16,10 @@
 int main(int argc, char** arg) {
   // imports
   Scene mainScene;
-  if (mainScene.loadFrom("assets/models/dragon_vrip.ply") != 0) {
+  if (mainScene.import("assets/models/dragon_vrip.ply") != 0) {
     printf("dragon couldn't fly!\n");
   }
-  if (mainScene.loadFrom("assets/models/terrain.obj") != 0) {
+  if (mainScene.import("assets/models/terrain.obj") != 0) {
     printf("you got no standing ground!\n");
   }
 
@@ -63,9 +63,16 @@ int main(int argc, char** arg) {
   Camera cam;
   cam.setPosition({0, 10, 0});
 
+  // light
+  PointLightData lData = {
+      {-3.5f, 10.0f, -2.5f},
+      {1, 1, 1},
+      10,
+  };
+  PointLight light(lData);
+
   // OGL_Renderer
-  OGL_RendererData renData = {&prg_texture, &cam};
-  OGL_Renderer newRen(renData);
+  OGL_Renderer newRen;
 
   std::vector<GameObject>& objs = mainScene.getGameObjects();
   OGL_Renderable renderables[objs.size()];
@@ -176,20 +183,19 @@ int main(int argc, char** arg) {
     }
 
     cam.move({0, upVel * deltaTime, 0});
-
+    
     // event polling
     mainWin.checkEvents();
+    light.setPosition({5 * (float)sin(mainWin.getTicks() / 1000.0f), 5,  5 * (float)cos(mainWin.getTicks() / 1000.0f)});
 
     // rendering
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
     for (int i = 0; i < objs.size(); i++) {
       if (((GameObject*)renderables[i].dataStorage)->hasTexture())
-        newRen.setProgram(&prg_texture);
+        newRen.render(renderables[i], cam, prg_texture, light);
       else
-        newRen.setProgram(&prg_basic);
-
-      newRen.render(renderables[i]);
+        newRen.render(renderables[i], cam, prg_basic, light);
     }
 
     // swap buffers

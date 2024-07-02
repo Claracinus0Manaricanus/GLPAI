@@ -104,6 +104,13 @@ int OGL_Program::setVec4(const char* uniformName, Vec4& a) {
   return 0; // add error check
 }
 
+int OGL_Program::setVec3(const char* uniformName, Vec3& a) {
+  use();
+  glUniform3fv(glGetUniformLocation(programID, uniformName), 1, (float*)&a);
+
+  return 0; // add error check
+}
+
 int OGL_Program::setFloat(const char* uniformName, float a) {
   use();
   glUniform1f(glGetUniformLocation(programID, uniformName), a);

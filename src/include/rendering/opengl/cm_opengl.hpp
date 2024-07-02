@@ -2,6 +2,7 @@
 #define CM_OPENGL_RENDERER
 
 #include "../../types/classes/camera.hpp"
+#include "../../types/classes/light.hpp"
 #include "../../types/classes/mesh.hpp"
 #include "include/OGL_Program.hpp"
 #include "include/OGL_Types.hpp"
@@ -12,31 +13,24 @@
 // are defined here
 
 // data structures
-struct OGL_RendererData {
-  OGL_Program* program;
-  Camera* camera;
-};
+struct OGL_RendererData {};
 
 class OGL_Renderer {
 protected:
   // instance vars
-  // to add:
-  Camera* camera;
-  // lights
-  OGL_Program* program;
 
 public:
   // constructors
+  OGL_Renderer();
   OGL_Renderer(OGL_RendererData data);
 
   // getters
 
   // setters
-  void setProgram(OGL_Program* program);
-  void setCamera(Camera* camera);
 
   // rendering
-  void render(OGL_Renderable& toRender);
+  void render(OGL_Renderable& toRender, Camera& camera, OGL_Program& program,
+              PointLight& light);
 
   // utility
   static OGL_Renderable genRenderable(Mesh genFrom, void* dataStorage);

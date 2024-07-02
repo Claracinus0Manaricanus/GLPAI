@@ -10,8 +10,14 @@ out vec4 col;
 
 uniform sampler2D tex;
 
+//light
+uniform vec3 lPos;
+uniform vec3 lCol;
+uniform float lStrength;
+
 void main(){
 
-    col = fragCol * dot(vec3(1/1.7,1/1.7,1/1.7), fragNor);
+    vec3 lVec = lPos - fragPos;
+    col = fragCol * lStrength * vec4(lCol.xyz, 1) * dot(normalize(lVec), fragNor) / max((length(lVec) * length(lVec)), 1);
 
 }

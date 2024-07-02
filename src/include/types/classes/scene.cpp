@@ -67,8 +67,8 @@ void searchNode(aiNode* node, const aiScene* impScene,
             impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].y;
         vertices[i].uv.y =
             impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].x;
-      }else{
-        vertices[i].uv = {0,0};
+      } else {
+        vertices[i].uv = {0, 0};
       }
     }
     for (int i = 0; i < numFaces; i++) {
@@ -93,7 +93,7 @@ void searchNode(aiNode* node, const aiScene* impScene,
   }
 }
 
-int Scene::loadFrom(const char* filename) {
+int Scene::import(const char* filename) {
   Assimp::Importer importer;
   const aiScene* importedScene =
       importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenNormals);

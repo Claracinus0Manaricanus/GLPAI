@@ -34,8 +34,8 @@ public:
   GameObject& getLastLoadedGameObject();
   std::vector<GameObject>& getGameObjects();
 
-  // loaders ( import )
-  int loadFrom(const char* filename);
+  // loaders
+  int import(const char* filename);
 
   // savers ( export )
   int saveTo(const char* filename);

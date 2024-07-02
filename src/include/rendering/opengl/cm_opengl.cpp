@@ -5,40 +5,44 @@
 #define STORAGE_CLASS GameObject*
 
 // constructors
-OGL_Renderer::OGL_Renderer(OGL_RendererData data) {
-  this->program = data.program;
-  this->camera = data.camera;
-}
+OGL_Renderer::OGL_Renderer() {}
+
+OGL_Renderer::OGL_Renderer(OGL_RendererData data) {}
 
 // getters
 
 // setters
-void OGL_Renderer::setProgram(OGL_Program* program) { this->program = program; }
 
 // rendering
-void OGL_Renderer::render(OGL_Renderable& toRender) {
-  program->use();
+void OGL_Renderer::render(OGL_Renderable& toRender, Camera& camera,
+                          OGL_Program& program, PointLight& light) {
+  program.use();
 
   // setting matrices
-  if (camera != NULL) {
-    camera->calculateOVM();
-    program->setMat4("CVM", camera->getOVM());
-  }
+  // camera
+  camera.calculateOVM();
+  program.setMat4("CVM", camera.getOVM());
+
+  // object
   if (toRender.dataStorage != NULL) {
     // OVM
     ((STORAGE_CLASS)toRender.dataStorage)->calculateOVM();
-    program->setMat4("OVM", ((STORAGE_CLASS)toRender.dataStorage)->getOVM());
+    program.setMat4("OVM", ((STORAGE_CLASS)toRender.dataStorage)->getOVM());
 
-    program->setVec4("color",
-                     ((STORAGE_CLASS)toRender.dataStorage)->getColor());
-    program->setFloat("metalness",
-                      ((STORAGE_CLASS)toRender.dataStorage)->getMetalness());
+    program.setVec4("color", ((STORAGE_CLASS)toRender.dataStorage)->getColor());
+    program.setFloat("metalness",
+                     ((STORAGE_CLASS)toRender.dataStorage)->getMetalness());
   }
+
+  // light
+  program.setVec3("lPos", light.getPosition());
+  program.setVec3("lCol", light.getColor());
+  program.setFloat("lStrength", light.getStrength());
 
   // texture
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(toRender.texture.target, toRender.texture.texID);
-  program->setUnsignedInt("tex", 0);
+  program.setUnsignedInt("tex", 0);
 
   // vertex array
   glBindVertexArray(toRender.vertexArray);
