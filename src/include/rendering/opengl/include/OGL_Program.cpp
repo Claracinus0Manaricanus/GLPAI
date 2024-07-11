@@ -1,5 +1,5 @@
 #include "OGL_Program.hpp"
-#include "../../../osDependent/linux/filesystem/fileImport.hpp"
+#include "../../../platform/linux/filesystem/fileImport.hpp"
 
 extern "C" {
 #include <GL/glew.h>
