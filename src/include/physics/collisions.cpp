@@ -81,8 +81,8 @@ int Physics::checkCollisionRayTriangle(Ray& ray, Triangle triangle,
 
 // uses checkCollisionRayTriangle to iterate over every
 // triangle on a mesh and find the closest intersection
-int Physics::checkCollisionRayGameObject(Ray& ray, GameObject& mesh,
-                                         RayHit* out) {
+int Physics::checkCollisionRayGameObject(Ray& ray, Mesh& mesh,
+                                         Transform& transform, RayHit* out) {
   Triangle temp;
   std::vector<Vertex> vertices = mesh.getAllVertices();
   std::vector<uint32_t> indices = mesh.getIndexBuffer();
@@ -91,8 +91,8 @@ int Physics::checkCollisionRayGameObject(Ray& ray, GameObject& mesh,
   int collided = 0;
   int collidedGlobal = 0;
 
-  mesh.calculateOVM();
-  Mat4& ovm = mesh.getOVM();
+  transform.calculateOVM();
+  Mat4& ovm = transform.getOVM();
 
   for (int i = 0; i < vertices.size(); i++) {
     vertices[i].position = ovm * vertices[i].position;

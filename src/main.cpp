@@ -16,22 +16,13 @@
 int main(int argc, char** arg) {
   // imports
   Scene mainScene;
-  if (mainScene.import("assets/models/dragon_vrip.ply") != 0) {
-    printf("dragon couldn't fly!\n");
-  }
-  if (mainScene.import("assets/models/terrain.obj") != 0) {
-    printf("you got no standing ground!\n");
-  }
 
-  GameObject& ground = mainScene.getLastLoadedGameObject();
-  if (ground.loadTexture("assets/images/arkKnightsChars.jpg") != 0) {
-    printf("no tex!\n");
-    return -1;
-  }
+  GameObjectData gData = {{{0, 0, 0}, {0, 0, 0}, {10, 10, 10}}, 0, 0};
+  mainScene.addGameObject(gData);
 
-  ground.setScale({10, 10, 10});
-  mainScene.getGameObject(0).setScale({10, 10, 10});
-  mainScene.getGameObject(0).setPosition({0, 1, 0});
+  gData.transformD = {{0, 1, 0}, {0, 0, 0}, {10, 10, 10}};
+  gData.meshID = 1;
+  mainScene.addGameObject(gData);
 
   // Window
   Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
@@ -67,18 +58,27 @@ int main(int argc, char** arg) {
   PointLightData lData = {
       {-3.5f, 10.0f, -2.5f},
       {1, 1, 1},
-      10,
+      100,
   };
   PointLight light(lData);
 
   // OGL_Renderer
   OGL_Renderer newRen;
 
-  std::vector<GameObject>& objs = mainScene.getGameObjects();
-  OGL_Renderable renderables[objs.size()];
-  for (int i = 0; i < objs.size(); i++) {
-    renderables[i] = newRen.genRenderable(objs[i], &objs[i]);
+  std::vector<Mesh> meshes = Scene::import("assets/models/terrain.obj");
+  newRen.register_mesh(meshes[0]);
+
+  std::vector<Mesh> meshes2 = Scene::import("assets/models/dragon_vrip.ply");
+  newRen.register_mesh(meshes2[0]);
+
+  MaterialData mData;
+  mData.color = {1, 1, 1, 1};
+  Material tmpMat(mData);
+  if (tmpMat.loadTexture("assets/images/arkKnightsChars.jpg") != 0) {
+    printf("no tex!\n");
+    return -1;
   }
+  newRen.register_material(tmpMat);
 
   // vars
   Vec2 mousePos = {0, 0};
@@ -160,7 +160,8 @@ int main(int argc, char** arg) {
     ray.direction = {0, -1, 0};
 
     // collision test
-    collided = Physics::checkCollisionRayGameObject(ray, ground, &out);
+    collided = Physics::checkCollisionRayGameObject(
+        ray, meshes[0], mainScene.getGameObject(0), &out);
 
     if (collided) {
       print(out);
@@ -183,20 +184,16 @@ int main(int argc, char** arg) {
     }
 
     cam.move({0, upVel * deltaTime, 0});
-    
+
     // event polling
     mainWin.checkEvents();
-    light.setPosition({5 * (float)sin(mainWin.getTicks() / 1000.0f), 5,  5 * (float)cos(mainWin.getTicks() / 1000.0f)});
+    light.setPosition({4 * (float)sin(mainWin.getTicks() / 1000.0f), 5,
+                       4 * (float)cos(mainWin.getTicks() / 1000.0f)});
 
     // rendering
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
-    for (int i = 0; i < objs.size(); i++) {
-      if (((GameObject*)renderables[i].dataStorage)->hasTexture())
-        newRen.render(renderables[i], cam, prg_texture, light);
-      else
-        newRen.render(renderables[i], cam, prg_basic, light);
-    }
+    newRen.render(mainScene, prg_texture, cam, light);
 
     // swap buffers
     mainWin.updateScreen();

@@ -18,6 +18,6 @@ uniform float lStrength;
 void main(){
 
     vec3 lVec = lPos - fragPos;
-    col = fragCol * lStrength * vec4(lCol, 1) * texture(tex, fragUV) * dot(normalize(lVec), fragNor) / max((length(lVec) * length(lVec)), 1);
-
+    col = fragCol * vec4(lCol, 1) * texture(tex, fragUV) * dot(normalize(lVec), fragNor) / max((length(lVec) * length(lVec) / lStrength), 1);
+    
 }

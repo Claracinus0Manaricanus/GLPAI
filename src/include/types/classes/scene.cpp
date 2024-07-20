@@ -19,8 +19,7 @@ Scene::~Scene() {}
 void Scene::addGameObject(GameObject& toAdd) { gameObjects.push_back(toAdd); }
 
 void Scene::addGameObject(GameObjectData& toAdd) {
-  GameObject temp(toAdd);
-  gameObjects.push_back(temp);
+  gameObjects.push_back(toAdd);
 }
 
 // removers
@@ -44,7 +43,7 @@ std::vector<GameObject>& Scene::getGameObjects() { return gameObjects; }
 // loaders ( import )
 // helper functions
 void searchNode(aiNode* node, const aiScene* impScene,
-                std::vector<GameObject>& objs) {
+                std::vector<Mesh>& tempMeshes) {
   // load from node
   if (node->mNumMeshes != 0) {
     uint32_t numVertices = impScene->mMeshes[node->mMeshes[0]]->mNumVertices;
@@ -80,29 +79,30 @@ void searchNode(aiNode* node, const aiScene* impScene,
           impScene->mMeshes[node->mMeshes[0]]->mFaces[i].mIndices[2];
     }
 
-    GameObjectData gData;
-    gData.meshD.vertices = vertices;
-    gData.meshD.indexBuffer = indices;
+    MeshData mData;
+    mData.vertices = vertices;
+    mData.indexBuffer = indices;
 
-    objs.emplace_back(gData);
+    tempMeshes.emplace_back(mData);
   }
 
   // search children
   for (int i = 0; i < node->mNumChildren; i++) {
-    searchNode(node->mChildren[i], impScene, objs);
+    searchNode(node->mChildren[i], impScene, tempMeshes);
   }
 }
 
-int Scene::import(const char* filename) {
+std::vector<Mesh> Scene::import(const char* filename) {
+  std::vector<Mesh> tmpMeshes;
   Assimp::Importer importer;
   const aiScene* importedScene =
       importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenNormals);
   if (importedScene == nullptr)
-    return -1;
+    return tmpMeshes;
 
   // load recursively from the tree ( starting at importedScene->mRootNode )
-  searchNode(importedScene->mRootNode, importedScene, gameObjects);
-  return 0;
+  searchNode(importedScene->mRootNode, importedScene, tmpMeshes);
+  return tmpMeshes;
 }
 
 // savers ( export )

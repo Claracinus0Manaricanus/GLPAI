@@ -2,6 +2,9 @@
 #define CM_SCENE
 
 #include "gameObject.hpp"
+#include "mesh.hpp"
+#include <cstdint>
+#include "light.hpp"
 #include <vector>
 
 struct SceneData {
@@ -11,7 +14,7 @@ struct SceneData {
 class Scene {
 private:
   std::vector<GameObject> gameObjects;
-  // lights
+  std::vector<PointLight> pointLights;
 
 public:
   // constructors
@@ -35,7 +38,7 @@ public:
   std::vector<GameObject>& getGameObjects();
 
   // loaders
-  int import(const char* filename);
+  static std::vector<Mesh> import(const char* filename);
 
   // savers ( export )
   int saveTo(const char* filename);

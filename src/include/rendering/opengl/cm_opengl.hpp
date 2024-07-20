@@ -3,7 +3,9 @@
 
 #include "../../types/classes/camera.hpp"
 #include "../../types/classes/light.hpp"
+#include "../../types/classes/material.hpp"
 #include "../../types/classes/mesh.hpp"
+#include "../../types/classes/scene.hpp"
 #include "include/OGL_Program.hpp"
 #include "include/OGL_Types.hpp"
 #include <GL/glew.h>
@@ -18,6 +20,8 @@ struct OGL_RendererData {};
 class OGL_Renderer {
 protected:
   // instance vars
+  std::vector<OGL_Mesh> meshes;
+  std::vector<OGL_Material> materials;
 
 public:
   // constructors
@@ -27,13 +31,14 @@ public:
   // getters
 
   // setters
+  void register_mesh(Mesh& mesh);
+  void register_material(Material& material);
 
   // rendering
-  void render(OGL_Renderable& toRender, Camera& camera, OGL_Program& program,
+  void render(int mesh, int material, OGL_Program& program,
+              Transform& transform, Camera& camera, PointLight& light);
+  void render(Scene& scene, OGL_Program& program, Camera& camera,
               PointLight& light);
-
-  // utility
-  static OGL_Renderable genRenderable(Mesh genFrom, void* dataStorage);
 };
 
 #endif
