@@ -28,6 +28,9 @@ public:
   OGL_Renderer();
   OGL_Renderer(OGL_RendererData data);
 
+  // destructors
+  ~OGL_Renderer();
+
   // getters
 
   // setters
@@ -37,8 +40,7 @@ public:
   // rendering
   void render(int mesh, int material, OGL_Program& program,
               Transform& transform, Camera& camera, PointLight& light);
-  void render(Scene& scene, OGL_Program& program, Camera& camera,
-              PointLight& light);
+  void render(Scene& scene, OGL_Program& program, Camera& camera);
 };
 
 #endif

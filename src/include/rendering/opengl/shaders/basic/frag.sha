@@ -18,6 +18,9 @@ uniform float lStrength;
 void main(){
 
     vec3 lVec = lPos - fragPos;
-    col = fragCol * lStrength * vec4(lCol.xyz, 1) * dot(normalize(lVec), fragNor) / max((length(lVec) * length(lVec)), 1);
+
+    float light_constant = dot(normalize(lVec), fragNor) / max((length(lVec) * length(lVec) / lStrength), 1.0);
+
+    col = fragCol * vec4(lCol.xyz * light_constant, 1.0);
 
 }

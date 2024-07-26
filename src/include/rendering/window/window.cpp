@@ -31,8 +31,6 @@ Window::Window(int width, int height, uint32_t flags) {
                         SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_CreateContext(winHandler);
     assert(glewInit() == GLEW_OK);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
   } else if (flags & SDL_WINDOW_VULKAN) {
     rendererType = CM_VULKAN;
   } else {
@@ -49,6 +47,8 @@ Window::Window(int width, int height, uint32_t flags) {
 Window::~Window() {
   if (rendererType == CM_SDL_RENDERER)
     SDL_DestroyRenderer(renderHandler);
+
+  // this function caused SIGSEGV on wayland, I don't know why
   SDL_DestroyWindow(winHandler);
 }
 

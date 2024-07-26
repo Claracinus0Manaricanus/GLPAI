@@ -10,6 +10,7 @@ Scene::Scene() {}
 Scene::Scene(SceneData& data) {
   //
   this->gameObjects = data.gameObjects;
+  this->pointLights = data.pointLights;
 }
 
 // destructors
@@ -19,7 +20,13 @@ Scene::~Scene() {}
 void Scene::addGameObject(GameObject& toAdd) { gameObjects.push_back(toAdd); }
 
 void Scene::addGameObject(GameObjectData& toAdd) {
-  gameObjects.push_back(toAdd);
+  gameObjects.emplace_back(toAdd);
+}
+
+void Scene::addPointLight(PointLight& toAdd) { pointLights.push_back(toAdd); }
+
+void Scene::addPointLight(PointLightData& toAdd) {
+  pointLights.emplace_back(toAdd);
 }
 
 // removers
@@ -39,6 +46,17 @@ GameObject& Scene::getLastLoadedGameObject() {
 }
 
 std::vector<GameObject>& Scene::getGameObjects() { return gameObjects; }
+
+PointLight& Scene::getPointLight(uint32_t index) {
+  assert(index < pointLights.size());
+  return pointLights[index];
+}
+
+PointLight& Scene::getLastLoadedPointLight() {
+  return pointLights[pointLights.size() - 1];
+}
+
+std::vector<PointLight>& Scene::getPointLights() { return pointLights; }
 
 // loaders ( import )
 // helper functions

@@ -2,9 +2,39 @@
 #include <vector>
 
 // constructors
-OGL_Renderer::OGL_Renderer() {}
+OGL_Renderer::OGL_Renderer() {
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_BLEND);
 
-OGL_Renderer::OGL_Renderer(OGL_RendererData data) {}
+  glDepthFunc(GL_LEQUAL);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+OGL_Renderer::OGL_Renderer(OGL_RendererData data) {
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_BLEND);
+
+  glDepthFunc(GL_LEQUAL);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+// destructors
+OGL_Renderer::~OGL_Renderer() {
+  for (OGL_Mesh mesh : meshes) {
+    glDeleteBuffers(1, &mesh.indexbuffer);
+    glDeleteBuffers(1, &mesh.vertexDataBuffer);
+    glDeleteVertexArrays(1, &mesh.vertexArray);
+  }
+
+  for (OGL_Material material : materials) {
+    if (material.texture.texID != 0)
+      glDeleteTextures(1, &material.texture.texID);
+  }
+}
 
 // getters
 
@@ -126,9 +156,7 @@ void OGL_Renderer::render(int mesh, int material, OGL_Program& program,
   glBindVertexArray(0);
 }
 
-void OGL_Renderer::render(Scene& scene, OGL_Program& program, Camera& camera,
-                          PointLight& light) {
-  std::vector<GameObject>& objs = scene.getGameObjects();
+void OGL_Renderer::render(Scene& scene, OGL_Program& program, Camera& camera) {
 
   program.use();
 
@@ -137,32 +165,38 @@ void OGL_Renderer::render(Scene& scene, OGL_Program& program, Camera& camera,
   camera.calculateOVM();
   program.setMat4("CVM", camera.getOVM());
 
-  for (GameObject obj : objs) {
-    // object
-    // OVM
-    obj.calculateOVM();
-    program.setMat4("OVM", obj.getOVM());
+  for (PointLight light : scene.getPointLights()) {
+    for (GameObject obj : scene.getGameObjects()) {
+      // object
+      // OVM
+      obj.calculateOVM();
+      program.setMat4("OVM", obj.getOVM());
 
-    program.setVec4("color", materials[obj.getMaterial()].color);
+      program.setVec4("color", materials[obj.getMaterial()].color);
 
-    // light
-    program.setVec3("lPos", light.getPosition());
-    program.setVec3("lCol", light.getColor());
-    program.setFloat("lStrength", light.getStrength());
+      // light
+      program.setVec3("lPos", light.getPosition());
+      program.setVec3("lCol", light.getColor());
+      program.setFloat("lStrength", light.getStrength());
 
-    // texture
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(materials[obj.getMaterial()].texture.target,
-                  materials[obj.getMaterial()].texture.texID);
-    program.setUnsignedInt("tex", 0);
+      // texture
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(materials[obj.getMaterial()].texture.target,
+                    materials[obj.getMaterial()].texture.texID);
+      program.setUnsignedInt("tex", 0);
 
-    // vertex array
-    glBindVertexArray(meshes[obj.getMesh()].vertexArray);
-    glDrawElements(GL_TRIANGLES, meshes[obj.getMesh()].indexBufferlength,
-                   GL_UNSIGNED_INT, (void*)0);
+      // vertex array
+      glBindVertexArray(meshes[obj.getMesh()].vertexArray);
+      glDrawElements(GL_TRIANGLES, meshes[obj.getMesh()].indexBufferlength,
+                     GL_UNSIGNED_INT, (void*)0);
 
-    glBindTexture(materials[obj.getMaterial()].texture.target, 0);
+      glBindTexture(materials[obj.getMaterial()].texture.target, 0);
+    }
+    glBlendFunc(GL_ONE, GL_ONE);
   }
+
+  // blend settings
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glBindVertexArray(0);
 }

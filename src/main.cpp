@@ -24,6 +24,15 @@ int main(int argc, char** arg) {
   gData.meshID = 1;
   mainScene.addGameObject(gData);
 
+  PointLightData lData = {
+      {-3.5f, 10.0f, -2.5f},
+      {1, 1, 1},
+      100,
+  };
+  mainScene.addPointLight(lData);
+  lData.position = (Vec3){5.0f, -2.7f, 5.5f};
+  mainScene.addPointLight(lData);
+
   // Window
   Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
   if (!mainWin.isFine()) {
@@ -53,14 +62,6 @@ int main(int argc, char** arg) {
   // camera
   Camera cam;
   cam.setPosition({0, 10, 0});
-
-  // light
-  PointLightData lData = {
-      {-3.5f, 10.0f, -2.5f},
-      {1, 1, 1},
-      100,
-  };
-  PointLight light(lData);
 
   // OGL_Renderer
   OGL_Renderer newRen;
@@ -187,13 +188,11 @@ int main(int argc, char** arg) {
 
     // event polling
     mainWin.checkEvents();
-    light.setPosition({4 * (float)sin(mainWin.getTicks() / 1000.0f), 5,
-                       4 * (float)cos(mainWin.getTicks() / 1000.0f)});
 
     // rendering
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
-    newRen.render(mainScene, prg_texture, cam, light);
+    newRen.render(mainScene, prg_texture, cam);
 
     // swap buffers
     mainWin.updateScreen();
