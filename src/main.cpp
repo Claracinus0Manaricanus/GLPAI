@@ -8,11 +8,6 @@
 #include "include/utility/printUtil.hpp"
 #include <cstdio>
 
-// assimp
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
 int main(int argc, char** arg) {
   // imports
   Scene mainScene;
@@ -25,12 +20,12 @@ int main(int argc, char** arg) {
   mainScene.addGameObject(gData);
 
   PointLightData lData = {
-      {-3.5f, 10.0f, -2.5f},
+      {-3.5f, 1.0f, -2.5f},
       {1, 1, 1},
-      100,
+      10,
   };
   mainScene.addPointLight(lData);
-  lData.position = (Vec3){5.0f, -2.7f, 5.5f};
+  lData.position = (Vec3){5.0f, 2.0f, 5.5f};
   mainScene.addPointLight(lData);
 
   // Window
@@ -66,11 +61,33 @@ int main(int argc, char** arg) {
   // OGL_Renderer
   OGL_Renderer newRen;
 
-  std::vector<Mesh> meshes = Scene::import("assets/models/terrain.obj");
-  newRen.register_mesh(meshes[0]);
+  // generating ground
+  Mesh ground;
+  Vertex tempToInsert;
+  int ground_size = 10;
+  for (int i = 0; i < ground_size; i++) {
+    for (int k = 0; k < ground_size; k++) {
+      tempToInsert.position = {(float)i - ((float)ground_size / 2), 0,
+                               (float)k - ((float)ground_size / 2)};
+      tempToInsert.normal = {0.0f, 1.0f, 0.0f};
+      tempToInsert.uv = {(float)i / ground_size, (float)k / ground_size};
+      ground.addVertex(tempToInsert);
+    }
+  }
 
-  std::vector<Mesh> meshes2 = Scene::import("assets/models/dragon_vrip.ply");
-  newRen.register_mesh(meshes2[0]);
+  for (int i = 0; i < ground_size - 1; i++) {
+    for (int k = 0; k < ground_size - 1; k++) {
+      ground.addFace(i * ground_size + k, i * ground_size + k + 1,
+                     (i + 1) * ground_size + k);
+      ground.addFace((i + 1) * ground_size + k, i * ground_size + k + 1,
+                     (i + 1) * ground_size + k + 1);
+    }
+  }
+
+  newRen.register_mesh(ground);
+
+  std::vector<Mesh> meshes = Scene::import("assets/models/dragon_vrip.ply");
+  newRen.register_mesh(meshes[0]);
 
   MaterialData mData;
   mData.color = {1, 1, 1, 1};
@@ -161,8 +178,8 @@ int main(int argc, char** arg) {
     ray.direction = {0, -1, 0};
 
     // collision test
-    collided = Physics::checkCollisionRayGameObject(
-        ray, meshes[0], mainScene.getGameObject(0), &out);
+    collided = Physics::checkCollisionRayMesh(ray, ground,
+                                              mainScene.getGameObject(0), &out);
 
     if (collided) {
       print(out);
@@ -192,7 +209,7 @@ int main(int argc, char** arg) {
     // rendering
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
-    newRen.render(mainScene, prg_texture, cam);
+    newRen.render(mainScene, prg_basic, cam);
 
     // swap buffers
     mainWin.updateScreen();

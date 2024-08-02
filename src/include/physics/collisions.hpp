@@ -10,7 +10,8 @@ namespace Physics {
 
 int checkCollisionRaySurface(Ray& ray, Surface surface, RayHit* out);
 int checkCollisionRayTriangle(Ray& ray, Triangle triangle, RayHit* out);
-int checkCollisionRayGameObject(Ray& ray, Mesh& mesh, Transform& transform, RayHit* out);
+int checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
+                          RayHit* out);
 
 } // namespace Physics
 

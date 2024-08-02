@@ -11,7 +11,7 @@ Mesh::Mesh(MeshData& data) {
 
 // setters
 int Mesh::addVertex(Vertex& toInsert) {
-  vertices.insert(vertices.cend(), toInsert);
+  vertices.push_back(toInsert);
 
   return 0; // needs check
 }
@@ -23,8 +23,8 @@ int Mesh::addMultipleVertex(std::vector<Vertex>& toInsert) {
 }
 
 int Mesh::addFace(uint32_t index1, uint32_t index2, uint32_t index3) {
-  if (index1 < vertices.size() && index2 < vertices.size() &&
-      index3 < vertices.size())
+  if (index1 >= vertices.size() && index2 >= vertices.size() &&
+      index3 >= vertices.size())
     return -1;
 
   indexBuffer.push_back(index1);
