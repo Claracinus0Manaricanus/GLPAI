@@ -40,7 +40,8 @@ public:
   // rendering
   void render(int mesh, int material, OGL_Program& program,
               Transform& transform, Camera& camera, PointLight& light);
-  void render(Scene& scene, OGL_Program& program, Camera& camera);
+  void render(Scene& scene, OGL_Program& prg_texture,
+              OGL_Program& prg_no_texture, Camera& camera);
 };
 
 #endif

@@ -12,20 +12,21 @@ int main(int argc, char** arg) {
   // imports
   Scene mainScene;
 
-  GameObjectData gData = {{{0, 0, 0}, {0, 0, 0}, {10, 10, 10}}, 0, 0};
+  GameObjectData gData = {{{0, 1, 0}, {0, 0, 0}, {2, 2, 2}}, 0, 0};
   mainScene.addGameObject(gData);
 
   gData.transformD = {{0, 1, 0}, {0, 0, 0}, {10, 10, 10}};
   gData.meshID = 1;
+  gData.materialID = 1;
   mainScene.addGameObject(gData);
 
   PointLightData lData = {
-      {-3.5f, 1.0f, -2.5f},
+      {-1.0f, 2.0f, -1.0f},
       {1, 1, 1},
       10,
   };
   mainScene.addPointLight(lData);
-  lData.position = (Vec3){5.0f, 2.0f, 5.5f};
+  lData.position = (Vec3){1.0f, 2.0f, 1.0f};
   mainScene.addPointLight(lData);
 
   // Window
@@ -97,6 +98,11 @@ int main(int argc, char** arg) {
     return -1;
   }
   newRen.register_material(tmpMat);
+
+  mData.color.y = 0;
+  mData.color.z = 0;
+  Material tmpMat2(mData);
+  newRen.register_material(tmpMat2);
 
   // vars
   Vec2 mousePos = {0, 0};
@@ -209,7 +215,7 @@ int main(int argc, char** arg) {
     // rendering
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
-    newRen.render(mainScene, prg_basic, cam);
+    newRen.render(mainScene, prg_texture, prg_basic, cam);
 
     // swap buffers
     mainWin.updateScreen();

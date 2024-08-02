@@ -1,4 +1,5 @@
 #include "cm_opengl.hpp"
+#include "include/OGL_Program.hpp"
 #include <vector>
 
 // constructors
@@ -156,34 +157,47 @@ void OGL_Renderer::render(int mesh, int material, OGL_Program& program,
   glBindVertexArray(0);
 }
 
-void OGL_Renderer::render(Scene& scene, OGL_Program& program, Camera& camera) {
+void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
+                          OGL_Program& prg_no_texture, Camera& camera) {
 
-  program.use();
+  OGL_Program* activePrg = &prg_texture;
 
   // setting matrices
   // camera
+  prg_texture.use();
   camera.calculateOVM();
-  program.setMat4("CVM", camera.getOVM());
+  prg_texture.setMat4("CVM", camera.getOVM());
+
+  prg_no_texture.use();
+  camera.calculateOVM();
+  prg_no_texture.setMat4("CVM", camera.getOVM());
 
   for (PointLight light : scene.getPointLights()) {
     for (GameObject obj : scene.getGameObjects()) {
+      if (materials[obj.getMaterial()].texture.texID == 0)
+        activePrg = &prg_no_texture;
+      else
+        activePrg = &prg_texture;
+
+      activePrg->use();
+
       // object
       // OVM
       obj.calculateOVM();
-      program.setMat4("OVM", obj.getOVM());
+      activePrg->setMat4("OVM", obj.getOVM());
 
-      program.setVec4("color", materials[obj.getMaterial()].color);
+      activePrg->setVec4("color", materials[obj.getMaterial()].color);
 
       // light
-      program.setVec3("lPos", light.getPosition());
-      program.setVec3("lCol", light.getColor());
-      program.setFloat("lStrength", light.getStrength());
+      activePrg->setVec3("lPos", light.getPosition());
+      activePrg->setVec3("lCol", light.getColor());
+      activePrg->setFloat("lStrength", light.getStrength());
 
       // texture
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(materials[obj.getMaterial()].texture.target,
                     materials[obj.getMaterial()].texture.texID);
-      program.setUnsignedInt("tex", 0);
+      activePrg->setUnsignedInt("tex", 0);
 
       // vertex array
       glBindVertexArray(meshes[obj.getMesh()].vertexArray);
