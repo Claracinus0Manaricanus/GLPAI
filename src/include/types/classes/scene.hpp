@@ -2,9 +2,9 @@
 #define CM_SCENE
 
 #include "gameObject.hpp"
+#include "light.hpp"
 #include "mesh.hpp"
 #include <cstdint>
-#include "light.hpp"
 #include <vector>
 
 struct SceneData {
@@ -14,8 +14,11 @@ struct SceneData {
 
 class Scene {
 private:
+  // Scene objects
   std::vector<GameObject> gameObjects;
   std::vector<PointLight> pointLights;
+
+  // skybox and canvas
 
 public:
   // constructors
@@ -30,7 +33,6 @@ public:
   void addGameObject(GameObjectData& toAdd);
   void addPointLight(PointLight& toAdd);
   void addPointLight(PointLightData& toAdd);
-  
 
   // removers
   void removeGameObject(uint32_t index);

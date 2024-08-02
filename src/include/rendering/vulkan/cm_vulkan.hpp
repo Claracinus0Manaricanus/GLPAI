@@ -5,8 +5,6 @@
 // functions for rendering usage with vulkan
 // are defined here
 
-namespace CM_Vulkan {
-    
-}
+namespace Vulkan_Renderer {}
 
 #endif
