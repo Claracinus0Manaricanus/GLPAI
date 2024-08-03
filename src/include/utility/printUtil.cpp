@@ -75,3 +75,10 @@ void print(Triangle& a) {
   printf("V2:\n");
   print(a.vertices[2]);
 }
+
+void print(Box& a) {
+  printf("Position: X: %f, Y: %f, Z: %f\n"
+         "Dimensions: X: %f, Y: %f, Z: %f\n",
+         a.position.x, a.position.y, a.position.z, a.dimensions.x,
+         a.dimensions.y, a.dimensions.z);
+}

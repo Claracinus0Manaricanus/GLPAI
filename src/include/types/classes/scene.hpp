@@ -4,6 +4,7 @@
 #include "gameObject.hpp"
 #include "light.hpp"
 #include "mesh.hpp"
+#include "skybox.hpp"
 #include <cstdint>
 #include <vector>
 
@@ -19,6 +20,7 @@ private:
   std::vector<PointLight> pointLights;
 
   // skybox and canvas
+  Skybox activeSkybox;
 
 public:
   // constructors

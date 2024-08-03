@@ -1,6 +1,7 @@
 #include "include/cm_math/operations.hpp"
 #include "include/physics/collisions.hpp"
 #include "include/rendering/opengl/cm_opengl.hpp"
+#include "include/rendering/opengl/include/OGL_Program.hpp"
 #include "include/rendering/window/window.hpp"
 #include "include/types/classes/gameObject.hpp"
 #include "include/types/classes/scene.hpp"
@@ -43,17 +44,23 @@ int main(int argc, char** arg) {
   mainWin.setMousePos(0, 0);
 
   // OpenGL
-  OGL_Program prg_basic({"src/include/rendering/opengl/shaders/basic/vert.sha",
-                         "src/include/rendering/opengl/shaders/basic/frag.sha",
+  OGL_Program prg_basic({"src/include/rendering/opengl/shaders/basic/vert.glsl",
+                         "src/include/rendering/opengl/shaders/basic/frag.glsl",
                          NULL});
   if (prg_basic.getError() != NULL)
     printf("%s\n", prg_basic.getError());
 
   OGL_Program prg_texture(
-      {"src/include/rendering/opengl/shaders/texture/vert.sha",
-       "src/include/rendering/opengl/shaders/texture/frag.sha", NULL});
+      {"src/include/rendering/opengl/shaders/texture/vert.glsl",
+       "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL});
   if (prg_texture.getError() != NULL)
     printf("%s\n", prg_texture.getError());
+
+  OGL_Program prg_skybox(
+      {"src/include/rendering/opengl/shaders/skybox/vert.glsl",
+       "src/include/rendering/opengl/shaders/skybox/frag.glsl", NULL});
+  if (prg_skybox.getError() != NULL)
+    printf("%s\n", prg_skybox.getError());
 
   // camera
   Camera cam;
@@ -99,10 +106,13 @@ int main(int argc, char** arg) {
   }
   newRen.register_material(tmpMat);
 
-  mData.color.y = 0;
-  mData.color.z = 0;
+  mData.color = {1, 0, 0, 1};
   Material tmpMat2(mData);
   newRen.register_material(tmpMat2);
+
+  mData.color = {0, 1, 0, 1};
+  Material tmpMat3(mData);
+  newRen.register_material(tmpMat3);
 
   // vars
   Vec2 mousePos = {0, 0};
@@ -118,9 +128,62 @@ int main(int argc, char** arg) {
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
 
+  // box test
+  Box box1 = {{0, 0, 0}, {1, 1, 1}};
+
+  Mesh skyboxesBox;
+
+  for (int i = -1; i < 1; i++) {
+    for (int j = -1; j < 1; j++) {
+      for (int k = -1; k < 1; k++) {
+        Vertex tempvert;
+        tempvert.position =
+            box1.position +
+            (box1.dimensions * (Vec3){(float)(1 + 2 * i), (float)(1 + 2 * j),
+                                      (float)(1 + 2 * k)});
+        tempvert.normal = {0, 0, 0};
+        tempvert.uv = {0, 0};
+
+        skyboxesBox.addVertex(tempvert);
+      }
+    }
+  }
+
+  /*
+  X: -1.000000, Y: -1.000000, Z: -1.000000
+  X: -1.000000, Y: -1.000000, Z: 1.000000
+  X: -1.000000, Y: 1.000000, Z: -1.000000
+  X: -1.000000, Y: 1.000000, Z: 1.000000
+  X: 1.000000, Y: -1.000000, Z: -1.000000
+  X: 1.000000, Y: -1.000000, Z: 1.000000
+  X: 1.000000, Y: 1.000000, Z: -1.000000
+  X: 1.000000, Y: 1.000000, Z: 1.000000
+  */
+
+  // X
+  skyboxesBox.addFace(0, 2, 1);
+  skyboxesBox.addFace(1, 2, 3);
+  skyboxesBox.addFace(4, 5, 6);
+  skyboxesBox.addFace(6, 5, 7);
+
+  // Y
+  skyboxesBox.addFace(4, 0, 1);
+  skyboxesBox.addFace(4, 1, 5);
+  skyboxesBox.addFace(2, 6, 3);
+  skyboxesBox.addFace(3, 6, 7);
+
+  // Z
+  skyboxesBox.addFace(0, 4, 2);
+  skyboxesBox.addFace(2, 4, 6);
+  skyboxesBox.addFace(5, 1, 3);
+  skyboxesBox.addFace(5, 3, 7);
+
+  newRen.register_mesh(skyboxesBox);
+
   // main loop
   while (!mainWin.shouldClose()) {
     // testing area //
+    newRen.setMaterialColor(2, {abs(upVel), 1, 0, 1});
     // testing area //
 
     // update resolution
@@ -187,10 +250,10 @@ int main(int argc, char** arg) {
     collided = Physics::checkCollisionRayMesh(ray, ground,
                                               mainScene.getGameObject(0), &out);
 
-    if (collided) {
+    /*if (collided) {
       print(out);
       println(cam.getPosition());
-    }
+      }*/
 
     if (keyStates[SDL_SCANCODE_LCTRL])
       camHeight = 0.85f;
@@ -216,6 +279,7 @@ int main(int argc, char** arg) {
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
     newRen.render(mainScene, prg_texture, prg_basic, cam);
+    newRen.render(2, 2, prg_skybox, cam);
 
     // swap buffers
     mainWin.updateScreen();

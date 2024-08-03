@@ -119,7 +119,26 @@ void OGL_Renderer::register_material(Material& material) {
   materials.push_back(tmpMat);
 }
 
+void OGL_Renderer::setMaterialColor(int index, Vec4 color) {
+  materials[index].color = color;
+}
+
 // rendering
+void OGL_Renderer::render(int mesh, int material, OGL_Program& program,
+                          Camera& camera) {
+  program.use();
+
+  camera.calculateOVM();
+  program.setMat4("CVM", camera.getOVM());
+
+  program.setVec4("color", materials[material].color);
+
+  glBindVertexArray(meshes[mesh].vertexArray);
+  glDrawElements(GL_TRIANGLES, meshes[mesh].indexBufferlength, GL_UNSIGNED_INT,
+                 (void*)0);
+  glBindVertexArray(0);
+}
+
 void OGL_Renderer::render(int mesh, int material, OGL_Program& program,
                           Transform& transform, Camera& camera,
                           PointLight& light) {

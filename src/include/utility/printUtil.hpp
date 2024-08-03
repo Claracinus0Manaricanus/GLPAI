@@ -1,10 +1,10 @@
 #ifndef CM_PRINT_UTIL
 #define CM_PRINT_UTIL
 
+#include "../types/classes/transform.hpp"
 #include "../types/physics.hpp"
 #include "../types/primitives.hpp"
 #include "../types/vectors.hpp"
-#include "../types/classes/transform.hpp"
 
 // vectors
 void print(Vec2& a);
@@ -27,5 +27,6 @@ void print(Transform& tr);
 // primitives
 void print(Vertex& a);
 void print(Triangle& a);
+void print(Box& a);
 
 #endif

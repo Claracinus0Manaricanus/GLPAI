@@ -10,6 +10,8 @@ struct Vec2 {
 
   float& operator[](int index);
   Vec2 operator/(float c);
+  Vec2& operator*=(Vec2 a);
+  Vec2 operator*(Vec2 a);
   Vec2& operator+=(Vec2 a);
   Vec2 operator+(Vec2 a);
   Vec2& operator-=(Vec2 a);
@@ -23,6 +25,8 @@ struct Vec3 {
 
   float& operator[](int index);
   Vec3 operator/(float c);
+  Vec3& operator*=(Vec3 a);
+  Vec3 operator*(Vec3 a);
   Vec3& operator+=(Vec3 a);
   Vec3 operator+(Vec3 a);
   Vec3& operator-=(Vec3 a);

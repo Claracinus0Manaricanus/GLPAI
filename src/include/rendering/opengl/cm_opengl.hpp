@@ -36,8 +36,10 @@ public:
   // setters
   void register_mesh(Mesh& mesh);
   void register_material(Material& material);
+  void setMaterialColor(int index, Vec4 color);
 
   // rendering
+  void render(int mesh, int material, OGL_Program& program, Camera& camera);
   void render(int mesh, int material, OGL_Program& program,
               Transform& transform, Camera& camera, PointLight& light);
   void render(Scene& scene, OGL_Program& prg_texture,

@@ -6,6 +6,15 @@ float& Vec2::operator[](int index) { return ((float*)this)[index]; }
 
 Vec2 Vec2::operator/(float c) { return {this->x / c, this->y / c}; }
 
+Vec2& Vec2::operator*=(Vec2 a) {
+  x *= a.x;
+  y *= a.y;
+
+  return *this;
+}
+
+Vec2 Vec2::operator*(Vec2 a) { return (Vec2){x * a.x, y * a.y}; }
+
 Vec2& Vec2::operator+=(Vec2 a) {
   x += a.x;
   y += a.y;
@@ -38,6 +47,16 @@ float& Vec3::operator[](int index) { return ((float*)this)[index]; }
 Vec3 Vec3::operator/(float c) {
   return {this->x / c, this->y / c, this->z / c};
 }
+
+Vec3& Vec3::operator*=(Vec3 a) {
+  x *= a.x;
+  y *= a.y;
+  z *= a.z;
+
+  return *this;
+}
+
+Vec3 Vec3::operator*(Vec3 a) { return (Vec3){x * a.x, y * a.y, z * a.z}; }
 
 Vec3& Vec3::operator+=(Vec3 a) {
   x += a.x;
