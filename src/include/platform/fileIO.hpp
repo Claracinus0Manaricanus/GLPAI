@@ -1,5 +1,5 @@
-#ifndef CM_FILE_IMPORT
-#define CM_FILE_IMPORT
+#ifndef CM_FILE_IO
+#define CM_FILE_IO
 
 extern "C" {
 #include <sys/types.h>

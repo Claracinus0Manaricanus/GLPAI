@@ -115,6 +115,7 @@ void OGL_Renderer::register_material(Material& material) {
   }
 
   tmpMat.color = material.getColor();
+  tmpMat.metallic = material.getMetallic();
 
   materials.push_back(tmpMat);
 }
@@ -186,10 +187,12 @@ void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
   prg_texture.use();
   camera.calculateOVM();
   prg_texture.setMat4("CVM", camera.getOVM());
+  prg_texture.setVec3("cameraPos", camera.getPosition());
 
   prg_no_texture.use();
   camera.calculateOVM();
   prg_no_texture.setMat4("CVM", camera.getOVM());
+  prg_no_texture.setVec3("cameraPos", camera.getPosition());
 
   for (PointLight light : scene.getPointLights()) {
     for (GameObject obj : scene.getGameObjects()) {
@@ -206,6 +209,7 @@ void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
       activePrg->setMat4("OVM", obj.getOVM());
 
       activePrg->setVec4("color", materials[obj.getMaterial()].color);
+      activePrg->setFloat("metallic", materials[obj.getMaterial()].metallic);
 
       // light
       activePrg->setVec3("lPos", light.getPosition());

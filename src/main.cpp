@@ -99,6 +99,7 @@ int main(int argc, char** arg) {
 
   MaterialData mData;
   mData.color = {1, 1, 1, 1};
+  mData.metallic = 0.95f;
   Material tmpMat(mData);
   if (tmpMat.loadTexture("assets/images/arkKnightsChars.jpg") != 0) {
     printf("no tex!\n");
@@ -107,6 +108,7 @@ int main(int argc, char** arg) {
   newRen.register_material(tmpMat);
 
   mData.color = {1, 0, 0, 1};
+  mData.metallic = 1.0f;
   Material tmpMat2(mData);
   newRen.register_material(tmpMat2);
 

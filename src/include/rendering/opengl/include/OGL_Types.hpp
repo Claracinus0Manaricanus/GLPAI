@@ -1,8 +1,8 @@
 #ifndef CM_OGL_TYPES
 #define CM_OGL_TYPES
 
-#include <cstdint>
 #include "../../../types/vectors.hpp"
+#include <cstdint>
 
 // Structs and other stuff for opengl rendering
 // Basically to make life livable
@@ -22,9 +22,10 @@ struct OGL_Mesh {
   uint32_t vertexArray;
 };
 
-struct OGL_Material{
+struct OGL_Material {
   OGL_Texture texture;
   Vec4 color;
+  float metallic;
 };
 
 struct OGL_ProgramData {

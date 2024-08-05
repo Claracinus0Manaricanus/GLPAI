@@ -5,7 +5,7 @@
 
 struct MaterialData {
   Vec4 color = {1, 1, 1, 1};
-  float metalness = 0;
+  float metallic = 0;
 };
 
 struct TextureData {
@@ -43,7 +43,7 @@ public:
   // getters
   const float* getDataAsArray();
   Vec4& getColor();
-  float& getMetalness();
+  float& getMetallic();
   char hasTexture();
   int getTextureWidth();
   int getTextureHeight();

@@ -2,7 +2,7 @@
 
 extern "C" {
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../platform/linux/filesystem/stb_image.h"
+#include "../../platform/stb_image.h"
 }
 
 // constructors
@@ -13,22 +13,20 @@ Material::Material() {
 
 Material::Material(MaterialData& data) {
   (*(Vec4*)dataArray) = data.color;
-  dataArray[4] = data.metalness;
+  dataArray[4] = data.metallic;
 }
 
 // destructors
-Material::~Material() {
-  stbi_image_free(texData.data);
-}
+Material::~Material() { stbi_image_free(texData.data); }
 
 // setters
 void Material::setData(MaterialData& data) {
   (*(Vec4*)dataArray) = data.color;
-  dataArray[4] = data.metalness;
+  dataArray[4] = data.metallic;
 }
 
 void Material::setColor(Vec4 color) { (*(Vec4*)dataArray) = color; }
-void Material::setMetalness(float metalness) { dataArray[4] = metalness; }
+void Material::setMetalness(float metallic) { dataArray[4] = metallic; }
 
 int Material::loadTexture(const char* path) {
   texData.data =
@@ -50,7 +48,7 @@ void Material::resetTexture() {
 // getters
 const float* Material::getDataAsArray() { return dataArray; }
 Vec4& Material::getColor() { return (*(Vec4*)dataArray); }
-float& Material::getMetalness() { return dataArray[4]; }
+float& Material::getMetallic() { return dataArray[4]; }
 char Material::hasTexture() { return texData.data != nullptr; }
 int Material::getTextureWidth() { return texData.width; }
 int Material::getTextureHeight() { return texData.height; }
