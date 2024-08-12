@@ -7,11 +7,7 @@ typedef struct {
 
 class Skybox {
 private:
-  //
-
 public:
-  Skybox();
-  Skybox(SkyboxData& data);
 };
 
 #endif

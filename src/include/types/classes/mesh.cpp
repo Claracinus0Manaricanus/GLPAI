@@ -1,4 +1,5 @@
 #include "mesh.hpp"
+#include "../../cm_math/operations.hpp"
 #include <cassert>
 
 // constructor
@@ -55,3 +56,38 @@ Vertex Mesh::getVertex(int index) {
 std::vector<Vertex>& Mesh::getAllVertices() { return vertices; }
 
 std::vector<uint32_t>& Mesh::getIndexBuffer() { return indexBuffer; }
+
+// utility
+int Mesh::calculateNormals() {
+
+  Vertex v1, v2, v3;
+  Vec3 normal;
+
+  std::vector<Vertex> newVertices;
+  std::vector<uint32_t> newIndexBuffer;
+
+  for (int i = 0; i < indexBuffer.size(); i += 3) {
+    v1 = vertices[indexBuffer[i]];
+    v2 = vertices[indexBuffer[i + 1]];
+    v3 = vertices[indexBuffer[i + 2]];
+
+    normal = Vector::Normalize(
+        Vector::Cross(v2.position - v1.position, v3.position - v1.position));
+
+    v1.normal = normal;
+    v2.normal = normal;
+    v3.normal = normal;
+
+    newVertices.push_back(v1);
+    newVertices.push_back(v2);
+    newVertices.push_back(v3);
+    newIndexBuffer.push_back(i);
+    newIndexBuffer.push_back(i + 1);
+    newIndexBuffer.push_back(i + 2);
+  }
+
+  vertices = newVertices;
+  indexBuffer = newIndexBuffer;
+
+  return 0;
+}

@@ -24,7 +24,7 @@ int main(int argc, char** arg) {
   PointLightData lData = {
       {-1.0f, 2.0f, -1.0f},
       {1, 1, 1},
-      10,
+      1,
   };
   mainScene.addPointLight(lData);
   lData.position = (Vec3){1.0f, 2.0f, 1.0f};
@@ -156,7 +156,10 @@ int main(int argc, char** arg) {
   X: -1.000000, Y: -1.000000, Z: 1.000000
   X: -1.000000, Y: 1.000000, Z: -1.000000
   X: -1.000000, Y: 1.000000, Z: 1.000000
-  X: 1.000000, Y: -1.000000, Z: -1.000000
+  X: 1.000000, Y: -1.typedef struct {
+    Vec3 normal;
+    float distance; // distance from origin
+  } Surface;000000, Z: -1.000000
   X: 1.000000, Y: -1.000000, Z: 1.000000
   X: 1.000000, Y: 1.000000, Z: -1.000000
   X: 1.000000, Y: 1.000000, Z: 1.000000
@@ -180,7 +183,15 @@ int main(int argc, char** arg) {
   skyboxesBox.addFace(5, 1, 3);
   skyboxesBox.addFace(5, 3, 7);
 
+  skyboxesBox.calculateNormals();
+
   newRen.register_mesh(skyboxesBox);
+
+  gData.meshID = 2;
+  gData.materialID = 0;
+  gData.transformD = {{0, 3, 0}, {0, 0, 0}, {3, 3, 3}};
+
+  mainScene.addGameObject(gData);
 
   // main loop
   while (!mainWin.shouldClose()) {

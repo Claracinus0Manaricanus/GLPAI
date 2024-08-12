@@ -33,6 +33,10 @@ public:
   std::vector<Vertex>& getAllVertices(); // unsafe and WIP
   std::vector<uint32_t>& getIndexBuffer();
   // add get*Size() functions
+
+  // utility
+  int calculateNormals(); // calculates normals based on faces and vertex
+                          // positions, assumes triangles
 };
 
 #endif

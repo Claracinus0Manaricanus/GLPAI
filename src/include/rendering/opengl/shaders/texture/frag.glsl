@@ -22,7 +22,7 @@ void main() {
     vec3 cVec = cameraPos - fragPos;
 
     float light_constant = dot(normalize(lVec), fragNor) / max((length(lVec) * length(lVec) / lStrength), 1.0);
-    float specular_constant = metallic * dot(normalize((normalize(cVec) + normalize(lVec))), fragNor);
+    float specular_constant = metallic * dot(normalize((normalize(cVec) + normalize(lVec))), fragNor) / max(length(lVec) / lStrength, 1.0);
 
     col = fragCol * vec4((lCol * texture(tex, fragUV).xyz * light_constant) + (lCol * vec3(pow(specular_constant, 20))), 1.0);
 }
