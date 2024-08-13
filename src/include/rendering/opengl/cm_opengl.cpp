@@ -1,5 +1,7 @@
 #include "cm_opengl.hpp"
 #include "include/OGL_Program.hpp"
+#include "types/classes/skybox.hpp"
+#include <cstdint>
 #include <vector>
 
 // constructors
@@ -101,8 +103,8 @@ void OGL_Renderer::register_material(Material& material) {
 
     glTexParameteri(tmpMat.texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(tmpMat.texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTextureParameteri(tmpMat.texture.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTextureParameteri(tmpMat.texture.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(tmpMat.texture.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(tmpMat.texture.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glBindTexture(tmpMat.texture.target, 0);
 
@@ -122,6 +124,30 @@ void OGL_Renderer::register_material(Material& material) {
 
 void OGL_Renderer::setMaterialColor(int index, Vec4 color) {
   materials[index].color = color;
+}
+
+void OGL_Renderer::register_skybox(Skybox& skybox) {
+  OGL_Cubemap tmpMap;
+
+  glGenTextures(1, &tmpMap.texID);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tmpMap.texID);
+
+  for (int i = 0; i < 6; i++) {
+    TextureData& side = skybox.getTexture(i);
+    if (side.data != nullptr)
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, side.width,
+                   side.height, 0, GL_RGB, GL_UNSIGNED_BYTE, side.data);
+  }
+
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
+
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+  cubemaps.push_back(tmpMap);
 }
 
 // rendering
@@ -236,4 +262,55 @@ void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glBindVertexArray(0);
+}
+
+void OGL_Renderer::render_skybox(int index, OGL_Program& prg, Camera& camera) {
+  if (skyVertArr == 0) {
+    glGenVertexArrays(1, &skyVertArr);
+    glGenBuffers(1, &skyVertBuffer);
+    glGenBuffers(1, &skyIndBuffer);
+
+    Box b1 = {{0, 0, 0}, {1, 1, 1}};
+    Mesh bM(b1, 1);
+    std::vector<Vertex> vertexData = bM.getAllVertices();
+    std::vector<uint32_t> indexData = bM.getIndexBuffer();
+
+    // vertex data
+    glBindVertexArray(skyVertArr);
+    glBindBuffer(GL_ARRAY_BUFFER, skyVertBuffer);
+    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex),
+                 vertexData.data(), GL_STATIC_DRAW);
+
+    // index data
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skyIndBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(int),
+                 indexData.data(), GL_STATIC_DRAW);
+
+    // vertex data structure
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+  }
+
+  prg.use();
+
+  camera.calculateOVM();
+  prg.setMat4("CVM", camera.getOVM());
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, cubemaps[index].texID);
+  prg.setUnsignedInt("cubemap", 0);
+
+  glBindVertexArray(skyVertArr);
+  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }

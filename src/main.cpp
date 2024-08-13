@@ -116,32 +116,16 @@ int main(int argc, char** arg) {
   Material tmpMat3(mData);
   newRen.register_material(tmpMat3);
 
-  // vars
-  Vec2 mousePos = {0, 0};
-  uint32_t lastMiliSec = mainWin.getTicks();
-  float deltaTime = 0;
-  int collided = 0;
-  char captureMouse = 1, escA = 1;
-
-  float G = -9.8f;
-  float upVel = 0;
-  float camHeight = 1.7f;
-
-  RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
-  Ray ray = {{0, 0, 0}, {0, 0, -1}};
-
   // box test
   Box box1 = {{0, 0, 0}, {1, 1, 1}};
 
-  Mesh skyboxesBox(box1, 1);
   Mesh justBox(box1);
 
   justBox.calculateNormals();
 
-  newRen.register_mesh(skyboxesBox);
   newRen.register_mesh(justBox);
 
-  gData.meshID = 3;
+  gData.meshID = 2;
   gData.materialID = 0;
   gData.transformD = {{5, 1, 0}, {0, 0, 0}, {1, 1, 1}};
 
@@ -155,8 +139,30 @@ int main(int argc, char** arg) {
   newRen.register_mesh(sphM);
 
   gData.transformD.position = {-5, 1, 0};
-  gData.meshID = 4;
+  gData.meshID = 3;
   mainScene.addGameObject(gData);
+
+  // skybox
+  const char* skyFiles[6] = {
+      "assets/skybox/starryCSky/px.png", "assets/skybox/starryCSky/nx.png",
+      "assets/skybox/starryCSky/py.png", "assets/skybox/starryCSky/ny.png",
+      "assets/skybox/starryCSky/pz.png", "assets/skybox/starryCSky/nz.png"};
+  Skybox sky0(skyFiles);
+  newRen.register_skybox(sky0);
+
+  // vars
+  Vec2 mousePos = {0, 0};
+  uint32_t lastMiliSec = mainWin.getTicks();
+  float deltaTime = 0;
+  int collided = 0;
+  char captureMouse = 1, escA = 1;
+
+  float G = -9.8f;
+  float upVel = 0;
+  float camHeight = 1.7f;
+
+  RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
+  Ray ray = {{0, 0, 0}, {0, 0, -1}};
 
   // main loop
   while (!mainWin.shouldClose()) {
@@ -258,7 +264,7 @@ int main(int argc, char** arg) {
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
     newRen.render(mainScene, prg_texture, prg_basic, cam);
-    newRen.render(2, 2, prg_skybox, cam);
+    newRen.render_skybox(0, prg_skybox, cam);
 
     // swap buffers
     mainWin.updateScreen();

@@ -15,6 +15,10 @@ struct OGL_Texture {
   int height;
 };
 
+struct OGL_Cubemap {
+  unsigned int texID;
+};
+
 struct OGL_Mesh {
   uint32_t vertexDataBuffer;
   uint32_t indexbuffer;

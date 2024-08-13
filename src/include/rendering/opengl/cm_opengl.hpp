@@ -22,6 +22,12 @@ protected:
   // instance vars
   std::vector<OGL_Mesh> meshes;
   std::vector<OGL_Material> materials;
+  std::vector<OGL_Cubemap> cubemaps;
+
+  // for skyboxes
+  uint32_t skyVertArr = 0;
+  uint32_t skyVertBuffer = 0;
+  uint32_t skyIndBuffer = 0;
 
 public:
   // constructors
@@ -37,6 +43,7 @@ public:
   void register_mesh(Mesh& mesh);
   void register_material(Material& material);
   void setMaterialColor(int index, Vec4 color);
+  void register_skybox(Skybox& skybox);
 
   // rendering
   void render(int mesh, int material, OGL_Program& program, Camera& camera);
@@ -44,6 +51,7 @@ public:
               Transform& transform, Camera& camera, PointLight& light);
   void render(Scene& scene, OGL_Program& prg_texture,
               OGL_Program& prg_no_texture, Camera& camera);
+  void render_skybox(int index, OGL_Program& prg, Camera& camera);
 };
 
 #endif
