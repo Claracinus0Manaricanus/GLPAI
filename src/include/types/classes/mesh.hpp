@@ -1,8 +1,8 @@
 #ifndef CM_MESH
 #define CM_MESH
 
-#include "../primitives.hpp"
 #include <cstdint>
+#include <types/primitives.hpp>
 #include <vector>
 
 struct MeshData {

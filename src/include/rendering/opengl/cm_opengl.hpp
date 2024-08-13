@@ -1,14 +1,14 @@
 #ifndef CM_OPENGL_RENDERER
 #define CM_OPENGL_RENDERER
 
-#include "../../types/classes/camera.hpp"
-#include "../../types/classes/light.hpp"
-#include "../../types/classes/material.hpp"
-#include "../../types/classes/mesh.hpp"
-#include "../../types/classes/scene.hpp"
 #include "include/OGL_Program.hpp"
 #include "include/OGL_Types.hpp"
 #include <GL/glew.h>
+#include <types/classes/camera.hpp>
+#include <types/classes/light.hpp>
+#include <types/classes/material.hpp>
+#include <types/classes/mesh.hpp>
+#include <types/classes/scene.hpp>
 
 // header for using opengl at rendering
 // functions for rendering usage with opengl

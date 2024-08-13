@@ -1,7 +1,7 @@
 #ifndef CM_PHYSICS
 #define CM_PHYSICS
 
-#include "vectors.hpp"
+#include <types/vectors.hpp>
 
 typedef struct {
   Vec3 start;

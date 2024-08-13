@@ -1,13 +1,13 @@
-#include "include/cm_math/operations.hpp"
-#include "include/physics/collisions.hpp"
-#include "include/rendering/opengl/cm_opengl.hpp"
-#include "include/rendering/opengl/include/OGL_Program.hpp"
-#include "include/rendering/window/window.hpp"
-#include "include/types/classes/gameObject.hpp"
-#include "include/types/classes/scene.hpp"
-#include "include/types/physics.hpp"
-#include "include/utility/printUtil.hpp"
+#include <cm_math/operations.hpp>
 #include <cstdio>
+#include <physics/collisions.hpp>
+#include <rendering/opengl/cm_opengl.hpp>
+#include <rendering/opengl/include/OGL_Program.hpp>
+#include <rendering/window/window.hpp>
+#include <types/classes/gameObject.hpp>
+#include <types/classes/scene.hpp>
+#include <types/physics.hpp>
+#include <utility/printUtil.hpp>
 
 int main(int argc, char** arg) {
   // imports
@@ -148,13 +148,13 @@ int main(int argc, char** arg) {
   mainScene.addGameObject(gData);
 
   // sphere test
-  Sphere sph1 = {{0, 0, 0}, 2};
-  Mesh sphM(sph1, 1);
+  Sphere sph1 = {{0, 0, 0}, 1};
+  Mesh sphM(sph1);
   sphM.calculateNormals();
 
   newRen.register_mesh(sphM);
 
-  gData.transformD.position = {-5, 2, 0};
+  gData.transformD.position = {-5, 1, 0};
   gData.meshID = 4;
   mainScene.addGameObject(gData);
 

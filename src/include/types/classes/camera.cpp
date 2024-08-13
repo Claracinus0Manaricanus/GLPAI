@@ -1,5 +1,5 @@
 #include "camera.hpp"
-#include "../../cm_math/operations.hpp"
+#include <cm_math/operations.hpp>
 #include <math.h>
 
 // constructors

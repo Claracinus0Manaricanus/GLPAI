@@ -1,7 +1,7 @@
 #ifndef CM_MATERIAL
 #define CM_MATERIAL
 
-#include "../vectors.hpp"
+#include <types/vectors.hpp>
 
 struct MaterialData {
   Vec4 color = {1, 1, 1, 1};

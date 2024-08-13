@@ -1,8 +1,8 @@
 #ifndef CM_OGL_TYPES
 #define CM_OGL_TYPES
 
-#include "../../../types/vectors.hpp"
 #include <cstdint>
+#include <types/vectors.hpp>
 
 // Structs and other stuff for opengl rendering
 // Basically to make life livable

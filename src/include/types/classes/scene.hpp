@@ -1,11 +1,11 @@
 #ifndef CM_SCENE
 #define CM_SCENE
 
-#include "gameObject.hpp"
-#include "light.hpp"
-#include "mesh.hpp"
-#include "skybox.hpp"
 #include <cstdint>
+#include <types/classes/gameObject.hpp>
+#include <types/classes/light.hpp>
+#include <types/classes/mesh.hpp>
+#include <types/classes/skybox.hpp>
 #include <vector>
 
 struct SceneData {

@@ -1,9 +1,9 @@
 #ifndef CM_OGL_PROGRAM
 #define CM_OGL_PROGRAM
 
-#include "../../../types/vectors.hpp"
 #include "OGL_Types.hpp"
 #include <cstdint>
+#include <types/vectors.hpp>
 
 #define CM_OK 0
 #define CM_ERROR_VERTEX_SHADER 1

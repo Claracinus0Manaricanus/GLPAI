@@ -1,5 +1,5 @@
 #include "transform.hpp"
-#include "../../cm_math/operations.hpp"
+#include <cm_math/operations.hpp>
 #include <cmath>
 
 // constructors

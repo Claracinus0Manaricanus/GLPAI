@@ -1,6 +1,6 @@
 #include "mesh.hpp"
-#include "../../cm_math/operations.hpp"
 #include <cassert>
+#include <cm_math/operations.hpp>
 #include <math.h>
 
 #define PI 3.14159265f

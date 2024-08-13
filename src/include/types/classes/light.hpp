@@ -1,7 +1,7 @@
 #ifndef CM_LIGHT
 #define CM_LIGHT
 
-#include "../vectors.hpp"
+#include <types/vectors.hpp>
 
 struct PointLightData {
   Vec3 position;

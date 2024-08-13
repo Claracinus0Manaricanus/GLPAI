@@ -1,7 +1,7 @@
 #ifndef CM_TRANSFORM
 #define CM_TRANSFORM
 
-#include "../vectors.hpp"
+#include <types/vectors.hpp>
 
 // data structs
 struct TransformData {

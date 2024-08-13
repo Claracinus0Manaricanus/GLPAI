@@ -1,5 +1,5 @@
 #include "OGL_Program.hpp"
-#include "../../../platform/fileIO.hpp"
+#include <platform/fileIO.hpp>
 
 extern "C" {
 #include <GL/glew.h>

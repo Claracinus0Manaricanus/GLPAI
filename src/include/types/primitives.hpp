@@ -1,7 +1,7 @@
 #ifndef CM_PRIMITIVES
 #define CM_PRIMITIVES
 
-#include "vectors.hpp"
+#include <types/vectors.hpp>
 
 typedef struct {
   Vec3 position;

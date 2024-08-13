@@ -1,7 +1,7 @@
 #ifndef CM_GAMEOBJECT
 #define CM_GAMEOBJECT
 
-#include "transform.hpp"
+#include <types/classes/transform.hpp>
 
 // After the addition of material class it will be added here as well
 

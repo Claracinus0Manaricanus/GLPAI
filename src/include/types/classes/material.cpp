@@ -2,7 +2,7 @@
 
 extern "C" {
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../platform/stb_image.h"
+#include <platform/stb_image.h>
 }
 
 // constructors

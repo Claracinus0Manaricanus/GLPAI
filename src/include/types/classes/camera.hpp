@@ -1,7 +1,7 @@
 #ifndef CM_CAMERA
 #define CM_CAMERA
 
-#include "transform.hpp"
+#include <types/classes/transform.hpp>
 
 // data structures
 struct CameraData {
