@@ -1,6 +1,10 @@
 #include "mesh.hpp"
 #include "../../cm_math/operations.hpp"
 #include <cassert>
+#include <math.h>
+
+#define PI 3.14159265f
+#define TAU (PI * 2)
 
 // constructor
 Mesh::Mesh() {}
@@ -8,6 +12,92 @@ Mesh::Mesh() {}
 Mesh::Mesh(MeshData& data) {
   this->vertices = data.vertices;
   this->indexBuffer = data.indexBuffer;
+}
+
+Mesh::Mesh(Box data, int invert) {
+  for (int i = -1; i < 1; i++) {
+    for (int j = -1; j < 1; j++) {
+      for (int k = -1; k < 1; k++) {
+        Vertex tempvert;
+        tempvert.position =
+            data.position +
+            (data.dimensions * (Vec3){(float)(1 + 2 * i), (float)(1 + 2 * j),
+                                      (float)(1 + 2 * k)});
+        tempvert.normal = {0, 0, 0};
+        tempvert.uv = {1.0f + k, -1.0f - j};
+
+        vertices.push_back(tempvert);
+      }
+    }
+  }
+  if (invert) {
+    // X
+    addFace(0, 2, 1);
+    addFace(1, 2, 3);
+    addFace(4, 5, 6);
+    addFace(6, 5, 7);
+
+    // Y
+    addFace(4, 0, 1);
+    addFace(4, 1, 5);
+    addFace(2, 6, 3);
+    addFace(3, 6, 7);
+
+    // Z
+    addFace(0, 4, 2);
+    addFace(2, 4, 6);
+    addFace(5, 1, 3);
+    addFace(5, 3, 7);
+  } else {
+    // X
+    addFace(0, 1, 2);
+    addFace(1, 3, 2);
+    addFace(4, 6, 5);
+    addFace(6, 7, 5);
+
+    // Y
+    addFace(4, 1, 0);
+    addFace(4, 5, 1);
+    addFace(2, 3, 6);
+    addFace(3, 7, 6);
+
+    // Z
+    addFace(0, 2, 4);
+    addFace(2, 6, 4);
+    addFace(5, 3, 1);
+    addFace(5, 7, 3);
+  }
+}
+
+Mesh::Mesh(Sphere data, int invert) {
+  // UV sphere algorithm (by me so don't expect much) (it works though)
+  Vertex tempVert;
+  for (int i = -10; i <= 10; i += 1) {
+    for (int k = 0; k <= 10; k += 1) {
+      float x = cos((k * TAU / 10)), z = sin((k * TAU / 10));
+      float division_const = sqrt(
+          ((x * x) + (z * z)) /
+          (data.radius - ((i * data.radius / 10) * (i * data.radius / 10))));
+      x /= division_const;
+      z /= division_const;
+      tempVert.position = {x, (i * data.radius / 10), z};
+      tempVert.uv = {1 - k / 10.0f,
+                     -((i * data.radius / 10) + data.radius) / 2.0f};
+      vertices.push_back(tempVert);
+    }
+  }
+
+  for (int i = 0; i < vertices.size(); i += 11) {
+    for (int k = 0; k < 10; k++) {
+      if (invert) {
+        addFace(i + k, i + k + 12, i + k + 11);
+        addFace(i + k, i + k + 1, i + k + 12);
+      } else {
+        addFace(i + k, i + k + 11, i + k + 12);
+        addFace(i + k, i + k + 12, i + k + 1);
+      }
+    }
+  }
 }
 
 // setters

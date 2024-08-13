@@ -13,10 +13,10 @@ int main(int argc, char** arg) {
   // imports
   Scene mainScene;
 
-  GameObjectData gData = {{{0, 1, 0}, {0, 0, 0}, {2, 2, 2}}, 0, 0};
+  GameObjectData gData = {{{0, 0, 0}, {0, 0, 0}, {2, 2, 2}}, 0, 0};
   mainScene.addGameObject(gData);
 
-  gData.transformD = {{0, 1, 0}, {0, 0, 0}, {10, 10, 10}};
+  gData.transformD = {{0, 0, 0}, {0, 0, 0}, {10, 10, 10}};
   gData.meshID = 1;
   gData.materialID = 1;
   mainScene.addGameObject(gData);
@@ -133,64 +133,29 @@ int main(int argc, char** arg) {
   // box test
   Box box1 = {{0, 0, 0}, {1, 1, 1}};
 
-  Mesh skyboxesBox;
+  Mesh skyboxesBox(box1, 1);
+  Mesh justBox(box1);
 
-  for (int i = -1; i < 1; i++) {
-    for (int j = -1; j < 1; j++) {
-      for (int k = -1; k < 1; k++) {
-        Vertex tempvert;
-        tempvert.position =
-            box1.position +
-            (box1.dimensions * (Vec3){(float)(1 + 2 * i), (float)(1 + 2 * j),
-                                      (float)(1 + 2 * k)});
-        tempvert.normal = {0, 0, 0};
-        tempvert.uv = {0, 0};
-
-        skyboxesBox.addVertex(tempvert);
-      }
-    }
-  }
-
-  /*
-  X: -1.000000, Y: -1.000000, Z: -1.000000
-  X: -1.000000, Y: -1.000000, Z: 1.000000
-  X: -1.000000, Y: 1.000000, Z: -1.000000
-  X: -1.000000, Y: 1.000000, Z: 1.000000
-  X: 1.000000, Y: -1.typedef struct {
-    Vec3 normal;
-    float distance; // distance from origin
-  } Surface;000000, Z: -1.000000
-  X: 1.000000, Y: -1.000000, Z: 1.000000
-  X: 1.000000, Y: 1.000000, Z: -1.000000
-  X: 1.000000, Y: 1.000000, Z: 1.000000
-  */
-
-  // X
-  skyboxesBox.addFace(0, 2, 1);
-  skyboxesBox.addFace(1, 2, 3);
-  skyboxesBox.addFace(4, 5, 6);
-  skyboxesBox.addFace(6, 5, 7);
-
-  // Y
-  skyboxesBox.addFace(4, 0, 1);
-  skyboxesBox.addFace(4, 1, 5);
-  skyboxesBox.addFace(2, 6, 3);
-  skyboxesBox.addFace(3, 6, 7);
-
-  // Z
-  skyboxesBox.addFace(0, 4, 2);
-  skyboxesBox.addFace(2, 4, 6);
-  skyboxesBox.addFace(5, 1, 3);
-  skyboxesBox.addFace(5, 3, 7);
-
-  skyboxesBox.calculateNormals();
+  justBox.calculateNormals();
 
   newRen.register_mesh(skyboxesBox);
+  newRen.register_mesh(justBox);
 
-  gData.meshID = 2;
+  gData.meshID = 3;
   gData.materialID = 0;
-  gData.transformD = {{0, 3, 0}, {0, 0, 0}, {3, 3, 3}};
+  gData.transformD = {{5, 1, 0}, {0, 0, 0}, {1, 1, 1}};
 
+  mainScene.addGameObject(gData);
+
+  // sphere test
+  Sphere sph1 = {{0, 0, 0}, 1};
+  Mesh sphM(sph1, 0);
+  sphM.calculateNormals();
+
+  newRen.register_mesh(sphM);
+
+  gData.transformD.position = {-5, 1, 0};
+  gData.meshID = 4;
   mainScene.addGameObject(gData);
 
   // main loop
@@ -284,6 +249,7 @@ int main(int argc, char** arg) {
     }
 
     cam.move({0, upVel * deltaTime, 0});
+    mainScene.getPointLight(0).setPosition(cam.getPosition());
 
     // event polling
     mainWin.checkEvents();

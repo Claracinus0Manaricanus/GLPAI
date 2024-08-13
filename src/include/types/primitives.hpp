@@ -19,4 +19,9 @@ typedef struct {
                    // are twice these
 } Box;
 
+typedef struct {
+  Vec3 position;
+  float radius;
+} Sphere;
+
 #endif
