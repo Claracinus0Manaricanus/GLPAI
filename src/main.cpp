@@ -148,13 +148,13 @@ int main(int argc, char** arg) {
   mainScene.addGameObject(gData);
 
   // sphere test
-  Sphere sph1 = {{0, 0, 0}, 1};
-  Mesh sphM(sph1, 0);
+  Sphere sph1 = {{0, 0, 0}, 2};
+  Mesh sphM(sph1, 1);
   sphM.calculateNormals();
 
   newRen.register_mesh(sphM);
 
-  gData.transformD.position = {-5, 1, 0};
+  gData.transformD.position = {-5, 2, 0};
   gData.meshID = 4;
   mainScene.addGameObject(gData);
 

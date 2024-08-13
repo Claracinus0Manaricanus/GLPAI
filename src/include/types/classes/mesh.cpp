@@ -74,15 +74,28 @@ Mesh::Mesh(Sphere data, int invert) {
   Vertex tempVert;
   for (int i = -10; i <= 10; i += 1) {
     for (int k = 0; k <= 10; k += 1) {
-      float x = cos((k * TAU / 10)), z = sin((k * TAU / 10));
-      float division_const = sqrt(
-          ((x * x) + (z * z)) /
-          (data.radius - ((i * data.radius / 10) * (i * data.radius / 10))));
-      x /= division_const;
-      z /= division_const;
-      tempVert.position = {x, (i * data.radius / 10), z};
-      tempVert.uv = {1 - k / 10.0f,
-                     -((i * data.radius / 10) + data.radius) / 2.0f};
+      float radian = k * TAU / 10;
+      float y = (i * data.radius / 10);
+
+      float x = cos(radian), z = sin(radian);
+
+      if (i != -10 && i != 10) {
+        float division_const =
+            sqrt(((x * x) + (z * z)) / ((data.radius * data.radius) - (y * y)));
+        x /= division_const;
+        z /= division_const;
+      } else {
+        x = 0;
+        z = 0;
+      }
+
+      tempVert.position = {x, y, z};
+      if (invert)
+        tempVert.uv = {k / 10.0f, -(y + data.radius) / (2.0f * data.radius)};
+      else
+        tempVert.uv = {1 - k / 10.0f,
+                       -(y + data.radius) / (2.0f * data.radius)};
+
       vertices.push_back(tempVert);
     }
   }
