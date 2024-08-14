@@ -170,12 +170,14 @@ void Window::setClearColor(float r, float g, float b, float a) {
 }
 
 void Window::clearScreen() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (rendererType == CM_OPENGL)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Window::updateViewport() {
   IVec2 winRes = getWindowResolution();
-  glViewport(0, 0, winRes.x, winRes.y);
+  if (rendererType == CM_OPENGL)
+    glViewport(0, 0, winRes.x, winRes.y);
 }
 
 int Window::setSwapInterval(int interval) {

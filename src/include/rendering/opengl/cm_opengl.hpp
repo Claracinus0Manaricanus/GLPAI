@@ -41,6 +41,7 @@ public:
 
   // setters
   void register_mesh(Mesh& mesh);
+  void register_meshes(std::vector<Mesh>& meshes);
   void register_material(Material& material);
   void setMaterialColor(int index, Vec4 color);
   void register_skybox(Skybox& skybox);

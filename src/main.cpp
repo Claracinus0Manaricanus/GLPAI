@@ -95,7 +95,7 @@ int main(int argc, char** arg) {
   newRen.register_mesh(ground);
 
   std::vector<Mesh> meshes = Scene::import("assets/models/dragon_vrip.ply");
-  newRen.register_mesh(meshes[0]);
+  newRen.register_meshes(meshes);
 
   MaterialData mData;
   mData.color = {1, 1, 1, 1};

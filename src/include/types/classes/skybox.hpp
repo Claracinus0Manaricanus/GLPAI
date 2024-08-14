@@ -10,6 +10,7 @@
 #define CM_CUBE_MAP_POSITIVE_Z 4
 #define CM_CUBE_MAP_NEGATIVE_Z 5
 
+// Cubemap definition can be used from here
 typedef struct {
   TextureData textures[6]; // +X, -X, +Y, -Y, +Z, -Z
 } Cubemap;

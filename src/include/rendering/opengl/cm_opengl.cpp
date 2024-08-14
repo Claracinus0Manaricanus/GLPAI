@@ -80,6 +80,12 @@ void OGL_Renderer::register_mesh(Mesh& mesh) {
   meshes.push_back(tmpMesh);
 }
 
+void OGL_Renderer::register_meshes(std::vector<Mesh>& meshes) {
+  for (Mesh mesh : meshes) {
+    register_mesh(mesh);
+  }
+}
+
 void OGL_Renderer::register_material(Material& material) {
   OGL_Material tmpMat;
 
