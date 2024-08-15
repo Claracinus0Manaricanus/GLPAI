@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.29.0)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 project(newEngine)
 add_executable(neweng "src/main.cpp"
 #math
@@ -36,4 +39,3 @@ add_executable(neweng "src/main.cpp"
 
 target_link_libraries(neweng SDL2 GL GLEW assimp)
 target_include_directories(neweng PUBLIC src/include)
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
