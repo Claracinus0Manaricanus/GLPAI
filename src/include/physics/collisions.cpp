@@ -1,5 +1,6 @@
 #include "collisions.hpp"
 #include "../cm_math/operations.hpp"
+#include <cmath>
 
 // !! CAUTION !!
 // currently these functions are unoptimized and in a test stage
@@ -125,4 +126,46 @@ int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
     (*out) = tempClosest;
 
   return collidedGlobal;
+}
+
+int Physics::checkCollisionRaySphere(Ray& ray, Sphere sphere, RayHit* out) {
+  // adjusting the rays position in space according to the spheres location
+  Vec3 newStart = ray.start - sphere.position;
+
+  // Uses quadratic formula so we find a b and c first in the representation
+  // a*t^2 + b*t + c
+  float a = powf(ray.direction.x, 2) + powf(ray.direction.y, 2) +
+            powf(ray.direction.z, 2);
+  float b =
+      2 * ((newStart.x * ray.direction.x) + (newStart.y * ray.direction.y) +
+           (newStart.z * ray.direction.z));
+  float c = powf(newStart.x, 2) + powf(newStart.y, 2) + powf(newStart.z, 2) -
+            powf(sphere.radius, 2);
+
+  float delta = powf(b, 2) - (4 * a * c);
+  // if delta is negative there are no real solutions
+  if (delta < 0)
+    return 0;
+
+  // the negative version of the formula gives the closest collision
+  float negative = (-b - sqrt(delta)) / (2 * a);
+
+  // if this value is negative positive version of the formula should be used
+  // but I didn't implement it right now because this is true only if you are
+  // inside the sphere
+  if (negative < 0)
+    return 0;
+
+  // we don't use newStart position here because we need the world space not the
+  // ray space we created
+  out->hitPosition = ray.start + (ray.direction * negative);
+
+  // we use newStart here because we need the sphere to be at origin to
+  // calculate its normals this way and in the ray space we created the sphere
+  // is at the origin
+  out->hitNormal = Vector::Normalize(newStart + (ray.direction * negative));
+
+  out->tConstant = negative;
+
+  return 1;
 }

@@ -73,10 +73,10 @@ int main(int argc, char** arg) {
     }
   }
 
-  newRen.register_mesh(ground);
+  const int mesh_ground = newRen.register_mesh(ground);
 
   std::vector<Mesh> meshes = Scene::import("assets/models/dragon_vrip.ply");
-  newRen.register_meshes(meshes);
+  const int mesh_dragon = newRen.register_meshes(meshes);
 
   MaterialData mData;
   mData.color = {1, 1, 1, 1};
@@ -100,11 +100,11 @@ int main(int argc, char** arg) {
   Scene mainScene;
 
   GameObjectData gData = {
-      {{0, 0, 0}, {0, 0, 0}, {2, 2, 2}}, 0, material_arkTex};
+      {{0, 0, 0}, {0, 0, 0}, {2, 2, 2}}, mesh_ground, material_arkTex};
   mainScene.addGameObject(gData);
 
   gData.transformD = {{0, 0, 0}, {0, 0, 0}, {10, 10, 10}};
-  gData.meshID = 1;
+  gData.meshID = mesh_dragon;
   gData.materialID = material_redMetallic;
   mainScene.addGameObject(gData);
 
@@ -124,9 +124,9 @@ int main(int argc, char** arg) {
 
   justBox.calculateNormals();
 
-  newRen.register_mesh(justBox);
+  const int mesh_box = newRen.register_mesh(justBox);
 
-  gData.meshID = 2;
+  gData.meshID = mesh_box;
   gData.materialID = material_arkTex;
   gData.transformD = {{5, 1, 0}, {0, 0, 0}, {1, 1, 1}};
 
@@ -137,10 +137,10 @@ int main(int argc, char** arg) {
   Mesh sphM(sph1, 100, 1);
   sphM.calculateNormals();
 
-  newRen.register_mesh(sphM);
+  const int mesh_sphere = newRen.register_mesh(sphM);
 
   gData.transformD.position = {-5, 1, 0};
-  gData.meshID = 3;
+  gData.meshID = mesh_sphere;
   gData.materialID = material_equ;
   mainScene.addGameObject(gData);
 
@@ -169,6 +169,15 @@ int main(int argc, char** arg) {
   // main loop
   while (!mainWin.shouldClose()) {
     // testing area //
+    sph1.position = mainScene.getGameObject(3).getPosition();
+    ray.direction = cam.getForward();
+    collided = Physics::checkCollisionRaySphere(ray, sph1, &out);
+    if (collided) {
+      printf("collided with sphere!\nposition: ");
+      println(out.hitPosition);
+      printf("normal: ");
+      println(out.hitNormal);
+    }
     // testing area //
 
     // update resolution

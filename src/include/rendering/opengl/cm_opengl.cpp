@@ -83,11 +83,13 @@ int OGL_Renderer::register_mesh(Mesh& mesh) {
 }
 
 int OGL_Renderer::register_meshes(std::vector<Mesh>& meshes) {
+  int retVal = 0;
+
   for (Mesh mesh : meshes) {
-    register_mesh(mesh);
+    retVal = register_mesh(mesh);
   }
 
-  return (meshes.size() - 1);
+  return retVal;
 }
 
 int OGL_Renderer::register_material(Material& material) {

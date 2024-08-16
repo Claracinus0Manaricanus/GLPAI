@@ -12,6 +12,7 @@ int checkCollisionRaySurface(Ray& ray, Surface surface, RayHit* out);
 int checkCollisionRayTriangle(Ray& ray, Triangle triangle, RayHit* out);
 int checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
                           RayHit* out);
+int checkCollisionRaySphere(Ray& ray, Sphere sphere, RayHit* out);
 
 } // namespace Physics
 
