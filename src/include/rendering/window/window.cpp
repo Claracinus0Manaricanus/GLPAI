@@ -50,6 +50,7 @@ Window::~Window() {
 
   // this function caused SIGSEGV on wayland, I don't know why
   SDL_DestroyWindow(winHandler);
+  SDL_Quit();
 }
 
 // getters
@@ -129,7 +130,7 @@ int Window::updateScreen() {
 }
 
 // event handling
-int Window::checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key)) {
+int Window::checkEvents() {
   int retOfPollEvent = SDL_PollEvent(&event);
 
   if (retOfPollEvent == 0)
@@ -141,13 +142,9 @@ int Window::checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key)) {
     break;
 
   case SDL_KEYDOWN:
-    if (keyCallback != NULL)
-      keyCallback(event.key.type, event.key.keysym);
     break;
 
   case SDL_KEYUP:
-    if (keyCallback != NULL)
-      keyCallback(event.key.type, event.key.keysym);
     break;
 
   case SDL_TEXTINPUT:

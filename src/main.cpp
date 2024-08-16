@@ -1,5 +1,6 @@
 #include <cm_math/operations.hpp>
 #include <cstdio>
+#include <math.h>
 #include <physics/collisions.hpp>
 #include <rendering/opengl/cm_opengl.hpp>
 #include <rendering/opengl/include/OGL_Program.hpp>
@@ -10,26 +11,6 @@
 #include <utility/printUtil.hpp>
 
 int main(int argc, char** arg) {
-  // imports
-  Scene mainScene;
-
-  GameObjectData gData = {{{0, 0, 0}, {0, 0, 0}, {2, 2, 2}}, 0, 0};
-  mainScene.addGameObject(gData);
-
-  gData.transformD = {{0, 0, 0}, {0, 0, 0}, {10, 10, 10}};
-  gData.meshID = 1;
-  gData.materialID = 1;
-  mainScene.addGameObject(gData);
-
-  PointLightData lData = {
-      {-1.0f, 2.0f, -1.0f},
-      {1, 1, 1},
-      1,
-  };
-  mainScene.addPointLight(lData);
-  lData.position = (Vec3){1.0f, 2.0f, 1.0f};
-  mainScene.addPointLight(lData);
-
   // Window
   Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
   if (!mainWin.isFine()) {
@@ -105,16 +86,36 @@ int main(int argc, char** arg) {
     printf("no tex!\n");
     return -1;
   }
-  newRen.register_material(tmpMat);
+  const int material_arkTex = newRen.register_material(tmpMat);
 
   mData.color = {1, 0, 0, 1};
   mData.metallic = 1.0f;
   Material tmpMat2(mData);
-  newRen.register_material(tmpMat2);
+  const int material_redMetallic = newRen.register_material(tmpMat2);
 
-  mData.color = {0, 1, 0, 1};
-  Material tmpMat3(mData);
-  newRen.register_material(tmpMat3);
+  tmpMat.loadTexture("assets/images/equ.jpg");
+  const int material_equ = newRen.register_material(tmpMat);
+
+  // Scene
+  Scene mainScene;
+
+  GameObjectData gData = {
+      {{0, 0, 0}, {0, 0, 0}, {2, 2, 2}}, 0, material_arkTex};
+  mainScene.addGameObject(gData);
+
+  gData.transformD = {{0, 0, 0}, {0, 0, 0}, {10, 10, 10}};
+  gData.meshID = 1;
+  gData.materialID = material_redMetallic;
+  mainScene.addGameObject(gData);
+
+  PointLightData lData = {
+      {-1.0f, 2.0f, -1.0f},
+      {1, 1, 1},
+      1,
+  };
+  mainScene.addPointLight(lData);
+  lData.position = (Vec3){1.0f, 2.0f, 1.0f};
+  mainScene.addPointLight(lData);
 
   // box test
   Box box1 = {{0, 0, 0}, {1, 1, 1}};
@@ -126,20 +127,21 @@ int main(int argc, char** arg) {
   newRen.register_mesh(justBox);
 
   gData.meshID = 2;
-  gData.materialID = 0;
+  gData.materialID = material_arkTex;
   gData.transformD = {{5, 1, 0}, {0, 0, 0}, {1, 1, 1}};
 
   mainScene.addGameObject(gData);
 
   // sphere test
   Sphere sph1 = {{0, 0, 0}, 1};
-  Mesh sphM(sph1);
+  Mesh sphM(sph1, 100, 1);
   sphM.calculateNormals();
 
   newRen.register_mesh(sphM);
 
   gData.transformD.position = {-5, 1, 0};
   gData.meshID = 3;
+  gData.materialID = material_equ;
   mainScene.addGameObject(gData);
 
   // skybox
@@ -167,7 +169,6 @@ int main(int argc, char** arg) {
   // main loop
   while (!mainWin.shouldClose()) {
     // testing area //
-    newRen.setMaterialColor(2, {abs(upVel), 1, 0, 1});
     // testing area //
 
     // update resolution

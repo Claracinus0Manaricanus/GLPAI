@@ -50,7 +50,7 @@ public:
   int updateScreen();
 
   // event handling
-  int checkEvents(void (*keyCallback)(uint32_t type, SDL_Keysym key) = NULL);
+  int checkEvents();
 
   // error control
   int isFine();

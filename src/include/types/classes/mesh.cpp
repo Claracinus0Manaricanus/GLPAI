@@ -69,17 +69,17 @@ Mesh::Mesh(Box data, int invert) {
   }
 }
 
-Mesh::Mesh(Sphere data, int invert) {
+Mesh::Mesh(Sphere data, int resolution, int invert) {
   // UV sphere algorithm (by me so don't expect much) (it works though)
   Vertex tempVert;
-  for (int i = -10; i <= 10; i += 1) {
-    for (int k = 0; k <= 10; k += 1) {
-      float radian = k * TAU / 10;
-      float y = (i * data.radius / 10);
+  for (int i = -resolution; i <= resolution; i += 1) {
+    for (int k = 0; k <= resolution; k += 1) {
+      float radian = k * TAU / resolution;
+      float y = (i * data.radius / resolution);
 
       float x = cos(radian), z = sin(radian);
 
-      if (i != -10 && i != 10) {
+      if (i != -resolution && i != resolution) {
         float division_const =
             sqrt(((x * x) + (z * z)) / ((data.radius * data.radius) - (y * y)));
         x /= division_const;
@@ -91,23 +91,25 @@ Mesh::Mesh(Sphere data, int invert) {
 
       tempVert.position = {x, y, z};
       if (invert)
-        tempVert.uv = {k / 10.0f, -(y + data.radius) / (2.0f * data.radius)};
+        tempVert.uv = {(float)k / resolution,
+                       -(y + data.radius) / (2.0f * data.radius)};
       else
-        tempVert.uv = {1 - k / 10.0f,
+        tempVert.uv = {1.0f - k / resolution,
                        -(y + data.radius) / (2.0f * data.radius)};
 
       vertices.push_back(tempVert);
     }
   }
 
-  for (int i = 0; i < vertices.size(); i += 11) {
-    for (int k = 0; k < 10; k++) {
+  for (int i = 0; i < vertices.size() - (resolution + 1);
+       i += (resolution + 1)) {
+    for (int k = 0; k < resolution; k++) {
       if (invert) {
-        addFace(i + k, i + k + 12, i + k + 11);
-        addFace(i + k, i + k + 1, i + k + 12);
+        addFace(i + k, i + k + (resolution + 2), i + k + (resolution + 1));
+        addFace(i + k, i + k + 1, i + k + (resolution + 2));
       } else {
-        addFace(i + k, i + k + 11, i + k + 12);
-        addFace(i + k, i + k + 12, i + k + 1);
+        addFace(i + k, i + k + (resolution + 1), i + k + (resolution + 2));
+        addFace(i + k, i + k + (resolution + 2), i + k + 1);
       }
     }
   }

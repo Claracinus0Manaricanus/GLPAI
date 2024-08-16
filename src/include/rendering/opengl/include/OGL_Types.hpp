@@ -15,6 +15,10 @@ struct OGL_Texture {
   int height;
 };
 
+struct OGL_Framebuffer {
+  //
+};
+
 struct OGL_Cubemap {
   unsigned int texID;
 };

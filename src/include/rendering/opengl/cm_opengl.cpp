@@ -42,7 +42,7 @@ OGL_Renderer::~OGL_Renderer() {
 // getters
 
 // setters
-void OGL_Renderer::register_mesh(Mesh& mesh) {
+int OGL_Renderer::register_mesh(Mesh& mesh) {
   OGL_Mesh tmpMesh;
   std::vector<Vertex> vertexData = mesh.getAllVertices();
   std::vector<uint32_t> indexData = mesh.getIndexBuffer();
@@ -78,15 +78,19 @@ void OGL_Renderer::register_mesh(Mesh& mesh) {
   glBindVertexArray(0);
 
   meshes.push_back(tmpMesh);
+
+  return (meshes.size() - 1);
 }
 
-void OGL_Renderer::register_meshes(std::vector<Mesh>& meshes) {
+int OGL_Renderer::register_meshes(std::vector<Mesh>& meshes) {
   for (Mesh mesh : meshes) {
     register_mesh(mesh);
   }
+
+  return (meshes.size() - 1);
 }
 
-void OGL_Renderer::register_material(Material& material) {
+int OGL_Renderer::register_material(Material& material) {
   OGL_Material tmpMat;
 
   if (material.hasTexture()) {
@@ -126,13 +130,15 @@ void OGL_Renderer::register_material(Material& material) {
   tmpMat.metallic = material.getMetallic();
 
   materials.push_back(tmpMat);
+
+  return (materials.size() - 1);
 }
 
 void OGL_Renderer::setMaterialColor(int index, Vec4 color) {
   materials[index].color = color;
 }
 
-void OGL_Renderer::register_skybox(Skybox& skybox) {
+int OGL_Renderer::register_skybox(Skybox& skybox) {
   OGL_Cubemap tmpMap;
 
   glGenTextures(1, &tmpMap.texID);
@@ -154,6 +160,8 @@ void OGL_Renderer::register_skybox(Skybox& skybox) {
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
   cubemaps.push_back(tmpMap);
+
+  return (cubemaps.size() - 1);
 }
 
 // rendering

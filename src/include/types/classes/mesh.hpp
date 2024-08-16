@@ -21,7 +21,7 @@ public:
   Mesh();
   Mesh(MeshData& data);
   Mesh(Box data, int invert = 0);
-  Mesh(Sphere data, int invert = 0);
+  Mesh(Sphere data, int resolution = 10, int invert = 0);
 
   // setters
   int addVertex(Vertex& toInsert);

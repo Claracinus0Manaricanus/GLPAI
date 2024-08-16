@@ -40,11 +40,11 @@ public:
   // getters
 
   // setters
-  void register_mesh(Mesh& mesh);
-  void register_meshes(std::vector<Mesh>& meshes);
-  void register_material(Material& material);
+  int register_mesh(Mesh& mesh);
+  int register_meshes(std::vector<Mesh>& meshes);
+  int register_material(Material& material);
   void setMaterialColor(int index, Vec4 color);
-  void register_skybox(Skybox& skybox);
+  int register_skybox(Skybox& skybox);
 
   // rendering
   void render(int mesh, int material, OGL_Program& program, Camera& camera);

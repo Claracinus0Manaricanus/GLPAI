@@ -29,6 +29,10 @@ void Material::setColor(Vec4 color) { (*(Vec4*)dataArray) = color; }
 void Material::setMetalness(float metallic) { dataArray[4] = metallic; }
 
 int Material::loadTexture(const char* path) {
+  if (texData.data != NULL || texData.data != nullptr) {
+    stbi_image_free(texData.data);
+  }
+
   texData.data =
       stbi_load(path, &texData.width, &texData.height, &texData.channel, 0);
 
