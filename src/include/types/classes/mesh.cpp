@@ -90,6 +90,9 @@ Mesh::Mesh(Sphere data, int resolution, int invert) {
       }
 
       tempVert.position = {x, y, z};
+      tempVert.normal =
+          Vector::Normalize(tempVert.position * (1.0f - (2 * invert)));
+
       if (invert)
         tempVert.uv = {(float)k / resolution,
                        -(y + data.radius) / (2.0f * data.radius)};

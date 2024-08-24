@@ -135,7 +135,6 @@ int main(int argc, char** arg) {
   // sphere test
   Sphere sph1 = {{0, 0, 0}, 1};
   Mesh sphM(sph1, 100, 1);
-  sphM.calculateNormals();
 
   const int mesh_sphere = newRen.register_mesh(sphM);
 
@@ -172,12 +171,12 @@ int main(int argc, char** arg) {
     sph1.position = mainScene.getGameObject(3).getPosition();
     ray.direction = cam.getForward();
     collided = Physics::checkCollisionRaySphere(ray, sph1, &out);
-    if (collided) {
+    /*if (collided) {
       printf("collided with sphere!\nposition: ");
       println(out.hitPosition);
       printf("normal: ");
       println(out.hitNormal);
-    }
+    }*/
     // testing area //
 
     // update resolution
