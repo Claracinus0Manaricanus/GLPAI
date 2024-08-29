@@ -24,9 +24,8 @@ public:
   int clear();
 
   // filters
-  // maybe implement some filters here?
-  // example:
-  // void gaussianBlur();
+  // flips c_one and c_two, 1 2 3 4 resembles r g b a
+  int flipChannels(int c_one, int c_two);
 
   // getters
   unsigned char* getDataPointer();

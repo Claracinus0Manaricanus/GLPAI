@@ -43,6 +43,7 @@ public:
   int getTextureHeight();
   int getTextureChannel();
   unsigned char* getTextureData();
+  Image& getImageObject();
 };
 
 #endif

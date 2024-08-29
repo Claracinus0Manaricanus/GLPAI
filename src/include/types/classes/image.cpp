@@ -30,7 +30,10 @@ int Image::loadImage(ImageData data) {
   if (data.desired_channels != 0)
     channels = data.desired_channels;
 
-  return -(pixelData == NULL);
+  if (pixelData == NULL)
+    pixelData = nullptr;
+
+  return -(pixelData == nullptr);
 }
 
 int Image::clear() {
@@ -41,6 +44,25 @@ int Image::clear() {
   height = 0;
   channels = 0;
 
+  return 0;
+}
+
+// filters
+int Image::flipChannels(int c_one, int c_two) {
+  if (c_one == c_two)
+    return -1;
+
+  if (pixelData != nullptr && channels >= c_one && channels >= c_two) {
+    c_one--;
+    c_two--;
+    for (int i = 0; i < (width * height * channels); i += channels) {
+      pixelData[i + c_one] ^= pixelData[i + c_two];
+      pixelData[i + c_two] ^= pixelData[i + c_one];
+      pixelData[i + c_one] ^= pixelData[i + c_two];
+    }
+  } else {
+    return -1;
+  }
   return 0;
 }
 

@@ -39,3 +39,4 @@ int Material::getTextureWidth() { return image.getWidth(); }
 int Material::getTextureHeight() { return image.getHeight(); }
 int Material::getTextureChannel() { return image.getChannels(); }
 unsigned char* Material::getTextureData() { return image.getDataPointer(); }
+Image& Material::getImageObject() { return image; }
