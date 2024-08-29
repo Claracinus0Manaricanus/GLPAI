@@ -1,6 +1,6 @@
 #include "cm_opengl.hpp"
 #include "include/OGL_Program.hpp"
-#include "types/classes/skybox.hpp"
+#include "types/classes/cubemap.hpp"
 #include <cstdint>
 #include <vector>
 
@@ -140,17 +140,18 @@ void OGL_Renderer::setMaterialColor(int index, Vec4 color) {
   materials[index].color = color;
 }
 
-int OGL_Renderer::register_skybox(Skybox& skybox) {
+int OGL_Renderer::register_cubemap(Cubemap& skybox) {
   OGL_Cubemap tmpMap;
 
   glGenTextures(1, &tmpMap.texID);
   glBindTexture(GL_TEXTURE_CUBE_MAP, tmpMap.texID);
 
   for (int i = 0; i < 6; i++) {
-    TextureData& side = skybox.getTexture(i);
-    if (side.data != nullptr)
-      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, side.width,
-                   side.height, 0, GL_RGB, GL_UNSIGNED_BYTE, side.data);
+    Image& side = skybox.getTexture(i);
+    if (side.getDataPointer() != nullptr)
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
+                   side.getWidth(), side.getHeight(), 0, GL_RGB,
+                   GL_UNSIGNED_BYTE, side.getDataPointer());
   }
 
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -167,58 +168,6 @@ int OGL_Renderer::register_skybox(Skybox& skybox) {
 }
 
 // rendering
-void OGL_Renderer::render(int mesh, int material, OGL_Program& program,
-                          Camera& camera) {
-  program.use();
-
-  camera.calculateOVM();
-  program.setMat4("CVM", camera.getOVM());
-
-  program.setVec4("color", materials[material].color);
-
-  glBindVertexArray(meshes[mesh].vertexArray);
-  glDrawElements(GL_TRIANGLES, meshes[mesh].indexBufferlength, GL_UNSIGNED_INT,
-                 (void*)0);
-  glBindVertexArray(0);
-}
-
-void OGL_Renderer::render(int mesh, int material, OGL_Program& program,
-                          Transform& transform, Camera& camera,
-                          PointLight& light) {
-  program.use();
-
-  // setting matrices
-  // camera
-  camera.calculateOVM();
-  program.setMat4("CVM", camera.getOVM());
-
-  // object
-  // OVM
-  transform.calculateOVM();
-  program.setMat4("OVM", transform.getOVM());
-
-  program.setVec4("color", materials[material].color);
-
-  // light
-  program.setVec3("lPos", light.getPosition());
-  program.setVec3("lCol", light.getColor());
-  program.setFloat("lStrength", light.getStrength());
-
-  // texture
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(materials[material].texture.target,
-                materials[material].texture.texID);
-  program.setUnsignedInt("tex", 0);
-
-  // vertex array
-  glBindVertexArray(meshes[mesh].vertexArray);
-  glDrawElements(GL_TRIANGLES, meshes[mesh].indexBufferlength, GL_UNSIGNED_INT,
-                 (void*)0);
-
-  glBindTexture(materials[material].texture.target, 0);
-  glBindVertexArray(0);
-}
-
 void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
                           OGL_Program& prg_no_texture, Camera& camera) {
 

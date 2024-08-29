@@ -1,18 +1,12 @@
 #ifndef CM_MATERIAL
 #define CM_MATERIAL
 
+#include <types/classes/image.hpp>
 #include <types/vectors.hpp>
 
 struct MaterialData {
   Vec4 color = {1, 1, 1, 1};
   float metallic = 0;
-};
-
-struct TextureData {
-  unsigned char* data = nullptr;
-  int width = 0;
-  int height = 0;
-  int channel = 0;
 };
 
 class Material {
@@ -22,7 +16,7 @@ protected:
   // RGBA is the color format, CCCC means color, M is metalness
   // if the data held changes with an update the
   // new data types will be added after the existing ones
-  TextureData texData;
+  Image image;
   float dataArray[5];
 
 public:

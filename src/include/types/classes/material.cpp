@@ -1,9 +1,5 @@
 #include "material.hpp"
-
-extern "C" {
-#define STB_IMAGE_IMPLEMENTATION
-#include <platform/stb_image.h>
-}
+#include <cstdlib>
 
 // constructors
 Material::Material() {
@@ -17,7 +13,7 @@ Material::Material(MaterialData& data) {
 }
 
 // destructors
-Material::~Material() { stbi_image_free(texData.data); }
+Material::~Material() {}
 
 // setters
 void Material::setData(MaterialData& data) {
@@ -29,32 +25,17 @@ void Material::setColor(Vec4 color) { (*(Vec4*)dataArray) = color; }
 void Material::setMetalness(float metallic) { dataArray[4] = metallic; }
 
 int Material::loadTexture(const char* path) {
-  if (texData.data != NULL || texData.data != nullptr) {
-    stbi_image_free(texData.data);
-  }
-
-  texData.data =
-      stbi_load(path, &texData.width, &texData.height, &texData.channel, 0);
-
-  if (texData.data == NULL) {
-    texData.data = nullptr;
-    return -1;
-  }
-
-  return 0;
+  return image.loadImage({path, 0});
 }
 
-void Material::resetTexture() {
-  stbi_image_free(texData.data);
-  texData.data = nullptr;
-}
+void Material::resetTexture() { image.clear(); }
 
 // getters
 const float* Material::getDataAsArray() { return dataArray; }
 Vec4& Material::getColor() { return (*(Vec4*)dataArray); }
 float& Material::getMetallic() { return dataArray[4]; }
-char Material::hasTexture() { return texData.data != nullptr; }
-int Material::getTextureWidth() { return texData.width; }
-int Material::getTextureHeight() { return texData.height; }
-int Material::getTextureChannel() { return texData.channel; }
-unsigned char* Material::getTextureData() { return texData.data; }
+char Material::hasTexture() { return image.getDataPointer() != nullptr; }
+int Material::getTextureWidth() { return image.getWidth(); }
+int Material::getTextureHeight() { return image.getHeight(); }
+int Material::getTextureChannel() { return image.getChannels(); }
+unsigned char* Material::getTextureData() { return image.getDataPointer(); }

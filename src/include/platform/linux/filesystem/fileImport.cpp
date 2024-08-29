@@ -3,6 +3,9 @@
 #include <cstdlib>
 
 extern "C" {
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -29,4 +32,9 @@ char* readFile(const char* path, size_t* readBytes) {
 
   close(fd);
   return src;
+}
+
+unsigned char* readImageFile(const char* path, int* x, int* y,
+                             int* channels_in_file, int desired_channels) {
+  return stbi_load(path, x, y, channels_in_file, desired_channels);
 }

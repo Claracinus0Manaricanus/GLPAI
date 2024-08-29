@@ -23,7 +23,8 @@ add_executable(neweng "src/main.cpp"
 "src/include/types/classes/material.cpp"
 "src/include/types/classes/scene.cpp"
 "src/include/types/classes/light.cpp"
-"src/include/types/classes/skybox.cpp"
+"src/include/types/classes/cubemap.cpp"
+"src/include/types/classes/image.cpp"
 
 #utilities
 "src/include/utility/printUtil.cpp"

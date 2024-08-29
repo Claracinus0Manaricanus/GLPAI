@@ -5,7 +5,6 @@
 #include <types/classes/gameObject.hpp>
 #include <types/classes/light.hpp>
 #include <types/classes/mesh.hpp>
-#include <types/classes/skybox.hpp>
 #include <vector>
 
 struct SceneData {
@@ -18,9 +17,6 @@ private:
   // Scene objects
   std::vector<GameObject> gameObjects;
   std::vector<PointLight> pointLights;
-
-  // skybox and canvas
-  Skybox activeSkybox;
 
 public:
   // constructors

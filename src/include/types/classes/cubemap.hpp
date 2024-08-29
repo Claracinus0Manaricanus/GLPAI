@@ -1,7 +1,7 @@
 #ifndef CM_SKYBOX
 #define CM_SKYBOX
 
-#include <types/classes/material.hpp>
+#include <types/classes/image.hpp>
 
 #define CM_CUBE_MAP_POSITIVE_X 0
 #define CM_CUBE_MAP_NEGATIVE_X 1
@@ -10,25 +10,20 @@
 #define CM_CUBE_MAP_POSITIVE_Z 4
 #define CM_CUBE_MAP_NEGATIVE_Z 5
 
-// Cubemap definition can be used from here
-typedef struct {
-  TextureData textures[6]; // +X, -X, +Y, -Y, +Z, -Z
-} Cubemap;
-
-class Skybox {
+class Cubemap {
 private:
-  Cubemap skyboxMap;
+  Image images[6];
 
 public:
   // cosntructors
-  Skybox();
-  Skybox(Cubemap& data);
-  Skybox(const char* filenames[6]);
+  Cubemap();
+  Cubemap(const char* filenames[6]);
 
   // setters
+  void loadFiles(const char* filenames[6]);
 
   // getters
-  TextureData& getTexture(int side);
+  Image& getTexture(int side);
 };
 
 #endif

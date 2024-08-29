@@ -3,6 +3,7 @@
 
 #include "include/OGL_Program.hpp"
 #include "include/OGL_Types.hpp"
+#include "types/classes/cubemap.hpp"
 #include <GL/glew.h>
 #include <types/classes/camera.hpp>
 #include <types/classes/light.hpp>
@@ -44,12 +45,9 @@ public:
   int register_meshes(std::vector<Mesh>& meshes);
   int register_material(Material& material);
   void setMaterialColor(int index, Vec4 color);
-  int register_skybox(Skybox& skybox);
+  int register_cubemap(Cubemap& skybox);
 
   // rendering
-  void render(int mesh, int material, OGL_Program& program, Camera& camera);
-  void render(int mesh, int material, OGL_Program& program,
-              Transform& transform, Camera& camera, PointLight& light);
   void render(Scene& scene, OGL_Program& prg_texture,
               OGL_Program& prg_no_texture, Camera& camera);
   void render_skybox(int index, OGL_Program& prg, Camera& camera);

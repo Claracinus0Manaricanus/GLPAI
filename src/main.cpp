@@ -5,6 +5,7 @@
 #include <rendering/opengl/cm_opengl.hpp>
 #include <rendering/opengl/include/OGL_Program.hpp>
 #include <rendering/window/window.hpp>
+#include <types/classes/cubemap.hpp>
 #include <types/classes/gameObject.hpp>
 #include <types/classes/scene.hpp>
 #include <types/physics.hpp>
@@ -148,8 +149,8 @@ int main(int argc, char** arg) {
       "assets/skybox/starryCSky/px.png", "assets/skybox/starryCSky/nx.png",
       "assets/skybox/starryCSky/py.png", "assets/skybox/starryCSky/ny.png",
       "assets/skybox/starryCSky/pz.png", "assets/skybox/starryCSky/nz.png"};
-  Skybox sky0(skyFiles);
-  newRen.register_skybox(sky0);
+  Cubemap sky0(skyFiles);
+  newRen.register_cubemap(sky0);
 
   // vars
   Vec2 mousePos = {0, 0};
