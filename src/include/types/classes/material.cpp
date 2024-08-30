@@ -5,11 +5,13 @@
 Material::Material() {
   (*(Vec4*)dataArray) = {1, 1, 1, 1};
   dataArray[4] = 0;
+  prg_ID = 0;
 }
 
 Material::Material(MaterialData& data) {
   (*(Vec4*)dataArray) = data.color;
   dataArray[4] = data.metallic;
+  prg_ID = data.prg_ID;
 }
 
 // destructors
@@ -30,6 +32,8 @@ int Material::loadTexture(const char* path) {
 
 void Material::resetTexture() { image.clear(); }
 
+void Material::setPrgID(int ID) { prg_ID = ID; }
+
 // getters
 const float* Material::getDataAsArray() { return dataArray; }
 Vec4& Material::getColor() { return (*(Vec4*)dataArray); }
@@ -40,3 +44,4 @@ int Material::getTextureHeight() { return image.getHeight(); }
 int Material::getTextureChannel() { return image.getChannels(); }
 unsigned char* Material::getTextureData() { return image.getDataPointer(); }
 Image& Material::getImageObject() { return image; }
+int Material::getPrgID() { return prg_ID; }

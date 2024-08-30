@@ -25,25 +25,6 @@ int main(int argc, char** arg) {
   mainWin.setRelativeMouseMode(SDL_TRUE);
   mainWin.setMousePos(0, 0);
 
-  // OpenGL
-  OGL_Program prg_basic({"src/include/rendering/opengl/shaders/basic/vert.glsl",
-                         "src/include/rendering/opengl/shaders/basic/frag.glsl",
-                         NULL});
-  if (prg_basic.getError() != NULL)
-    printf("%s\n", prg_basic.getError());
-
-  OGL_Program prg_texture(
-      {"src/include/rendering/opengl/shaders/texture/vert.glsl",
-       "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL});
-  if (prg_texture.getError() != NULL)
-    printf("%s\n", prg_texture.getError());
-
-  OGL_Program prg_skybox(
-      {"src/include/rendering/opengl/shaders/skybox/vert.glsl",
-       "src/include/rendering/opengl/shaders/skybox/frag.glsl", NULL});
-  if (prg_skybox.getError() != NULL)
-    printf("%s\n", prg_skybox.getError());
-
   // camera
   Camera cam;
   cam.setPosition({0, 10, 0});
@@ -51,7 +32,26 @@ int main(int argc, char** arg) {
   // OGL_Renderer
   OGL_Renderer newRen;
 
-  // generating ground
+  // programs
+  const int prg_skybox = newRen.register_program(
+      {"src/include/rendering/opengl/shaders/skybox/vert.glsl",
+       "src/include/rendering/opengl/shaders/skybox/frag.glsl", NULL});
+  if (newRen.getProgramError(prg_skybox) != NULL)
+    printf("%s\n", newRen.getProgramError(prg_skybox));
+
+  const int prg_basic = newRen.register_program(
+      {"src/include/rendering/opengl/shaders/basic/vert.glsl",
+       "src/include/rendering/opengl/shaders/basic/frag.glsl", NULL});
+  if (newRen.getProgramError(prg_basic) != NULL)
+    printf("%s\n", newRen.getProgramError(prg_basic));
+
+  const int prg_texture = newRen.register_program(
+      {"src/include/rendering/opengl/shaders/texture/vert.glsl",
+       "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL});
+  if (newRen.getProgramError(prg_texture) != NULL)
+    printf("%s\n", newRen.getProgramError(prg_texture));
+
+  // generating ground and meshes
   Mesh ground;
   Vertex tempToInsert;
   int ground_size = 10;
@@ -79,9 +79,11 @@ int main(int argc, char** arg) {
   std::vector<Mesh> meshes = Scene::import("assets/models/dragon_vrip.ply");
   const int mesh_dragon = newRen.register_meshes(meshes);
 
+  // materials
   MaterialData mData;
   mData.color = {1, 1, 1, 1};
   mData.metallic = 0.95f;
+  mData.prg_ID = prg_texture;
   Material tmpMat(mData);
   if (tmpMat.loadTexture("assets/images/arkKnightsChars.jpg") != 0) {
     printf("no tex!\n");
@@ -91,10 +93,12 @@ int main(int argc, char** arg) {
 
   mData.color = {1, 0, 0, 1};
   mData.metallic = 1.0f;
+  mData.prg_ID = prg_basic;
   Material tmpMat2(mData);
   const int material_redMetallic = newRen.register_material(tmpMat2);
 
   tmpMat.loadTexture("assets/images/equ.jpg");
+  mData.prg_ID = prg_texture;
   const int material_equ = newRen.register_material(tmpMat);
 
   // Scene
@@ -273,7 +277,7 @@ int main(int argc, char** arg) {
     // rendering
     mainWin.clearScreen();
     cam.setAspectRatio(mainWin.getAspectRatio());
-    newRen.render(mainScene, prg_texture, prg_basic, cam);
+    newRen.render(mainScene, cam);
     newRen.render_skybox(0, prg_skybox, cam);
 
     // swap buffers

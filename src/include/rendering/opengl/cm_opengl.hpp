@@ -24,6 +24,7 @@ protected:
   std::vector<OGL_Mesh> meshes;
   std::vector<OGL_Material> materials;
   std::vector<OGL_Cubemap> cubemaps;
+  std::vector<OGL_Program*> programs;
 
   // for skyboxes
   uint32_t skyVertArr = 0;
@@ -39,6 +40,7 @@ public:
   ~OGL_Renderer();
 
   // getters
+  const char* getProgramError(int index);
 
   // setters
   int register_mesh(Mesh& mesh);
@@ -46,11 +48,11 @@ public:
   int register_material(Material& material);
   void setMaterialColor(int index, Vec4 color);
   int register_cubemap(Cubemap& skybox);
+  int register_program(OGL_ProgramData data);
 
   // rendering
-  void render(Scene& scene, OGL_Program& prg_texture,
-              OGL_Program& prg_no_texture, Camera& camera);
-  void render_skybox(int index, OGL_Program& prg, Camera& camera);
+  void render(Scene& scene, Camera& camera);
+  void render_skybox(int index, int prg, Camera& camera);
 };
 
 #endif

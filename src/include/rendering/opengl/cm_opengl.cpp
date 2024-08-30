@@ -37,9 +37,16 @@ OGL_Renderer::~OGL_Renderer() {
     if (material.texture.texID != 0)
       glDeleteTextures(1, &material.texture.texID);
   }
+
+  for (OGL_Program* toFree : programs) {
+    delete toFree;
+  }
 }
 
 // getters
+const char* OGL_Renderer::getProgramError(int index) {
+  return programs[index]->getError();
+}
 
 // setters
 int OGL_Renderer::register_mesh(Mesh& mesh) {
@@ -130,6 +137,7 @@ int OGL_Renderer::register_material(Material& material) {
 
   tmpMat.color = material.getColor();
   tmpMat.metallic = material.getMetallic();
+  tmpMat.prg_ID = material.getPrgID();
 
   materials.push_back(tmpMat);
 
@@ -167,32 +175,27 @@ int OGL_Renderer::register_cubemap(Cubemap& skybox) {
   return (cubemaps.size() - 1);
 }
 
+int OGL_Renderer::register_program(OGL_ProgramData data) {
+  programs.push_back(new OGL_Program(data));
+
+  return programs.size() - 1;
+}
+
 // rendering
-void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
-                          OGL_Program& prg_no_texture, Camera& camera) {
+void OGL_Renderer::render(Scene& scene, Camera& camera) {
+  OGL_Program* activePrg = programs[0];
 
-  OGL_Program* activePrg = &prg_texture;
-
-  // setting matrices
   // camera
-  prg_texture.use();
   camera.calculateOVM();
-  prg_texture.setMat4("CVM", camera.getOVM());
-  prg_texture.setVec3("cameraPos", camera.getPosition());
-
-  prg_no_texture.use();
-  camera.calculateOVM();
-  prg_no_texture.setMat4("CVM", camera.getOVM());
-  prg_no_texture.setVec3("cameraPos", camera.getPosition());
 
   for (PointLight light : scene.getPointLights()) {
     for (GameObject obj : scene.getGameObjects()) {
-      if (materials[obj.getMaterial()].texture.texID == 0)
-        activePrg = &prg_no_texture;
-      else
-        activePrg = &prg_texture;
 
+      activePrg = programs[materials[obj.getMaterial()].prg_ID];
       activePrg->use();
+
+      activePrg->setMat4("CVM", camera.getOVM());
+      activePrg->setVec3("cameraPos", camera.getPosition());
 
       // object
       // OVM
@@ -229,7 +232,7 @@ void OGL_Renderer::render(Scene& scene, OGL_Program& prg_texture,
   glBindVertexArray(0);
 }
 
-void OGL_Renderer::render_skybox(int index, OGL_Program& prg, Camera& camera) {
+void OGL_Renderer::render_skybox(int index, int prg, Camera& camera) {
   if (skyVertArr == 0) {
     glGenVertexArrays(1, &skyVertArr);
     glGenBuffers(1, &skyVertBuffer);
@@ -266,14 +269,14 @@ void OGL_Renderer::render_skybox(int index, OGL_Program& prg, Camera& camera) {
     glBindVertexArray(0);
   }
 
-  prg.use();
+  programs[prg]->use();
 
   camera.calculateOVM();
-  prg.setMat4("CVM", camera.getOVM());
+  programs[prg]->setMat4("CVM", camera.getOVM());
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, cubemaps[index].texID);
-  prg.setUnsignedInt("cubemap", 0);
+  programs[prg]->setInt("cubemap", 0);
 
   glBindVertexArray(skyVertArr);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);

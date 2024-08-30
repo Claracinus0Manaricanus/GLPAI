@@ -120,14 +120,14 @@ int OGL_Program::setFloat(const char* uniformName, float a) {
 
 int OGL_Program::setUnsignedInt(const char* uniformName, unsigned int a) {
   use();
-  glUniform1f(glGetUniformLocation(programID, uniformName), a);
+  glUniform1ui(glGetUniformLocation(programID, uniformName), a);
 
   return 0; // add error check
 }
 
 int OGL_Program::setInt(const char* uniformName, int a) {
   use();
-  glUniform1f(glGetUniformLocation(programID, uniformName), a);
+  glUniform1i(glGetUniformLocation(programID, uniformName), a);
 
   return 0; // add error check
 }

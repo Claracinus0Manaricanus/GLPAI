@@ -7,6 +7,7 @@
 struct MaterialData {
   Vec4 color = {1, 1, 1, 1};
   float metallic = 0;
+  int prg_ID = 0;
 };
 
 class Material {
@@ -18,6 +19,7 @@ protected:
   // new data types will be added after the existing ones
   Image image;
   float dataArray[5];
+  int prg_ID;
 
 public:
   // constructors
@@ -33,6 +35,7 @@ public:
   void setMetalness(float metalness);
   int loadTexture(const char* path);
   void resetTexture();
+  void setPrgID(int ID);
 
   // getters
   const float* getDataAsArray();
@@ -44,6 +47,7 @@ public:
   int getTextureChannel();
   unsigned char* getTextureData();
   Image& getImageObject();
+  int getPrgID();
 };
 
 #endif
