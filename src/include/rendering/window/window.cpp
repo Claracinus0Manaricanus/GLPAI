@@ -162,8 +162,8 @@ const char* Window::getError() { return SDL_GetError(); }
 
 // opengl specific stuff
 void Window::setClearColor(float r, float g, float b, float a) {
-  assert(rendererType == CM_OPENGL);
-  glClearColor(r, g, b, a);
+  if (rendererType == CM_OPENGL)
+    glClearColor(r, g, b, a);
 }
 
 void Window::clearScreen() {
