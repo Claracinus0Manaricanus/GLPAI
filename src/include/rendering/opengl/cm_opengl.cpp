@@ -212,16 +212,16 @@ void OGL_Renderer::render(Scene& scene, Camera& camera) {
 
       // texture
       glActiveTexture(GL_TEXTURE0);
-      glBindTexture(materials[obj.getMaterial()].texture.target,
-                    materials[obj.getMaterial()].texture.texID);
-      activePrg->setUnsignedInt("tex", 0);
+      if (materials[obj.getMaterial()].texture.texID != 0) {
+        glBindTexture(materials[obj.getMaterial()].texture.target,
+                      materials[obj.getMaterial()].texture.texID);
+        activePrg->setInt("tex", 0);
+      }
 
       // vertex array
       glBindVertexArray(meshes[obj.getMesh()].vertexArray);
       glDrawElements(GL_TRIANGLES, meshes[obj.getMesh()].indexBufferlength,
                      GL_UNSIGNED_INT, (void*)0);
-
-      glBindTexture(materials[obj.getMaterial()].texture.target, 0);
     }
     glBlendFunc(GL_ONE, GL_ONE);
   }
