@@ -97,7 +97,7 @@ Mesh::Mesh(Sphere data, int resolution, int invert) {
         tempVert.uv = {(float)k / resolution,
                        -(y + data.radius) / (2.0f * data.radius)};
       else
-        tempVert.uv = {1.0f - k / resolution,
+        tempVert.uv = {1.0f - (float)k / resolution,
                        -(y + data.radius) / (2.0f * data.radius)};
 
       vertices.push_back(tempVert);

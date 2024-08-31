@@ -20,6 +20,8 @@ void print(Mat4& a);
 // physics
 void print(Ray& a);
 void print(RayHit& a);
+void print(Sphere& a);
+void print(SphereHit& a);
 
 // classes
 void print(Transform& tr);

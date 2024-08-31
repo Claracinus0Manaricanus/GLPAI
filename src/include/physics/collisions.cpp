@@ -1,5 +1,6 @@
 #include "collisions.hpp"
 #include "../cm_math/operations.hpp"
+#include "types/primitives.hpp"
 #include <cmath>
 
 // !! CAUTION !!
@@ -166,6 +167,24 @@ int Physics::checkCollisionRaySphere(Ray& ray, Sphere sphere, RayHit* out) {
   out->hitNormal = Vector::Normalize(newStart + (ray.direction * negative));
 
   out->tConstant = negative;
+
+  return 1;
+}
+
+int Physics::checkCollisionSphereSphere(Sphere& sphere0, Sphere& sphere1,
+                                        SphereHit* out) {
+  // the distance between spheres is needed to check if they collide
+  float distance_between_spheres =
+      Vector::Length(sphere0.position - sphere1.position);
+  float radius_sum = sphere0.radius + sphere1.radius;
+  if (distance_between_spheres > radius_sum) {
+    return 0;
+  }
+
+  out->hitPosition = (sphere0.position * sphere0.radius / radius_sum) +
+                     (sphere1.position * sphere1.radius / radius_sum);
+  out->hitNormal = Vector::Normalize(sphere1.position - sphere0.position);
+  out->overlap_distance = radius_sum - distance_between_spheres;
 
   return 1;
 }

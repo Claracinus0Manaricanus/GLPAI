@@ -46,6 +46,20 @@ void print(RayHit& a) {
   printf("tConstant: %f\n", a.tConstant);
 }
 
+void print(Sphere& a) {
+  printf("Position: ");
+  println(a.position);
+  printf("Radius: %f\n", a.radius);
+}
+
+void print(SphereHit& a) {
+  printf("hitPosition: ");
+  println(a.hitPosition);
+  printf("hitNormal: ");
+  println(a.hitNormal);
+  printf("overlap distance: %f\n", a.overlap_distance);
+}
+
 // classes
 void print(Transform& tr) {
   printf("Position: ");

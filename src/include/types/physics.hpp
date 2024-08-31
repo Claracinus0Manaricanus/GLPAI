@@ -19,4 +19,10 @@ typedef struct {
   float tConstant; // calculated using rays direction vector
 } RayHit;
 
+typedef struct {
+  Vec3 hitPosition;
+  Vec3 hitNormal;
+  float overlap_distance;
+} SphereHit;
+
 #endif

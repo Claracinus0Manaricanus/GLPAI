@@ -49,9 +49,6 @@ int Image::clear() {
 
 // filters
 int Image::flipChannels(int c_one, int c_two) {
-  if (c_one == c_two)
-    return -1;
-
   if (pixelData != nullptr && channels >= c_one && channels >= c_two) {
     c_one--;
     c_two--;

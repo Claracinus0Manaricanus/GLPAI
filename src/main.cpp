@@ -139,7 +139,7 @@ int main(int argc, char** arg) {
 
   // sphere test
   Sphere sph1 = {{0, 0, 0}, 1};
-  Mesh sphM(sph1, 100, 1);
+  Mesh sphM(sph1, 100);
 
   const int mesh_sphere = newRen.register_mesh(sphM);
 
@@ -156,6 +156,15 @@ int main(int argc, char** arg) {
   Cubemap sky0(skyFiles);
   newRen.register_cubemap(sky0);
 
+  // colon
+  meshes = Scene::import("assets/models/colon.obj");
+  const int mesh_colon = newRen.register_meshes(meshes);
+
+  gData.materialID = material_redMetallic;
+  gData.meshID = mesh_colon;
+  gData.transformD.position = {0, 0, 0};
+  mainScene.addGameObject(gData);
+
   // vars
   Vec2 mousePos = {0, 0};
   uint32_t lastMiliSec = mainWin.getTicks();
@@ -170,21 +179,24 @@ int main(int argc, char** arg) {
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
 
+  SphereHit sph_out;
+  Sphere player_sphere;
+
   // main loop
   while (!mainWin.shouldClose()) {
     // testing area //
+    player_sphere.position = cam.getPosition();
+    player_sphere.position.y -= camHeight / 2;
+    player_sphere.radius = 0.2f;
     sph1.position = mainScene.getGameObject(3).getPosition();
-    ray.direction = cam.getForward();
-    collided = Physics::checkCollisionRaySphere(ray, sph1, &out);
-    /*if (collided) {
-      printf("collided with sphere!\nposition: ");
-      println(out.hitPosition);
-      printf("normal: ");
-      println(out.hitNormal);
-    }*/
+    collided =
+        Physics::checkCollisionSphereSphere(sph1, player_sphere, &sph_out);
+    if (collided) {
+      cam.move(sph_out.hitNormal * sph_out.overlap_distance);
+    }
     // testing area //
 
-    // update resolution
+    // update resolutionP
     mainWin.updateViewport();
 
     // get deltaTime
@@ -251,7 +263,7 @@ int main(int argc, char** arg) {
     /*if (collided) {
       print(out);
       println(cam.getPosition());
-      }*/
+    }*/
 
     if (keyStates[SDL_SCANCODE_LCTRL])
       camHeight = 0.85f;
