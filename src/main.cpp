@@ -1,3 +1,4 @@
+#include <SDL2/SDL_scancode.h>
 #include <cm_math/operations.hpp>
 #include <cstdio>
 #include <math.h>
@@ -175,6 +176,8 @@ int main(int argc, char** arg) {
   float G = -9.8f;
   float upVel = 0;
   float camHeight = 1.7f;
+  float cam_z_rot = 0;
+  float camSpeed = 1.0f;
 
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
@@ -227,9 +230,7 @@ int main(int argc, char** arg) {
 
     abs(mousePos.x) > 0.004f ? mousePos.x = mousePos.x : mousePos.x = 0;
     abs(mousePos.y) > 0.004f ? mousePos.y = mousePos.y : mousePos.y = 0;
-    cam.rotate(
-        {mousePos.y, -mousePos.x,
-         (keyStates[SDL_SCANCODE_Q] - keyStates[SDL_SCANCODE_E]) * deltaTime});
+    cam.rotate({mousePos.y, -mousePos.x, 0});
 
     // movement
     Vec3 movement = {
@@ -237,13 +238,39 @@ int main(int argc, char** arg) {
         0,
         ((float)keyStates[SDL_SCANCODE_W] - (float)keyStates[SDL_SCANCODE_S])};
 
+    if (keyStates[SDL_SCANCODE_LSHIFT]) {
+      if (camSpeed < 4.0f) {
+        camSpeed += camSpeed * 4.0f * deltaTime;
+      } else {
+        camSpeed = 4.0f;
+      }
+    } else {
+      if (camSpeed > 1.0f) {
+        camSpeed -= camSpeed * 4.0f * deltaTime;
+      } else {
+        camSpeed = 1.0f;
+      }
+    }
+
     Vec3 dir =
         Vector::Normalize((Vec3){cam.getRight().x, 0, cam.getRight().z}) *
             movement.x +
         Vector::Normalize((Vec3){cam.getForward().x, 0, cam.getForward().z}) *
             movement.z;
 
-    cam.move(Vector::Normalize(dir) * deltaTime);
+    if (abs(cam_z_rot) < camSpeed * PI / 80.0f) {
+      cam_z_rot += deltaTime * -movement.x * PI / 5.0f;
+    } else if (movement.x != 0) {
+      cam_z_rot = -movement.x * camSpeed * PI / 80.0f;
+    }
+
+    if (movement.x == 0) {
+      cam_z_rot -= cam_z_rot * 10.0f * deltaTime;
+    }
+
+    cam.setRotation({cam.getRotation().x, cam.getRotation().y, cam_z_rot});
+
+    cam.move(Vector::Normalize(dir) * camSpeed * deltaTime);
 
     // camera reset
     if (keyStates[SDL_SCANCODE_R] || cam.getPosition().y < -100.0f) {
