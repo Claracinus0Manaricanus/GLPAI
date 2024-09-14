@@ -6,6 +6,12 @@ struct ImageData {
   int desired_channels; // put 0 here to get all the channels available
 };
 
+struct LoadedImageData {
+	unsigned char* data;
+	int width, height;
+	int channels;
+};
+
 class Image {
 private:
   unsigned char* pixelData;
@@ -21,6 +27,7 @@ public:
 
   // setters
   int loadImage(ImageData data);
+  int loadImage(LoadedImageData data, int clearPrevious = 1);
   int clear();
 
   // filters

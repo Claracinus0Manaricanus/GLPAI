@@ -1,5 +1,6 @@
 #include "image.hpp"
 #include <cstdlib>
+#include <cstring>
 #include <platform/fileIO.hpp>
 
 // constructors
@@ -34,6 +35,23 @@ int Image::loadImage(ImageData data) {
     pixelData = nullptr;
 
   return -(pixelData == nullptr);
+}
+
+int Image::loadImage(LoadedImageData data, int clearPrevious) {
+  if(data.data == NULL || data.data == nullptr)
+	  return -1;
+
+  if(clearPrevious)
+    free(pixelData);
+
+  width = data.width;
+  height = data.height;
+  channels = data.channels;
+
+  pixelData = (unsigned char*)malloc(sizeof(unsigned char) * channels * width * height);
+  memcpy(pixelData, data.data, channels * width * height);
+
+  return 0;
 }
 
 int Image::clear() {

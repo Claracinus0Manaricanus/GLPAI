@@ -22,7 +22,8 @@ class OGL_Renderer {
 protected:
   // instance vars
   std::vector<OGL_Mesh> meshes;
-  std::vector<OGL_Material> materials;
+  std::vector<Material*> materials;
+  std::vector<OGL_Texture> textures;
   std::vector<OGL_Cubemap> cubemaps;
   std::vector<OGL_Program*> programs;
 
@@ -41,12 +42,12 @@ public:
 
   // getters
   const char* getProgramError(int index);
+  Material& getMaterial(int index);
 
   // setters
   int register_mesh(Mesh& mesh);
   int register_meshes(std::vector<Mesh>& meshes);
   int register_material(Material& material);
-  void setMaterialColor(int index, Vec4 color);
   int register_cubemap(Cubemap& skybox);
   int register_program(OGL_ProgramData data);
 

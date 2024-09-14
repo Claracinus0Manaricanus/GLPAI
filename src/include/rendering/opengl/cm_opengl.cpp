@@ -33,9 +33,11 @@ OGL_Renderer::~OGL_Renderer() {
     glDeleteVertexArrays(1, &mesh.vertexArray);
   }
 
-  for (OGL_Material material : materials) {
-    if (material.texture.texID != 0)
-      glDeleteTextures(1, &material.texture.texID);
+  for (Material* material : materials) {
+    if (material->getTexID() != 0)
+      glDeleteTextures(1, (unsigned int*)&material->getTexID());
+    
+    delete material;
   }
 
   for (OGL_Program* toFree : programs) {
@@ -46,6 +48,10 @@ OGL_Renderer::~OGL_Renderer() {
 // getters
 const char* OGL_Renderer::getProgramError(int index) {
   return programs[index]->getError();
+}
+
+Material& OGL_Renderer::getMaterial(int index){
+	return *materials[index];
 }
 
 // setters
@@ -100,52 +106,42 @@ int OGL_Renderer::register_meshes(std::vector<Mesh>& meshes) {
 }
 
 int OGL_Renderer::register_material(Material& material) {
-  OGL_Material tmpMat;
 
-  if (material.hasTexture()) {
-    glGenTextures(1, &tmpMat.texture.texID);
-    tmpMat.texture.target = GL_TEXTURE_2D;
-    tmpMat.texture.width = material.getTextureWidth();
-    tmpMat.texture.height = material.getTextureHeight();
+  OGL_Texture tmpTex;
+
+  if (material.hasTexture() && material.getTexID() == -1) {
+    glGenTextures(1, &tmpTex.texID);
+    tmpTex.target = GL_TEXTURE_2D;
+    tmpTex.width = material.getTextureWidth();
+    tmpTex.height = material.getTextureHeight();
 
     if (material.getTextureChannel() == 3) {
-      tmpMat.texture.format = GL_RGB;
+      tmpTex.format = GL_RGB;
     } else {
-      tmpMat.texture.format = GL_RGBA;
+      tmpTex.format = GL_RGBA;
     }
 
-    glBindTexture(tmpMat.texture.target, tmpMat.texture.texID);
-    glTexImage2D(tmpMat.texture.target, 0, tmpMat.texture.format,
-                 tmpMat.texture.width, tmpMat.texture.height, 0,
-                 tmpMat.texture.format, GL_UNSIGNED_BYTE,
+    glBindTexture(tmpTex.target, tmpTex.texID);
+    glTexImage2D(tmpTex.target, 0, tmpTex.format,
+                 tmpTex.width, tmpTex.height, 0,
+                 tmpTex.format, GL_UNSIGNED_BYTE,
                  material.getTextureData());
 
-    glTexParameteri(tmpMat.texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(tmpMat.texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(tmpMat.texture.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(tmpMat.texture.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(tmpTex.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(tmpTex.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(tmpTex.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(tmpTex.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glBindTexture(tmpMat.texture.target, 0);
-
-  } else {
-    tmpMat.texture.texID = 0;
-    tmpMat.texture.target = 0;
-    tmpMat.texture.format = 0;
-    tmpMat.texture.width = 0;
-    tmpMat.texture.height = 0;
+    glBindTexture(tmpTex.target, 0);
+	
+    textures.push_back(tmpTex);
+    material.setTexID(textures.size() - 1);
   }
-
-  tmpMat.color = material.getColor();
-  tmpMat.metallic = material.getMetallic();
-  tmpMat.prg_ID = material.getPrgID();
-
-  materials.push_back(tmpMat);
+	
+  materials.push_back(new Material(material));
+  materials[materials.size() - 1]->loadTexture({material.getTextureData(), material.getTextureWidth(), material.getTextureHeight(), material.getTextureChannel()}, 0);
 
   return (materials.size() - 1);
-}
-
-void OGL_Renderer::setMaterialColor(int index, Vec4 color) {
-  materials[index].color = color;
 }
 
 int OGL_Renderer::register_cubemap(Cubemap& skybox) {
@@ -191,7 +187,7 @@ void OGL_Renderer::render(Scene& scene, Camera& camera) {
   for (PointLight light : scene.getPointLights()) {
     for (GameObject obj : scene.getGameObjects()) {
 
-      activePrg = programs[materials[obj.getMaterial()].prg_ID];
+      activePrg = programs[materials[obj.getMaterial()]->getPrgID()];
       activePrg->use();
 
       activePrg->setMat4("CVM", camera.getOVM());
@@ -202,8 +198,12 @@ void OGL_Renderer::render(Scene& scene, Camera& camera) {
       obj.calculateOVM();
       activePrg->setMat4("OVM", obj.getOVM());
 
-      activePrg->setVec4("color", materials[obj.getMaterial()].color);
-      activePrg->setFloat("metallic", materials[obj.getMaterial()].metallic);
+      // material
+      activePrg->setVec4("color", materials[obj.getMaterial()]->getColor());
+      activePrg->setFloat("metallic", materials[obj.getMaterial()]->getMetallic());
+      for( int i = 0; i < materials[obj.getMaterial()]->getUniformCount(); i++){
+	      activePrg->setFloat(materials[obj.getMaterial()]->getUnfiromName(i),materials[obj.getMaterial()]->getUniformValue(i));
+      }
 
       // light
       activePrg->setVec3("lPos", light.getPosition());
@@ -211,10 +211,10 @@ void OGL_Renderer::render(Scene& scene, Camera& camera) {
       activePrg->setFloat("lStrength", light.getStrength());
 
       // texture
-      glActiveTexture(GL_TEXTURE0);
-      if (materials[obj.getMaterial()].texture.texID != 0) {
-        glBindTexture(materials[obj.getMaterial()].texture.target,
-                      materials[obj.getMaterial()].texture.texID);
+      if (materials[obj.getMaterial()]->getTexID() >= 0) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(textures[materials[obj.getMaterial()]->getTexID()].target,
+                      textures[materials[obj.getMaterial()]->getTexID()].texID);
         activePrg->setInt("tex", 0);
       }
 

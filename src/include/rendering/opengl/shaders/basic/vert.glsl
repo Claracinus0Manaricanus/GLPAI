@@ -16,7 +16,6 @@ out vec3 fragNor;
 out vec2 fragUV;
 
 void main(){
-
     fragCol = color;
     fragMet = metalness;
     fragPos = (OVM * vec4(pos.xyz, 1.0)).xyz;

@@ -30,13 +30,6 @@ struct OGL_Mesh {
   uint32_t vertexArray;
 };
 
-struct OGL_Material {
-  OGL_Texture texture;
-  Vec4 color;
-  float metallic;
-  int prg_ID;
-};
-
 struct OGL_ProgramData {
   const char* vertexSourcePath;
   const char* fragSourcePath;
