@@ -38,17 +38,18 @@ int Image::loadImage(ImageData data) {
 }
 
 int Image::loadImage(LoadedImageData data, int clearPrevious) {
-  if(data.data == NULL || data.data == nullptr)
-	  return -1;
+  if (data.data == NULL || data.data == nullptr)
+    return -1;
 
-  if(clearPrevious)
+  if (clearPrevious)
     free(pixelData);
 
   width = data.width;
   height = data.height;
   channels = data.channels;
 
-  pixelData = (unsigned char*)malloc(sizeof(unsigned char) * channels * width * height);
+  pixelData =
+      (unsigned char*)malloc(sizeof(unsigned char) * channels * width * height);
   memcpy(pixelData, data.data, channels * width * height);
 
   return 0;

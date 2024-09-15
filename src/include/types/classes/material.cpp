@@ -32,8 +32,8 @@ int Material::loadTexture(const char* path) {
   return image.loadImage({path, 0});
 }
 
-int Material::loadTexture(LoadedImageData data, int clearPrevious){
-	return image.loadImage(data, clearPrevious);
+int Material::loadTexture(LoadedImageData data, int clearPrevious) {
+  return image.loadImage(data, clearPrevious);
 }
 
 void Material::resetTexture() { image.clear(); }
@@ -57,8 +57,6 @@ unsigned char* Material::getTextureData() { return image.getDataPointer(); }
 Image& Material::getImageObject() { return image; }
 int Material::getPrgID() { return prg_ID; }
 int& Material::getTexID() { return tex_ID; }
-int Material::getUniformCount(){ return names.size(); }
-const char* Material::getUnfiromName(int index){
-	return names[index];
-}
-float Material::getUniformValue(int index){return values[index];}
+int Material::getUniformCount() { return names.size(); }
+const char* Material::getUnfiromName(int index) { return names[index]; }
+float Material::getUniformValue(int index) { return values[index]; }

@@ -16,7 +16,8 @@ struct OGL_Texture {
 };
 
 struct OGL_Framebuffer {
-  //
+  unsigned int ID;
+  OGL_Texture textures[2];
 };
 
 struct OGL_Cubemap {

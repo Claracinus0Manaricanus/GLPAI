@@ -7,9 +7,9 @@ struct ImageData {
 };
 
 struct LoadedImageData {
-	unsigned char* data;
-	int width, height;
-	int channels;
+  unsigned char* data;
+  int width, height;
+  int channels;
 };
 
 class Image {

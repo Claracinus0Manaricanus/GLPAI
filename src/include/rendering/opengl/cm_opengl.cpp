@@ -36,7 +36,7 @@ OGL_Renderer::~OGL_Renderer() {
   for (Material* material : materials) {
     if (material->getTexID() != 0)
       glDeleteTextures(1, (unsigned int*)&material->getTexID());
-    
+
     delete material;
   }
 
@@ -50,9 +50,7 @@ const char* OGL_Renderer::getProgramError(int index) {
   return programs[index]->getError();
 }
 
-Material& OGL_Renderer::getMaterial(int index){
-	return *materials[index];
-}
+Material& OGL_Renderer::getMaterial(int index) { return *materials[index]; }
 
 // setters
 int OGL_Renderer::register_mesh(Mesh& mesh) {
@@ -122,10 +120,8 @@ int OGL_Renderer::register_material(Material& material) {
     }
 
     glBindTexture(tmpTex.target, tmpTex.texID);
-    glTexImage2D(tmpTex.target, 0, tmpTex.format,
-                 tmpTex.width, tmpTex.height, 0,
-                 tmpTex.format, GL_UNSIGNED_BYTE,
-                 material.getTextureData());
+    glTexImage2D(tmpTex.target, 0, tmpTex.format, tmpTex.width, tmpTex.height,
+                 0, tmpTex.format, GL_UNSIGNED_BYTE, material.getTextureData());
 
     glTexParameteri(tmpTex.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(tmpTex.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -133,13 +129,16 @@ int OGL_Renderer::register_material(Material& material) {
     glTexParameteri(tmpTex.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glBindTexture(tmpTex.target, 0);
-	
+
     textures.push_back(tmpTex);
     material.setTexID(textures.size() - 1);
   }
-	
+
   materials.push_back(new Material(material));
-  materials[materials.size() - 1]->loadTexture({material.getTextureData(), material.getTextureWidth(), material.getTextureHeight(), material.getTextureChannel()}, 0);
+  materials[materials.size() - 1]->loadTexture(
+      {material.getTextureData(), material.getTextureWidth(),
+       material.getTextureHeight(), material.getTextureChannel()},
+      0);
 
   return (materials.size() - 1);
 }
@@ -200,9 +199,12 @@ void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
 
       // material
       activePrg->setVec4("color", materials[obj.getMaterial()]->getColor());
-      activePrg->setFloat("metallic", materials[obj.getMaterial()]->getMetallic());
-      for( int i = 0; i < materials[obj.getMaterial()]->getUniformCount(); i++){
-	      activePrg->setFloat(materials[obj.getMaterial()]->getUnfiromName(i),materials[obj.getMaterial()]->getUniformValue(i));
+      activePrg->setFloat("metallic",
+                          materials[obj.getMaterial()]->getMetallic());
+      for (int i = 0; i < materials[obj.getMaterial()]->getUniformCount();
+           i++) {
+        activePrg->setFloat(materials[obj.getMaterial()]->getUnfiromName(i),
+                            materials[obj.getMaterial()]->getUniformValue(i));
       }
 
       // light
@@ -223,7 +225,8 @@ void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
       glDrawElements(GL_TRIANGLES, meshes[obj.getMesh()].indexBufferlength,
                      GL_UNSIGNED_INT, (void*)0);
     }
-    if(fullbright) break;
+    if (fullbright)
+      break;
     glBlendFunc(GL_ONE, GL_ONE);
   }
 
