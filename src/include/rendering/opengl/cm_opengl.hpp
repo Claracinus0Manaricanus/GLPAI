@@ -52,7 +52,7 @@ public:
   int register_program(OGL_ProgramData data);
 
   // rendering
-  void render(Scene& scene, Camera& camera);
+  void render(Scene& scene, Camera& camera, int fullbright = 0);
   void render_skybox(int index, int prg, Camera& camera);
 };
 

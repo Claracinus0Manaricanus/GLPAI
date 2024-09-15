@@ -40,15 +40,21 @@ int main(int argc, char** arg) {
   if (newRen.getProgramError(prg_skybox) != NULL)
     printf("%s\n", newRen.getProgramError(prg_skybox));
 
-  const int prg_basic = newRen.register_program(
+ const int prg_basic = newRen.register_program(
       {"src/include/rendering/opengl/shaders/basic/vert.glsl",
-       "src/include/rendering/opengl/shaders/basic/frag.glsl", NULL});
+       "src/include/rendering/opengl/shaders/basic/frag.glsl", NULL}); 
+ /* const int prg_basic = newRen.register_program(
+		  {"shaders/basic/vert.glsl", "shaders/basic/frag.glsl", NULL});
   if (newRen.getProgramError(prg_basic) != NULL)
-    printf("%s\n", newRen.getProgramError(prg_basic));
+    printf("%s\n", newRen.getProgramError(prg_basic));*/
 
   const int prg_texture = newRen.register_program(
       {"src/include/rendering/opengl/shaders/texture/vert.glsl",
-       "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL});
+       "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL}); 
+  /*const int prg_texture = newRen.register_program(
+      {"shaders/texture/vert.glsl",
+       "shaders/texture/frag.glsl", NULL}); */
+  
   if (newRen.getProgramError(prg_texture) != NULL)
     printf("%s\n", newRen.getProgramError(prg_texture));
 

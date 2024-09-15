@@ -178,7 +178,7 @@ int OGL_Renderer::register_program(OGL_ProgramData data) {
 }
 
 // rendering
-void OGL_Renderer::render(Scene& scene, Camera& camera) {
+void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
   OGL_Program* activePrg = programs[0];
 
   // camera
@@ -223,6 +223,7 @@ void OGL_Renderer::render(Scene& scene, Camera& camera) {
       glDrawElements(GL_TRIANGLES, meshes[obj.getMesh()].indexBufferlength,
                      GL_UNSIGNED_INT, (void*)0);
     }
+    if(fullbright) break;
     glBlendFunc(GL_ONE, GL_ONE);
   }
 
