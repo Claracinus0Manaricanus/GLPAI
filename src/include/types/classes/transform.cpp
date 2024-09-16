@@ -27,16 +27,7 @@ Transform::Transform(TransformData data) {
   rotation = data.rotation;
   scale = data.scale;
 
-  forward = {0, 0, -1}; // negative for math reasons
-  right = {1, 0, 0};
-  up = {0, 1, 0};
-
-  rotMat = {{
-      {right.x, up.x, -forward.x, 0},
-      {right.y, up.y, -forward.y, 0},
-      {right.z, up.z, -forward.z, 0},
-      {0, 0, 0, 1},
-  }};
+  calculateDirections();
 
   calculateOVM();
 }

@@ -43,45 +43,18 @@ int main(int argc, char** arg) {
   const int prg_basic = newRen.register_program(
       {"src/include/rendering/opengl/shaders/basic/vert.glsl",
        "src/include/rendering/opengl/shaders/basic/frag.glsl", NULL});
-  /* const int prg_basic = newRen.register_program(
-                   {"shaders/basic/vert.glsl", "shaders/basic/frag.glsl",
-   NULL}); if (newRen.getProgramError(prg_basic) != NULL) printf("%s\n",
-   newRen.getProgramError(prg_basic));*/
+  if (newRen.getProgramError(prg_basic) != NULL)
+    printf("%s\n", newRen.getProgramError(prg_basic));
 
   const int prg_texture = newRen.register_program(
       {"src/include/rendering/opengl/shaders/texture/vert.glsl",
        "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL});
-  /*const int prg_texture = newRen.register_program(
-      {"shaders/texture/vert.glsl",
-       "shaders/texture/frag.glsl", NULL}); */
-
   if (newRen.getProgramError(prg_texture) != NULL)
     printf("%s\n", newRen.getProgramError(prg_texture));
 
   // generating ground and meshes
-  Mesh ground;
-  Vertex tempToInsert;
-  int ground_size = 10;
-  for (int i = 0; i < ground_size; i++) {
-    for (int k = 0; k < ground_size; k++) {
-      tempToInsert.position = {(float)i - ((float)ground_size / 2), 0,
-                               (float)k - ((float)ground_size / 2)};
-      tempToInsert.normal = {0.0f, 1.0f, 0.0f};
-      tempToInsert.uv = {(float)i / ground_size, (float)k / ground_size};
-      ground.addVertex(tempToInsert);
-    }
-  }
-
-  for (int i = 0; i < ground_size - 1; i++) {
-    for (int k = 0; k < ground_size - 1; k++) {
-      ground.addFace(i * ground_size + k, i * ground_size + k + 1,
-                     (i + 1) * ground_size + k);
-      ground.addFace((i + 1) * ground_size + k, i * ground_size + k + 1,
-                     (i + 1) * ground_size + k + 1);
-    }
-  }
-
-  const int mesh_ground = newRen.register_mesh(ground);
+  std::vector<Mesh> ground = Scene::import("assets/models/plane.obj");
+  const int mesh_ground = newRen.register_meshes(ground);
 
   std::vector<Mesh> meshes = Scene::import("assets/models/dragon_vrip.ply");
   const int mesh_dragon = newRen.register_meshes(meshes);
@@ -112,7 +85,7 @@ int main(int argc, char** arg) {
   Scene mainScene;
 
   GameObjectData gData = {
-      {{0, 0, 0}, {0, 0, 0}, {2, 2, 2}}, mesh_ground, material_arkTex};
+      {{0, 0, 0}, {0, -PI / 2, 0}, {10, 10, 10}}, mesh_ground, material_arkTex};
   mainScene.addGameObject(gData);
 
   gData.transformD = {{0, 0, 0}, {0, 0, 0}, {10, 10, 10}};
@@ -290,7 +263,7 @@ int main(int argc, char** arg) {
     ray.direction = {0, -1, 0};
 
     // collision test
-    collided = Physics::checkCollisionRayMesh(ray, ground,
+    collided = Physics::checkCollisionRayMesh(ray, ground[0],
                                               mainScene.getGameObject(0), &out);
 
     /*if (collided) {

@@ -29,6 +29,14 @@ void Scene::addPointLight(PointLightData& toAdd) {
   pointLights.emplace_back(toAdd);
 }
 
+void Scene::addDirectLight(DirectLight& toAdd) {
+  directLights.push_back(toAdd);
+}
+
+void Scene::addDirectLight(DirectLightData& toAdd) {
+  directLights.emplace_back(toAdd);
+}
+
 // removers
 void Scene::removeGameObject(uint32_t index) {
   assert(index < gameObjects.size());
@@ -57,6 +65,17 @@ PointLight& Scene::getLastLoadedPointLight() {
 }
 
 std::vector<PointLight>& Scene::getPointLights() { return pointLights; }
+
+DirectLight& Scene::getDirectLight(uint32_t index) {
+  assert(index < directLights.size());
+  return directLights[index];
+}
+
+DirectLight& Scene::getLastLoadedDirectLight() {
+  return directLights[directLights.size() - 1];
+}
+
+std::vector<DirectLight>& Scene::getDirectLights() { return directLights; }
 
 // loaders ( import )
 // helper functions

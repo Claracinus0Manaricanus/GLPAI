@@ -17,6 +17,7 @@ private:
   // Scene objects
   std::vector<GameObject> gameObjects;
   std::vector<PointLight> pointLights;
+  std::vector<DirectLight> directLights;
 
 public:
   // constructors
@@ -31,6 +32,8 @@ public:
   void addGameObject(GameObjectData& toAdd);
   void addPointLight(PointLight& toAdd);
   void addPointLight(PointLightData& toAdd);
+  void addDirectLight(DirectLight& toAdd);
+  void addDirectLight(DirectLightData& toAdd);
 
   // removers
   void removeGameObject(uint32_t index);
@@ -45,6 +48,9 @@ public:
   PointLight& getPointLight(uint32_t index);
   PointLight& getLastLoadedPointLight();
   std::vector<PointLight>& getPointLights();
+  DirectLight& getDirectLight(uint32_t index);
+  DirectLight& getLastLoadedDirectLight();
+  std::vector<DirectLight>& getDirectLights();
 
   // loaders
   static std::vector<Mesh> import(const char* filename);
