@@ -26,11 +26,19 @@ protected:
   std::vector<OGL_Texture> textures;
   std::vector<OGL_Cubemap> cubemaps;
   std::vector<OGL_Program*> programs;
+  std::vector<OGL_Framebuffer> framebuffers;
+
+  // default meshes (for skybox and such)
+  OGL_Mesh default_meshes[2];
 
   // for skyboxes
   uint32_t skyVertArr = 0;
   uint32_t skyVertBuffer = 0;
   uint32_t skyIndBuffer = 0;
+
+private:
+  // init functions
+  void init_defaultMeshes();
 
 public:
   // constructors
@@ -50,8 +58,11 @@ public:
   int register_material(Material& material);
   int register_cubemap(Cubemap& skybox);
   int register_program(OGL_ProgramData data);
+  int create_framebuffer(int width, int height, int type = 0);
 
   // rendering
+  void useFramebuffer(int index);
+  void renderFramebuffer(int index, int prg);
   void render(Scene& scene, Camera& camera, int fullbright = 0);
   void render_skybox(int index, int prg, Camera& camera);
 };

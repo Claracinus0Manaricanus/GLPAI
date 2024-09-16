@@ -4,6 +4,88 @@
 #include <cstdint>
 #include <vector>
 
+// init functions
+void OGL_Renderer::init_defaultMeshes() {
+  glGenVertexArrays(1, &default_meshes[0].vertexArray);
+  glGenBuffers(1, &default_meshes[0].vertexDataBuffer);
+  glGenBuffers(1, &default_meshes[0].indexbuffer);
+
+  Box b1 = {{0, 0, 0}, {1, 1, 1}};
+  Mesh bM(b1, 1);
+  std::vector<Vertex> vertexData = bM.getAllVertices();
+  std::vector<uint32_t> indexData = bM.getIndexBuffer();
+
+  // vertex data
+  glBindVertexArray(default_meshes[0].vertexArray);
+  glBindBuffer(GL_ARRAY_BUFFER, default_meshes[0].vertexDataBuffer);
+  glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex),
+               vertexData.data(), GL_STATIC_DRAW);
+
+  // index data
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, default_meshes[0].indexbuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(int),
+               indexData.data(), GL_STATIC_DRAW);
+
+  // vertex data structure
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void*)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
+
+  glBindVertexArray(0);
+
+  glGenVertexArrays(1, &default_meshes[1].vertexArray);
+  glGenBuffers(1, &default_meshes[1].vertexDataBuffer);
+  glGenBuffers(1, &default_meshes[1].indexbuffer);
+
+  Mesh plane;
+  Vertex tmpVertex = {{-1, -1, 0}, {0, 0, 0}, {0, 0}};
+  plane.addVertex(tmpVertex);
+  tmpVertex = {{-1, 1, 0}, {0, 0, 0}, {0, 1}};
+  plane.addVertex(tmpVertex);
+  tmpVertex = {{1, 1, 0}, {0, 0, 0}, {1, 1}};
+  plane.addVertex(tmpVertex);
+  tmpVertex = {{1, -1, 0}, {0, 0, 0}, {1, 0}};
+  plane.addVertex(tmpVertex);
+
+  plane.addFace(0, 2, 1);
+  plane.addFace(0, 3, 2);
+
+  vertexData = plane.getAllVertices();
+  indexData = plane.getIndexBuffer();
+
+  // vertex data
+  glBindVertexArray(default_meshes[1].vertexArray);
+  glBindBuffer(GL_ARRAY_BUFFER, default_meshes[1].vertexDataBuffer);
+  glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex),
+               vertexData.data(), GL_STATIC_DRAW);
+
+  // index data
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, default_meshes[1].indexbuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(int),
+               indexData.data(), GL_STATIC_DRAW);
+
+  // vertex data structure
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (void*)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
+
+  glBindVertexArray(0);
+}
+
 // constructors
 OGL_Renderer::OGL_Renderer() {
   glEnable(GL_DEPTH_TEST);
@@ -13,6 +95,8 @@ OGL_Renderer::OGL_Renderer() {
   glDepthFunc(GL_LEQUAL);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  init_defaultMeshes();
 }
 
 OGL_Renderer::OGL_Renderer(OGL_RendererData data) {
@@ -23,6 +107,8 @@ OGL_Renderer::OGL_Renderer(OGL_RendererData data) {
   glDepthFunc(GL_LEQUAL);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  init_defaultMeshes();
 }
 
 // destructors
@@ -176,7 +262,83 @@ int OGL_Renderer::register_program(OGL_ProgramData data) {
   return programs.size() - 1;
 }
 
+int OGL_Renderer::create_framebuffer(int width, int height, int type) {
+  OGL_Framebuffer tmpFramebuffer;
+  glCreateFramebuffers(1, &tmpFramebuffer.ID);
+  glBindFramebuffer(GL_FRAMEBUFFER, tmpFramebuffer.ID);
+
+  // color buffer
+  glGenTextures(1, &tmpFramebuffer.textures[0].texID);
+  glBindTexture(GL_TEXTURE_2D, tmpFramebuffer.textures[0].texID);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+  tmpFramebuffer.textures[0].width = width;
+  tmpFramebuffer.textures[0].height = height;
+  tmpFramebuffer.textures[0].format = GL_RGBA;
+  tmpFramebuffer.textures[0].target = GL_TEXTURE_2D;
+
+  // depth buffer
+  glGenTextures(1, &tmpFramebuffer.textures[1].texID);
+  glBindTexture(GL_TEXTURE_2D, tmpFramebuffer.textures[1].texID);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
+               GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  tmpFramebuffer.textures[1].width = width;
+  tmpFramebuffer.textures[1].height = height;
+  tmpFramebuffer.textures[1].format = GL_DEPTH_COMPONENT;
+  tmpFramebuffer.textures[1].target = GL_TEXTURE_2D;
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // framebuffer
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         tmpFramebuffer.textures[0].texID, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                         tmpFramebuffer.textures[1].texID, 0);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    glDeleteTextures(1, &tmpFramebuffer.textures[0].texID);
+    glDeleteTextures(1, &tmpFramebuffer.textures[0].texID);
+    glDeleteFramebuffers(1, &tmpFramebuffer.ID);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    return -1;
+  }
+
+  framebuffers.push_back(tmpFramebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  return framebuffers.size() - 1;
+}
+
 // rendering
+void OGL_Renderer::useFramebuffer(int index) {
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[index].ID);
+  glViewport(0, 0, framebuffers[index].textures[0].width,
+             framebuffers[index].textures[0].height);
+}
+
+void OGL_Renderer::renderFramebuffer(int index, int prg) {
+  programs[prg]->use();
+  programs[prg]->setInt("color_map", 0);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, framebuffers[index].textures[0].texID);
+
+  glBindVertexArray(default_meshes[1].vertexArray);
+  glDrawElements(GL_TRIANGLES, default_meshes[1].indexBufferlength,
+                 GL_UNSIGNED_INT, (void*)0);
+}
+
 void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
   OGL_Program* activePrg = programs[0];
 
@@ -237,42 +399,6 @@ void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
 }
 
 void OGL_Renderer::render_skybox(int index, int prg, Camera& camera) {
-  if (skyVertArr == 0) {
-    glGenVertexArrays(1, &skyVertArr);
-    glGenBuffers(1, &skyVertBuffer);
-    glGenBuffers(1, &skyIndBuffer);
-
-    Box b1 = {{0, 0, 0}, {1, 1, 1}};
-    Mesh bM(b1, 1);
-    std::vector<Vertex> vertexData = bM.getAllVertices();
-    std::vector<uint32_t> indexData = bM.getIndexBuffer();
-
-    // vertex data
-    glBindVertexArray(skyVertArr);
-    glBindBuffer(GL_ARRAY_BUFFER, skyVertBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex),
-                 vertexData.data(), GL_STATIC_DRAW);
-
-    // index data
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skyIndBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(int),
-                 indexData.data(), GL_STATIC_DRAW);
-
-    // vertex data structure
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    glBindVertexArray(0);
-  }
-
   programs[prg]->use();
 
   camera.calculateOVM();
@@ -282,7 +408,7 @@ void OGL_Renderer::render_skybox(int index, int prg, Camera& camera) {
   glBindTexture(GL_TEXTURE_CUBE_MAP, cubemaps[index].texID);
   programs[prg]->setInt("cubemap", 0);
 
-  glBindVertexArray(skyVertArr);
+  glBindVertexArray(default_meshes[0].vertexArray);
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }

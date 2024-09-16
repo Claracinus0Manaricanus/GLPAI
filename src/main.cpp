@@ -32,6 +32,10 @@ int main(int argc, char** arg) {
 
   // OGL_Renderer
   OGL_Renderer newRen;
+  const int resolution_width = 1920;
+  const int resolution_height = 1080;
+  printf("%d\n",
+         newRen.create_framebuffer(resolution_width, resolution_height));
 
   // programs
   const int prg_skybox = newRen.register_program(
@@ -51,6 +55,12 @@ int main(int argc, char** arg) {
        "src/include/rendering/opengl/shaders/texture/frag.glsl", NULL});
   if (newRen.getProgramError(prg_texture) != NULL)
     printf("%s\n", newRen.getProgramError(prg_texture));
+
+  const int prg_framebuffer = newRen.register_program(
+      {"src/include/rendering/opengl/shaders/framebuffer/vert.glsl",
+       "src/include/rendering/opengl/shaders/framebuffer/frag.glsl", NULL});
+  if (newRen.getProgramError(prg_framebuffer) != NULL)
+    printf("%s\n", newRen.getProgramError(prg_framebuffer));
 
   // generating ground and meshes
   std::vector<Mesh> ground = Scene::import("assets/models/plane.obj");
@@ -178,9 +188,6 @@ int main(int argc, char** arg) {
     }
     // testing area //
 
-    // update resolutionP
-    mainWin.updateViewport();
-
     // get deltaTime
     deltaTime = (mainWin.getTicks() - lastMiliSec) / 1000.0f;
     lastMiliSec = mainWin.getTicks();
@@ -293,10 +300,13 @@ int main(int argc, char** arg) {
     mainWin.checkEvents();
 
     // rendering
+    newRen.useFramebuffer(0);
     mainWin.clearScreen();
-    cam.setAspectRatio(mainWin.getAspectRatio());
+    cam.setAspectRatio((float)resolution_height / (float)resolution_width);
     newRen.render(mainScene, cam);
     newRen.render_skybox(0, prg_skybox, cam);
+    mainWin.updateViewport();
+    newRen.renderFramebuffer(0, prg_framebuffer);
 
     // swap buffers
     mainWin.updateScreen();
