@@ -62,7 +62,7 @@ int main(int argc, char** arg) {
   if (newRen.getProgramError(prg_framebuffer) != NULL)
     printf("%s\n", newRen.getProgramError(prg_framebuffer));
 
-  // generating ground and meshes
+  // importing meshes
   std::vector<Mesh> ground = Scene::import("assets/models/plane.obj");
   const int mesh_ground = newRen.register_meshes(ground);
 

@@ -328,6 +328,10 @@ void OGL_Renderer::useFramebuffer(int index) {
 void OGL_Renderer::renderFramebuffer(int index, int prg) {
   programs[prg]->use();
   programs[prg]->setInt("color_map", 0);
+  programs[prg]->setInt("color_map_width",
+                        framebuffers[index].textures[0].width);
+  programs[prg]->setInt("color_map_height",
+                        framebuffers[index].textures[0].height);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
