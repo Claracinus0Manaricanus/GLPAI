@@ -6,7 +6,7 @@
 Camera::Camera() : Transform() {
   this->fov = 60;
   this->aspectRatio = 1;
-  this->near = 0.03f;
+  this->near = 0.1f;
   this->far = 100.0f;
 }
 

@@ -31,7 +31,7 @@ Vec3& PointLight::getColor() { return color; }
 
 float PointLight::getStrength() { return strength; }
 
-// Directi Light //
+// Direct Light //
 
 // constructors
 DirectLight::DirectLight() {

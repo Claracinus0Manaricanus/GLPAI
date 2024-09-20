@@ -1,7 +1,7 @@
 #include <SDL2/SDL_scancode.h>
 #include <cm_math/operations.hpp>
+#include <cmath>
 #include <cstdio>
-#include <math.h>
 #include <physics/collisions.hpp>
 #include <rendering/opengl/cm_opengl.hpp>
 #include <rendering/opengl/include/OGL_Program.hpp>
@@ -27,15 +27,19 @@ int main(int argc, char** arg) {
   mainWin.setMousePos(0, 0);
 
   // camera
-  Camera cam;
-  cam.setPosition({0, 10, 0});
+  int current_cam = 0;
+  Camera cams[2];
+  cams[0].setPosition({0, 10, 0});
+  cams[1].setPosition({10, 10, 10});
+  cams[1].setRotation({-PI / 4, PI / 4, 0});
 
   // OGL_Renderer
   OGL_Renderer newRen;
   const int resolution_width = 1920;
   const int resolution_height = 1080;
-  printf("%d\n",
-         newRen.create_framebuffer(resolution_width, resolution_height));
+  int retOfCreateF =
+      newRen.create_framebuffer(resolution_width, resolution_height);
+  printf("retOfCreateD = %d\n", retOfCreateF);
 
   // programs
   const int prg_skybox = newRen.register_program(
@@ -177,14 +181,14 @@ int main(int argc, char** arg) {
   // main loop
   while (!mainWin.shouldClose()) {
     // testing area //
-    player_sphere.position = cam.getPosition();
+    player_sphere.position = cams[0].getPosition();
     player_sphere.position.y -= camHeight / 2;
     player_sphere.radius = 0.2f;
     sph1.position = mainScene.getGameObject(3).getPosition();
     collided =
         Physics::checkCollisionSphereSphere(sph1, player_sphere, &sph_out);
     if (collided) {
-      cam.move(sph_out.hitNormal * sph_out.overlap_distance);
+      cams[0].move(sph_out.hitNormal * sph_out.overlap_distance);
     }
     // testing area //
 
@@ -195,10 +199,12 @@ int main(int argc, char** arg) {
     // mouse test
     if (keyStates[SDL_SCANCODE_ESCAPE] && captureMouse && escA) {
       captureMouse = 0;
+      current_cam = 1;
       mainWin.setRelativeMouseMode(SDL_FALSE);
       escA = 0;
     } else if (keyStates[SDL_SCANCODE_ESCAPE] && escA) {
       captureMouse = 1;
+      current_cam = 0;
       mainWin.setRelativeMouseMode(SDL_TRUE);
       mainWin.setMousePos(0, 0);
       escA = 0;
@@ -216,7 +222,7 @@ int main(int argc, char** arg) {
 
     abs(mousePos.x) > 0.004f ? mousePos.x = mousePos.x : mousePos.x = 0;
     abs(mousePos.y) > 0.004f ? mousePos.y = mousePos.y : mousePos.y = 0;
-    cam.rotate({mousePos.y, -mousePos.x, 0});
+    cams[0].rotate({mousePos.y, -mousePos.x, 0});
 
     // movement
     Vec3 movement = {
@@ -238,11 +244,12 @@ int main(int argc, char** arg) {
       }
     }
 
-    Vec3 dir =
-        Vector::Normalize((Vec3){cam.getRight().x, 0, cam.getRight().z}) *
-            movement.x +
-        Vector::Normalize((Vec3){cam.getForward().x, 0, cam.getForward().z}) *
-            movement.z;
+    Vec3 dir = Vector::Normalize(
+                   (Vec3){cams[0].getRight().x, 0, cams[0].getRight().z}) *
+                   movement.x +
+               Vector::Normalize(
+                   (Vec3){cams[0].getForward().x, 0, cams[0].getForward().z}) *
+                   movement.z;
 
     if (abs(cam_z_rot) < camSpeed * PI / 80.0f) {
       cam_z_rot += deltaTime * -movement.x * PI / 5.0f;
@@ -254,19 +261,20 @@ int main(int argc, char** arg) {
       cam_z_rot -= cam_z_rot * 10.0f * deltaTime;
     }
 
-    cam.setRotation({cam.getRotation().x, cam.getRotation().y, cam_z_rot});
+    cams[0].setRotation(
+        {cams[0].getRotation().x, cams[0].getRotation().y, cam_z_rot});
 
-    cam.move(Vector::Normalize(dir) * camSpeed * deltaTime);
+    cams[0].move(Vector::Normalize(dir) * camSpeed * deltaTime);
 
     // camera reset
-    if (keyStates[SDL_SCANCODE_R] || cam.getPosition().y < -100.0f) {
-      cam.setRotation({0, 0, 0});
-      cam.setPosition({0, camHeight, 0});
+    if (keyStates[SDL_SCANCODE_R] || cams[0].getPosition().y < -100.0f) {
+      cams[0].setRotation({0, 0, 0});
+      cams[0].setPosition({0, camHeight, 0});
       upVel = 0;
     }
 
     // ray
-    ray.start = cam.getPosition();
+    ray.start = cams[0].getPosition();
     ray.direction = {0, -1, 0};
 
     // collision test
@@ -275,7 +283,7 @@ int main(int argc, char** arg) {
 
     /*if (collided) {
       print(out);
-      println(cam.getPosition());
+      println(cams[0].getPosition());
     }*/
 
     if (keyStates[SDL_SCANCODE_LCTRL])
@@ -289,12 +297,13 @@ int main(int argc, char** arg) {
       upVel = 4.5f;
     } else if (collided && out.tConstant < camHeight) {
       upVel = 0;
-      cam.setPosition({cam.getPosition().x, out.hitPosition.y + camHeight,
-                       cam.getPosition().z});
+      cams[0].setPosition({cams[0].getPosition().x,
+                           out.hitPosition.y + camHeight,
+                           cams[0].getPosition().z});
     }
 
-    cam.move({0, upVel * deltaTime, 0});
-    mainScene.getPointLight(0).setPosition(cam.getPosition());
+    cams[0].move({0, upVel * deltaTime, 0});
+    mainScene.getPointLight(0).setPosition(cams[0].getPosition());
 
     // event polling
     mainWin.checkEvents();
@@ -302,11 +311,12 @@ int main(int argc, char** arg) {
     // rendering
     newRen.useFramebuffer(0);
     mainWin.clearScreen();
-    cam.setAspectRatio((float)resolution_height / (float)resolution_width);
-    newRen.render(mainScene, cam);
-    newRen.render_skybox(0, prg_skybox, cam);
-    mainWin.updateViewport();
-    newRen.renderFramebuffer(0, prg_framebuffer);
+    cams[current_cam].setAspectRatio((float)resolution_height /
+                                     (float)resolution_width);
+    newRen.render(mainScene, cams[current_cam]);
+    newRen.render_skybox(0, prg_skybox, cams[current_cam]);
+
+    newRen.renderFramebuffer(0, mainWin.getWindowResolution());
 
     // swap buffers
     mainWin.updateScreen();

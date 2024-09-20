@@ -13,7 +13,7 @@ struct LoadedImageData {
 };
 
 class Image {
-private:
+protected:
   unsigned char* pixelData;
   int width, height, channels;
 

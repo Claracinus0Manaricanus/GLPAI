@@ -1,7 +1,7 @@
 #include "gameObject.hpp"
 
 // constructors
-GameObject::GameObject() {
+GameObject::GameObject() : Transform() {
   meshID = 0;
   materialID = 0;
 }

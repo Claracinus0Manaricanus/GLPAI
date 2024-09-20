@@ -320,35 +320,19 @@ int OGL_Renderer::create_framebuffer(int width, int height, int type) {
 
 // rendering
 void OGL_Renderer::useFramebuffer(int index) {
-  glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[index].ID);
   glViewport(0, 0, framebuffers[index].textures[0].width,
              framebuffers[index].textures[0].height);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffers[index].ID);
 }
 
-void OGL_Renderer::renderFramebuffer(int index, int prg) {
-  programs[prg]->use();
-  programs[prg]->setInt("color_map", 0);
-  programs[prg]->setInt("color_map_width",
-                        framebuffers[index].textures[0].width);
-  programs[prg]->setInt("color_map_height",
-                        framebuffers[index].textures[0].height);
+// takes Screen Resolution from caller
+void OGL_Renderer::renderFramebuffer(int index, IVec2 screenRes) {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffers[index].ID);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-  programs[prg]->setInt("depth_map", 1);
-  programs[prg]->setInt("depth_map_width",
-                        framebuffers[index].textures[1].width);
-  programs[prg]->setInt("depth_map_height",
-                        framebuffers[index].textures[1].height);
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, framebuffers[index].textures[0].texID);
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, framebuffers[index].textures[1].texID);
-
-  glBindVertexArray(default_meshes[1].vertexArray);
-  glDrawElements(GL_TRIANGLES, default_meshes[1].indexBufferlength,
-                 GL_UNSIGNED_INT, (void*)0);
+  glBlitFramebuffer(0, 0, framebuffers[index].textures[0].width,
+                    framebuffers[index].textures[0].height, 0, 0, screenRes.x,
+                    screenRes.y, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
 void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {

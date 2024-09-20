@@ -35,7 +35,7 @@ void main(){
 	}
 
 	//col = vec4(texture(depth_map, fragUV).xxx, 1);
-	//float depth = pow(texture(depth_map, fragUV).x, 50);
+	//float depth = pow(texture(depth_map, fragUV).x, 10);
 	//col = vec4(0.3) * depth + col * (1-depth);
 
 	col.w = 1.0;

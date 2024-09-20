@@ -10,7 +10,7 @@ struct PointLightData {
 };
 
 class PointLight {
-private:
+protected:
   Vec3 position;
   Vec3 color;
   float strength;
@@ -40,7 +40,7 @@ struct DirectLightData {
 };
 
 class DirectLight {
-private:
+protected:
   Vec3 direction; // direction to light
   Vec3 color;
   float strength;

@@ -62,7 +62,7 @@ public:
 
   // rendering
   void useFramebuffer(int index);
-  void renderFramebuffer(int index, int prg);
+  void renderFramebuffer(int index, IVec2 screenRes);
   void render(Scene& scene, Camera& camera, int fullbright = 0);
   void render_skybox(int index, int prg, Camera& camera);
 };

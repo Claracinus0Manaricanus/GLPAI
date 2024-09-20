@@ -21,7 +21,7 @@ struct Element_Data {
 };
 
 class Scene {
-private:
+protected:
   // Scene objects
   std::vector<GameObject> gameObjects;
   std::vector<PointLight> pointLights;

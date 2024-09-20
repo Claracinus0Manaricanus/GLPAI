@@ -5,10 +5,10 @@
 
 // data structures
 struct CameraData {
-  TransformData trData;
+  TransformData trData = {{0, 0, 0}, {0, 0, 0}, {1, 1, 1}};
   float fov = 60;
   float aspectRatio = 1;
-  float near = 0.03f;
+  float near = 0.1f;
   float far = 100.0f;
 };
 

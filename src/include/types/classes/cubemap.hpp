@@ -11,7 +11,7 @@
 #define CM_CUBE_MAP_NEGATIVE_Z 5
 
 class Cubemap {
-private:
+protected:
   Image images[6];
 
 public:
