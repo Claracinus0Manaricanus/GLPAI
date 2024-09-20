@@ -333,10 +333,18 @@ void OGL_Renderer::renderFramebuffer(int index, int prg) {
   programs[prg]->setInt("color_map_height",
                         framebuffers[index].textures[0].height);
 
+  programs[prg]->setInt("depth_map", 1);
+  programs[prg]->setInt("depth_map_width",
+                        framebuffers[index].textures[1].width);
+  programs[prg]->setInt("depth_map_height",
+                        framebuffers[index].textures[1].height);
+
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, framebuffers[index].textures[0].texID);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, framebuffers[index].textures[1].texID);
 
   glBindVertexArray(default_meshes[1].vertexArray);
   glDrawElements(GL_TRIANGLES, default_meshes[1].indexBufferlength,

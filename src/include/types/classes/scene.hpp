@@ -10,6 +10,14 @@
 struct SceneData {
   std::vector<GameObject> gameObjects;
   std::vector<PointLight> pointLights;
+  std::vector<DirectLight> directLights;
+};
+
+// ElementData is for use with arrays, its purpose is to give elements
+// additional information.
+struct Element_Data {
+  const char* name;
+  unsigned int tag;
 };
 
 class Scene {

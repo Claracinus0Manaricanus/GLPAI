@@ -8,12 +8,16 @@ struct CameraData {
   TransformData trData;
   float fov = 60;
   float aspectRatio = 1;
+  float near = 0.03f;
+  float far = 100.0f;
 };
 
 class Camera : public Transform {
 protected:
   float fov; // half of field of view for optimization
   float aspectRatio;
+  float near;
+  float far;
 
 public:
   // constructor

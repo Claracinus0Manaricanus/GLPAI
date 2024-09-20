@@ -8,5 +8,5 @@ out vec3 fragPos;
 
 void main() {
     fragPos = pos;
-    gl_Position = vec4((CVM * vec4(pos, 0.0)).xyzw);
+    gl_Position = vec4((CVM * vec4(pos, 0.0)).xyww);
 }

@@ -5,6 +5,11 @@ uniform sampler2D color_map;
 uniform int color_map_width;
 uniform int color_map_height;
 
+uniform sampler2D depth_map;
+
+uniform int depth_map_width;
+uniform int depth_map_height;
+
 in vec2 fragUV;
 out vec4 col;
 
@@ -29,5 +34,9 @@ void main(){
 		}
 	}
 
-	col.w = 1;
+	//col = vec4(texture(depth_map, fragUV).xxx, 1);
+	//float depth = pow(texture(depth_map, fragUV).x, 50);
+	//col = vec4(0.3) * depth + col * (1-depth);
+
+	col.w = 1.0;
 }

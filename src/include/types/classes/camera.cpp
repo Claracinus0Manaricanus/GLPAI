@@ -6,11 +6,15 @@
 Camera::Camera() : Transform() {
   this->fov = 60;
   this->aspectRatio = 1;
+  this->near = 0.03f;
+  this->far = 100.0f;
 }
 
 Camera::Camera(CameraData caData) : Transform(caData.trData) {
   this->fov = caData.fov;
   this->aspectRatio = caData.aspectRatio;
+  this->near = caData.near;
+  this->far = caData.far;
 }
 
 // setters
@@ -73,9 +77,9 @@ void Camera::calculateOVM() {
   }};
 
   Mat4 proj = {{
-      {1 / tan(fov * PI / 180.0f), 0, 0, 0},
+      {1 / (tan(fov * PI / 180.0f)), 0, 0, 0},
       {0, 1 / (aspectRatio * tan(fov * PI / 180.0f)), 0, 0},
-      {0, 0, 1, -0.003f},
+      {0, 0, (far + near) / (far - near), -2 * far * near / (far - near)},
       {0, 0, 1, 0},
   }};
 
