@@ -100,9 +100,9 @@ void searchNode(aiNode* node, const aiScene* impScene,
                             impScene->mMeshes[node->mMeshes[0]]->mNormals[i].z};
       if (impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0] != nullptr) {
         vertices[i].uv.x =
-            impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].y;
-        vertices[i].uv.y =
             impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].x;
+        vertices[i].uv.y =
+            -impScene->mMeshes[node->mMeshes[0]]->mTextureCoords[0][i].y;
       } else {
         vertices[i].uv = {0, 0};
       }

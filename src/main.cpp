@@ -66,12 +66,22 @@ int main(int argc, char** arg) {
   if (newRen.getProgramError(prg_framebuffer) != NULL)
     printf("%s\n", newRen.getProgramError(prg_framebuffer));
 
+  const int prg_white = newRen.register_program(
+      {"shaders/white/vert.glsl", "shaders/white/frag.glsl", NULL});
+  if (newRen.getProgramError(prg_white) != NULL)
+    printf("%s\n", newRen.getProgramError(prg_white));
+
   // importing meshes
   std::vector<Mesh> ground = Scene::import("assets/models/plane.obj");
   const int mesh_ground = newRen.register_meshes(ground);
 
-  std::vector<Mesh> meshes = Scene::import("assets/models/dragon_vrip.ply");
-  const int mesh_dragon = newRen.register_meshes(meshes);
+  std::vector<Mesh> meshes = Scene::import("assets/models/train/seat.obj");
+  const int mesh_seat = newRen.register_meshes(meshes);
+
+  Sphere sph1 = {{0, 0, 0}, 1};
+  Mesh sphM(sph1, 100);
+
+  const int mesh_sphere = newRen.register_mesh(sphM);
 
   // materials
   MaterialData mData;
@@ -85,62 +95,58 @@ int main(int argc, char** arg) {
   }
   const int material_arkTex = newRen.register_material(tmpMat);
 
-  mData.color = {1, 0, 0, 1};
-  mData.metallic = 1.0f;
-  mData.prg_ID = prg_basic;
-  Material tmpMat2(mData);
-  const int material_redMetallic = newRen.register_material(tmpMat2);
-
   tmpMat.loadTexture("assets/images/equ.jpg");
-  mData.prg_ID = prg_texture;
   const int material_equ = newRen.register_material(tmpMat);
+
+  tmpMat.loadTexture("assets/images/train/seat_color.png");
+  const int material_seat = newRen.register_material(tmpMat);
+
+  tmpMat.setColor({1, 1, 1, 1});
+  tmpMat.setMetalness(1.0f);
+  tmpMat.setPrgID(prg_white);
+  tmpMat.resetTexture();
+  const int material_white = newRen.register_material(tmpMat);
 
   // Scene
   Scene mainScene;
 
+  // game objects
   GameObjectData gData = {
       {{0, 0, 0}, {0, -PI / 2, 0}, {10, 10, 10}}, mesh_ground, material_arkTex};
   mainScene.addGameObject(gData);
 
-  gData.transformD = {{0, 0, 0}, {0, 0, 0}, {10, 10, 10}};
-  gData.meshID = mesh_dragon;
-  gData.materialID = material_redMetallic;
-  mainScene.addGameObject(gData);
+  gData.transformD.position = {0, 0, 0};
+  gData.transformD.scale = {1, 1, 1};
+  gData.meshID = mesh_seat;
+  gData.materialID = material_seat;
 
-  PointLightData lData = {
-      {-1.0f, 2.0f, -1.0f},
-      {1, 1, 1},
-      1,
-  };
-  mainScene.addPointLight(lData);
-  lData.position = (Vec3){1.0f, 2.0f, 1.0f};
-  mainScene.addPointLight(lData);
+  for (int i = -3; i < 3; i++) {
+    for (int k = -1; k < 2; k++) {
+      if (k == 0)
+        continue;
+      gData.transformD.rotation = {0, k * PI / 2, 0};
+      for (int j = 0; j < 4; j++) {
+        gData.transformD.position = {(float)k, 0, i * 3.0f + j * 0.5f};
+        mainScene.addGameObject(gData);
+      }
+    }
+  }
 
-  // box test
-  Box box1 = {{0, 0, 0}, {1, 1, 1}};
-
-  Mesh justBox(box1);
-
-  justBox.calculateNormals();
-
-  const int mesh_box = newRen.register_mesh(justBox);
-
-  gData.meshID = mesh_box;
-  gData.materialID = material_arkTex;
-  gData.transformD = {{5, 1, 0}, {0, 0, 0}, {1, 1, 1}};
-
-  mainScene.addGameObject(gData);
-
-  // sphere test
-  Sphere sph1 = {{0, 0, 0}, 1};
-  Mesh sphM(sph1, 100);
-
-  const int mesh_sphere = newRen.register_mesh(sphM);
-
-  gData.transformD.position = {-5, 1, 0};
+  gData.transformD.scale = {0.1f, 0.1f, 0.1f};
   gData.meshID = mesh_sphere;
-  gData.materialID = material_equ;
-  mainScene.addGameObject(gData);
+  gData.materialID = material_white;
+  for (int i = -2; i < 3; i++) {
+    gData.transformD.position = {0, 2.5f, 3 * (float)i - 0.75f};
+    mainScene.addGameObject(gData);
+  }
+
+  // lights
+  PointLightData lData = {{0, 0, 0}, {1, 1, 1}, 1};
+
+  for (int i = -2; i < 3; i++) {
+    lData.position = {0, 2.5f, 3 * (float)i - 0.75f};
+    mainScene.addPointLight(lData);
+  }
 
   // skybox
   const char* skyFiles[6] = {
@@ -149,15 +155,6 @@ int main(int argc, char** arg) {
       "assets/skybox/starryCSky/pz.png", "assets/skybox/starryCSky/nz.png"};
   Cubemap sky0(skyFiles);
   newRen.register_cubemap(sky0);
-
-  // colon
-  meshes = Scene::import("assets/models/colon.obj");
-  const int mesh_colon = newRen.register_meshes(meshes);
-
-  gData.materialID = material_redMetallic;
-  gData.meshID = mesh_colon;
-  gData.transformD.position = {0, 0, 0};
-  mainScene.addGameObject(gData);
 
   // vars
   Vec2 mousePos = {0, 0};
@@ -184,7 +181,7 @@ int main(int argc, char** arg) {
     player_sphere.position = cams[0].getPosition();
     player_sphere.position.y -= camHeight / 2;
     player_sphere.radius = 0.2f;
-    sph1.position = mainScene.getGameObject(3).getPosition();
+    sph1.position = mainScene.getGameObject(1).getPosition();
     collided =
         Physics::checkCollisionSphereSphere(sph1, player_sphere, &sph_out);
     if (collided) {
@@ -303,7 +300,6 @@ int main(int argc, char** arg) {
     }
 
     cams[0].move({0, upVel * deltaTime, 0});
-    mainScene.getPointLight(0).setPosition(cams[0].getPosition());
 
     // event polling
     mainWin.checkEvents();
@@ -314,7 +310,7 @@ int main(int argc, char** arg) {
     cams[current_cam].setAspectRatio((float)resolution_height /
                                      (float)resolution_width);
     newRen.render(mainScene, cams[current_cam]);
-    newRen.render_skybox(0, prg_skybox, cams[current_cam]);
+    // newRen.render_skybox(0, prg_skybox, cams[current_cam]);
 
     newRen.renderFramebuffer(0, mainWin.getWindowResolution());
 

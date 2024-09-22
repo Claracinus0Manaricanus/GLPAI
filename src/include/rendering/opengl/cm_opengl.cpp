@@ -217,7 +217,6 @@ int OGL_Renderer::register_material(Material& material) {
     glBindTexture(tmpTex.target, 0);
 
     textures.push_back(tmpTex);
-    material.setTexID(textures.size() - 1);
   }
 
   materials.push_back(new Material(material));
@@ -225,6 +224,7 @@ int OGL_Renderer::register_material(Material& material) {
       {material.getTextureData(), material.getTextureWidth(),
        material.getTextureHeight(), material.getTextureChannel()},
       0);
+  materials[materials.size() - 1]->setTexID(textures.size() - 1);
 
   return (materials.size() - 1);
 }
