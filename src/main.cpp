@@ -1,4 +1,3 @@
-#include <SDL2/SDL_scancode.h>
 #include <cm_math/operations.hpp>
 #include <cmath>
 #include <cstdio>
@@ -29,7 +28,7 @@ int main(int argc, char** arg) {
   // camera
   int current_cam = 0;
   Camera cams[2];
-  cams[0].setPosition({0, 10, 0});
+  cams[0].setPosition({0, 0.2f, 0});
   cams[1].setPosition({10, 10, 10});
   cams[1].setRotation({-PI / 4, PI / 4, 0});
 
@@ -78,6 +77,9 @@ int main(int argc, char** arg) {
   std::vector<Mesh> meshes = Scene::import("assets/models/train/seat.obj");
   const int mesh_seat = newRen.register_meshes(meshes);
 
+  meshes = Scene::import("assets/models/train/train_compartment.obj");
+  const int mesh_train_compartment = newRen.register_meshes(meshes);
+
   Sphere sph1 = {{0, 0, 0}, 1};
   Mesh sphM(sph1, 100);
 
@@ -95,9 +97,6 @@ int main(int argc, char** arg) {
   }
   const int material_arkTex = newRen.register_material(tmpMat);
 
-  tmpMat.loadTexture("assets/images/equ.jpg");
-  const int material_equ = newRen.register_material(tmpMat);
-
   tmpMat.loadTexture("assets/images/train/seat_color.png");
   const int material_seat = newRen.register_material(tmpMat);
 
@@ -107,13 +106,16 @@ int main(int argc, char** arg) {
   tmpMat.resetTexture();
   const int material_white = newRen.register_material(tmpMat);
 
+  tmpMat.setColor({0.6f, 0.6f, 0.6f, 1.0f});
+  tmpMat.setPrgID(prg_basic);
+  tmpMat.setMetalness(0);
+  const int material_gray = newRen.register_material(tmpMat);
+
   // Scene
   Scene mainScene;
 
   // game objects
-  GameObjectData gData = {
-      {{0, 0, 0}, {0, -PI / 2, 0}, {10, 10, 10}}, mesh_ground, material_arkTex};
-  mainScene.addGameObject(gData);
+  GameObjectData gData;
 
   gData.transformD.position = {0, 0, 0};
   gData.transformD.scale = {1, 1, 1};
@@ -126,10 +128,19 @@ int main(int argc, char** arg) {
         continue;
       gData.transformD.rotation = {0, k * PI / 2, 0};
       for (int j = 0; j < 4; j++) {
-        gData.transformD.position = {(float)k, 0, i * 3.0f + j * 0.5f};
+        gData.transformD.position = {(float)k, 0, i * 3.0f + 0.75f + j * 0.5f};
         mainScene.addGameObject(gData);
       }
     }
+  }
+
+  gData.transformD.position = {0, 0, 0};
+  gData.transformD.rotation = {0, 0, 0};
+  gData.meshID = mesh_train_compartment;
+  gData.materialID = material_gray;
+  for (int i = -3; i < 3; i++) {
+    gData.transformD.position = {0, 0, i * 3.0f};
+    mainScene.addGameObject(gData, {"compartment", 1});
   }
 
   gData.transformD.scale = {0.1f, 0.1f, 0.1f};
@@ -144,15 +155,21 @@ int main(int argc, char** arg) {
   PointLightData lData = {{0, 0, 0}, {1, 1, 1}, 1};
 
   for (int i = -2; i < 3; i++) {
-    lData.position = {0, 2.5f, 3 * (float)i - 0.75f};
+    lData.position = {0, 2.4f, 3 * (float)i - 0.75f};
     mainScene.addPointLight(lData);
   }
 
   // skybox
-  const char* skyFiles[6] = {
+  /*const char* skyFiles[6] = {
       "assets/skybox/starryCSky/px.png", "assets/skybox/starryCSky/nx.png",
       "assets/skybox/starryCSky/py.png", "assets/skybox/starryCSky/ny.png",
       "assets/skybox/starryCSky/pz.png", "assets/skybox/starryCSky/nz.png"};
+  */
+  const char* skyFiles[6] = {
+      "assets/skybox/stars.png", "assets/skybox/stars.png",
+      "assets/skybox/stars.png", "assets/skybox/stars.png",
+      "assets/skybox/stars.png", "assets/skybox/stars.png"};
+
   Cubemap sky0(skyFiles);
   newRen.register_cubemap(sky0);
 
@@ -171,6 +188,7 @@ int main(int argc, char** arg) {
 
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
+  IVec2 compartments = {0, 0};
 
   SphereHit sph_out;
   Sphere player_sphere;
@@ -275,8 +293,13 @@ int main(int argc, char** arg) {
     ray.direction = {0, -1, 0};
 
     // collision test
-    collided = Physics::checkCollisionRayMesh(ray, ground[0],
-                                              mainScene.getGameObject(0), &out);
+    compartments = mainScene.getGameObjects(1);
+    for (int i = compartments.x; i <= compartments.y; i++) {
+      collided = Physics::checkCollisionRayMesh(
+          ray, meshes[0], mainScene.getGameObject(i), &out);
+      if (collided)
+        break;
+    }
 
     /*if (collided) {
       print(out);
@@ -310,7 +333,7 @@ int main(int argc, char** arg) {
     cams[current_cam].setAspectRatio((float)resolution_height /
                                      (float)resolution_width);
     newRen.render(mainScene, cams[current_cam]);
-    // newRen.render_skybox(0, prg_skybox, cams[current_cam]);
+    newRen.render_skybox(0, prg_skybox, cams[current_cam]);
 
     newRen.renderFramebuffer(0, mainWin.getWindowResolution());
 

@@ -3,6 +3,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <cassert>
+#include <cstdlib>
 
 // constructors
 Scene::Scene() {}
@@ -11,16 +12,61 @@ Scene::Scene(SceneData& data) {
   //
   this->gameObjects = data.gameObjects;
   this->pointLights = data.pointLights;
+  this->directLights = data.directLights;
 }
 
 // destructors
-Scene::~Scene() {}
+Scene::~Scene() {
+  for (Element_Data& i : gameObjectTags) {
+    free((void*)i.name);
+  }
+}
 
 // adders
-void Scene::addGameObject(GameObject& toAdd) { gameObjects.push_back(toAdd); }
+void Scene::addGameObject(GameObject& toAdd, Element_Data tags) {
+  int indexToInsert = 0; // GameObjects get inserted
+                         // according to ascending tag order
 
-void Scene::addGameObject(GameObjectData& toAdd) {
-  gameObjects.emplace_back(toAdd);
+  // needs optimization the elements are ordered so write a better algorithm
+  // here
+  for (; indexToInsert < gameObjects.size(); indexToInsert++) {
+    if (gameObjectTags[indexToInsert].tag >= tags.tag) {
+      break;
+    }
+  }
+
+  gameObjects.insert(indexToInsert + gameObjects.begin(), toAdd);
+
+  char* copyFromTags = nullptr;
+  if (tags.name != nullptr) {
+    int length = strlen(tags.name) + 1;
+    copyFromTags = (char*)malloc(length);
+    memcpy(copyFromTags, tags.name, length);
+  }
+  gameObjectTags.insert(indexToInsert + gameObjectTags.begin(),
+                        {copyFromTags, tags.tag});
+}
+
+void Scene::addGameObject(GameObjectData& toAdd, Element_Data tags) {
+  int indexToInsert = 0; // GameObjects get inserted
+                         // according to ascending tag order
+
+  for (; indexToInsert < gameObjects.size(); indexToInsert++) {
+    if (gameObjectTags[indexToInsert].tag >= tags.tag) {
+      break;
+    }
+  }
+
+  gameObjects.emplace(indexToInsert + gameObjects.begin(), toAdd);
+
+  char* copyFromTags = nullptr;
+  if (tags.name != nullptr) {
+    int length = strlen(tags.name) + 1;
+    copyFromTags = (char*)malloc(length);
+    memcpy(copyFromTags, tags.name, length);
+  }
+  gameObjectTags.insert(indexToInsert + gameObjectTags.begin(),
+                        {copyFromTags, tags.tag});
 }
 
 void Scene::addPointLight(PointLight& toAdd) { pointLights.push_back(toAdd); }
@@ -41,6 +87,7 @@ void Scene::addDirectLight(DirectLightData& toAdd) {
 void Scene::removeGameObject(uint32_t index) {
   assert(index < gameObjects.size());
   gameObjects.erase(gameObjects.cbegin() + index);
+  gameObjectTags.erase(gameObjectTags.cbegin() + index);
 }
 
 // getters
@@ -49,11 +96,43 @@ GameObject& Scene::getGameObject(uint32_t index) {
   return gameObjects[index];
 }
 
+int Scene::getGameObjectIndex(const char* name) {
+  for (int i = 0; i < gameObjects.size(); i++) {
+    if (gameObjectTags[i].name == nullptr)
+      continue;
+    if (strcmp(gameObjectTags[i].name, name) == 0)
+      return i;
+  }
+
+  return -1;
+}
+
 GameObject& Scene::getLastLoadedGameObject() {
   return gameObjects[gameObjects.size() - 1];
 }
 
 std::vector<GameObject>& Scene::getGameObjects() { return gameObjects; }
+
+IVec2 Scene::getGameObjects(int tag) {
+  int min = -1, max = -1;
+  for (int i = 0; i < gameObjectTags.size(); i++) {
+    if (gameObjectTags[i].tag == tag && min == -1) {
+      min = i;
+    } else if (gameObjectTags[i].tag != tag && min != -1) {
+      break;
+    }
+    max = i;
+  }
+
+  return {min, max};
+}
+
+std::vector<Element_Data>& Scene::getGameObjectTags() { return gameObjectTags; }
+
+Element_Data Scene::getGameObjectTag(uint32_t index) {
+  assert(index < gameObjectTags.size());
+  return gameObjectTags[index];
+}
 
 PointLight& Scene::getPointLight(uint32_t index) {
   assert(index < pointLights.size());
