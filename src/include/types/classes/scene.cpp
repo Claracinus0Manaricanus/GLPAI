@@ -24,16 +24,24 @@ Scene::~Scene() {
 
 // adders
 void Scene::addGameObject(GameObject& toAdd, Element_Data tags) {
-  int indexToInsert = 0; // GameObjects get inserted
-                         // according to ascending tag order
-
   // needs optimization the elements are ordered so write a better algorithm
   // here
-  for (; indexToInsert < gameObjects.size(); indexToInsert++) {
-    if (gameObjectTags[indexToInsert].tag >= tags.tag) {
+  int min = 0, max = gameObjects.size();
+  int indexToInsert = max / 2;
+
+  while (indexToInsert > min) {
+    if (gameObjectTags[indexToInsert].tag > tags.tag) {
+      max = indexToInsert;
+    } else if (gameObjectTags[indexToInsert].tag < tags.tag) {
+      min = indexToInsert;
+    } else if (gameObjectTags[indexToInsert].tag == tags.tag) {
       break;
     }
+    indexToInsert = (min + max) / 2;
   }
+  if (max > 0)
+    if (gameObjectTags[indexToInsert].tag < tags.tag)
+      indexToInsert++;
 
   gameObjects.insert(indexToInsert + gameObjects.begin(), toAdd);
 
@@ -48,14 +56,24 @@ void Scene::addGameObject(GameObject& toAdd, Element_Data tags) {
 }
 
 void Scene::addGameObject(GameObjectData& toAdd, Element_Data tags) {
-  int indexToInsert = 0; // GameObjects get inserted
-                         // according to ascending tag order
+  // needs optimization the elements are ordered so write a better algorithm
+  // here
+  int min = 0, max = gameObjects.size();
+  int indexToInsert = max / 2;
 
-  for (; indexToInsert < gameObjects.size(); indexToInsert++) {
-    if (gameObjectTags[indexToInsert].tag >= tags.tag) {
+  while (indexToInsert > min) {
+    if (gameObjectTags[indexToInsert].tag > tags.tag) {
+      max = indexToInsert;
+    } else if (gameObjectTags[indexToInsert].tag < tags.tag) {
+      min = indexToInsert;
+    } else if (gameObjectTags[indexToInsert].tag == tags.tag) {
       break;
     }
+    indexToInsert = (min + max) / 2;
   }
+  if (max > 0)
+    if (gameObjectTags[indexToInsert].tag < tags.tag)
+      indexToInsert++;
 
   gameObjects.emplace(indexToInsert + gameObjects.begin(), toAdd);
 
@@ -114,6 +132,9 @@ GameObject& Scene::getLastLoadedGameObject() {
 std::vector<GameObject>& Scene::getGameObjects() { return gameObjects; }
 
 IVec2 Scene::getGameObjects(int tag) {
+  // performance is good enough for now but if the program slows this search
+  // function can be changed with a faster one
+
   int min = -1, max = -1;
   for (int i = 0; i < gameObjectTags.size(); i++) {
     if (gameObjectTags[i].tag == tag && min == -1) {

@@ -1,6 +1,7 @@
 #include <cm_math/operations.hpp>
 #include <cmath>
 #include <cstdio>
+#include <ctime>
 #include <physics/collisions.hpp>
 #include <rendering/opengl/cm_opengl.hpp>
 #include <rendering/opengl/include/OGL_Program.hpp>
@@ -36,9 +37,7 @@ int main(int argc, char** arg) {
   OGL_Renderer newRen;
   const int resolution_width = 1920;
   const int resolution_height = 1080;
-  int retOfCreateF =
-      newRen.create_framebuffer(resolution_width, resolution_height);
-  printf("retOfCreateD = %d\n", retOfCreateF);
+  newRen.create_framebuffer(resolution_width, resolution_height);
 
   // programs
   const int prg_skybox = newRen.register_program(
@@ -71,6 +70,7 @@ int main(int argc, char** arg) {
     printf("%s\n", newRen.getProgramError(prg_white));
 
   // importing meshes
+
   std::vector<Mesh> ground = Scene::import("assets/models/plane.obj");
   const int mesh_ground = newRen.register_meshes(ground);
 
@@ -160,11 +160,6 @@ int main(int argc, char** arg) {
   }
 
   // skybox
-  /*const char* skyFiles[6] = {
-      "assets/skybox/starryCSky/px.png", "assets/skybox/starryCSky/nx.png",
-      "assets/skybox/starryCSky/py.png", "assets/skybox/starryCSky/ny.png",
-      "assets/skybox/starryCSky/pz.png", "assets/skybox/starryCSky/nz.png"};
-  */
   const char* skyFiles[6] = {
       "assets/skybox/stars.png", "assets/skybox/stars.png",
       "assets/skybox/stars.png", "assets/skybox/stars.png",
