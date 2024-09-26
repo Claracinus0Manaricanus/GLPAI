@@ -33,6 +33,9 @@ public:
   Transform();
   Transform(TransformData data);
 
+  // destructors
+  ~Transform();
+
   // setters
   void setPosition(Vec3 position);
   void move(Vec3 movement);
@@ -67,7 +70,7 @@ public:
   /* generates Object View Matrix (OVM) using
    * matrix multiplication.
    */
-  virtual void calculateOVM();
+  virtual void calculateOVM(Transform* relativeTo = nullptr);
 };
 
 #endif

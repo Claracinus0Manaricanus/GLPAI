@@ -29,7 +29,7 @@ public:
 
 public:
   // CVM generation
-  void calculateOVM() override;
+  void calculateOVM(Transform* relativeTo = nullptr) override;
   void calculateDirections() override;
 };
 

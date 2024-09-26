@@ -58,12 +58,6 @@ int main(int argc, char** arg) {
   if (newRen.getProgramError(prg_texture) != NULL)
     printf("%s\n", newRen.getProgramError(prg_texture));
 
-  const int prg_framebuffer = newRen.register_program(
-      {"src/include/rendering/opengl/shaders/framebuffer/vert.glsl",
-       "src/include/rendering/opengl/shaders/framebuffer/frag.glsl", NULL});
-  if (newRen.getProgramError(prg_framebuffer) != NULL)
-    printf("%s\n", newRen.getProgramError(prg_framebuffer));
-
   const int prg_white = newRen.register_program(
       {"shaders/white/vert.glsl", "shaders/white/frag.glsl", NULL});
   if (newRen.getProgramError(prg_white) != NULL)
@@ -190,18 +184,6 @@ int main(int argc, char** arg) {
 
   // main loop
   while (!mainWin.shouldClose()) {
-    // testing area //
-    player_sphere.position = cams[0].getPosition();
-    player_sphere.position.y -= camHeight / 2;
-    player_sphere.radius = 0.2f;
-    sph1.position = mainScene.getGameObject(1).getPosition();
-    collided =
-        Physics::checkCollisionSphereSphere(sph1, player_sphere, &sph_out);
-    if (collided) {
-      cams[0].move(sph_out.hitNormal * sph_out.overlap_distance);
-    }
-    // testing area //
-
     // get deltaTime
     deltaTime = (mainWin.getTicks() - lastMiliSec) / 1000.0f;
     lastMiliSec = mainWin.getTicks();

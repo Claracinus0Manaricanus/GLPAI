@@ -1,4 +1,5 @@
 #include "transform.hpp"
+#include <cassert>
 #include <cm_math/operations.hpp>
 #include <cmath>
 
@@ -31,6 +32,9 @@ Transform::Transform(TransformData data) {
 
   calculateOVM();
 }
+
+// destructors
+Transform::~Transform() {}
 
 // setters
 void Transform::setPosition(Vec3 position) { this->position = position; }
@@ -111,7 +115,7 @@ void Transform::calculateDirections() {
   }};
 }
 
-void Transform::calculateOVM() {
+void Transform::calculateOVM(Transform* relativeTo) {
   Mat4 scMat = {{
       {scale.x, 0, 0, 0},
       {0, scale.y, 0, 0},
@@ -126,5 +130,10 @@ void Transform::calculateOVM() {
       {0, 0, 0, 1},
   }};
 
-  OVM = tra * rotMat * scMat;
+  if (relativeTo != nullptr) {
+    relativeTo->calculateOVM();
+    OVM = relativeTo->getOVM() * tra * rotMat * scMat;
+  } else {
+    OVM = tra * rotMat * scMat;
+  }
 }
