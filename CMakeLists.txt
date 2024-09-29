@@ -26,6 +26,9 @@ add_executable(neweng "src/main.cpp"
 "src/include/types/classes/cubemap.cpp"
 "src/include/types/classes/image.cpp"
 
+#types/data_structures
+"src/include/types/data_structures/tree.cpp"
+
 #utilities
 "src/include/utility/printUtil.cpp"
 
@@ -40,5 +43,5 @@ add_executable(neweng "src/main.cpp"
 "src/include/platform/linux/filesystem/fileImport.cpp"
 )
 
-target_link_libraries(neweng SDL2 GL GLEW assimp)
+target_link_libraries(neweng SDL2 GL GLEW assimp m stdc++)
 target_include_directories(neweng PUBLIC src/include)
