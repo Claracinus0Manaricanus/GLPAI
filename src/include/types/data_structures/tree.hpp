@@ -27,11 +27,13 @@ public:
   ~cm_Tree();
 
   // setters, for node variable if nullptr is given it means root node
+
   TreeNode<T>* addChildTo(
       TreeNode<T>* node,
       T* toAddAsChild); // returns a pointer to the newly created node
 
   // getters, for node variable if nullptr is given it means root node
+
   TreeNode<T>& getRootNode(); // returns root node
 
   TreeNode<T>* getChilds(TreeNode<T>* node,

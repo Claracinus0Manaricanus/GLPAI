@@ -1,4 +1,5 @@
 #include "tree.hpp"
+#include <cstdlib>
 
 // constructors
 template <class T> cm_Tree<T>::cm_Tree() {
