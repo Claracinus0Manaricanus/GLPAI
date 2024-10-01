@@ -9,6 +9,7 @@
 #include <types/classes/cubemap.hpp>
 #include <types/classes/gameObject.hpp>
 #include <types/classes/scene.hpp>
+#include <types/data_structures/tree.hpp>
 #include <types/physics.hpp>
 #include <utility/printUtil.hpp>
 

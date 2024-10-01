@@ -27,7 +27,6 @@ add_executable(neweng "src/main.cpp"
 "src/include/types/classes/image.cpp"
 
 #types/data_structures
-"src/include/types/data_structures/tree.cpp"
 
 #utilities
 "src/include/utility/printUtil.cpp"
