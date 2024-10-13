@@ -192,7 +192,6 @@ int main(int argc, char** arg) {
   while (!mainWin.shouldClose()) {
     // get deltaTime
     deltaTime = timer.getDeltaTime();
-    printf("%f\n", deltaTime);
 
     // mouse test
     if (mainWin.getKey(GLFW_KEY_ESCAPE) && captureMouse && escA) {
