@@ -32,7 +32,8 @@ add_executable(neweng "src/main.cpp"
 "src/include/utility/printUtil.cpp"
 
 #window
-"src/include/rendering/window/window.cpp"
+"src/include/rendering/window/sdl/window.cpp"
+"src/include/rendering/window/glfw/window.cpp"
 
 #opengl
 "src/include/rendering/opengl/cm_opengl.cpp"
@@ -40,7 +41,8 @@ add_executable(neweng "src/main.cpp"
 
 #osDependent
 "src/include/platform/linux/filesystem/fileImport.cpp"
+"src/include/platform/linux/time/cm_time.cpp"
 )
 
-target_link_libraries(neweng SDL2 GL GLEW assimp m stdc++)
+target_link_libraries(neweng SDL2 GL GLEW assimp m stdc++ glfw)
 target_include_directories(neweng PUBLIC src/include)

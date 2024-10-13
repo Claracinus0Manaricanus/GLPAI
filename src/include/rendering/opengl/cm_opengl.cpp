@@ -1,6 +1,7 @@
 #include "cm_opengl.hpp"
 #include "include/OGL_Program.hpp"
 #include "types/classes/cubemap.hpp"
+#include <GL/glew.h>
 #include <cstdint>
 #include <vector>
 

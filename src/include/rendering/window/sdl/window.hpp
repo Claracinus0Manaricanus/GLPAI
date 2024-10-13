@@ -1,14 +1,14 @@
-#ifndef CM_WINDOW
-#define CM_WINDOW
+#ifndef CM_SDL_WINDOW
+#define CM_SDL_WINDOW
 
 #define CM_OPENGL 0
 #define CM_VULKAN 1
 #define CM_SDL_RENDERER 2
 
-#include "../../types/vectors.hpp"
 #include <SDL2/SDL.h>
+#include <types/vectors.hpp>
 
-class Window {
+class cm_sdl_Window {
 protected:
   // instance vars
   int latestError;
@@ -24,10 +24,10 @@ protected:
 
 public:
   // constructor
-  Window(int width, int height, uint32_t flags);
+  cm_sdl_Window(int width, int height, uint32_t flags);
 
   // destructor
-  ~Window();
+  ~cm_sdl_Window();
 
   // getters
   int shouldClose();
@@ -35,9 +35,7 @@ public:
   float getAspectRatio();
   IVec2 getCursorPos();
   Vec2 getCursorPosNormalized();
-  const uint8_t* getKeyboardState();
-  uint32_t getTicks();
-  uint32_t getTicks64();
+  int getKey(uint32_t keycode);
 
   // setters
   void setShouldClose(int winShouldClose);

@@ -4,7 +4,6 @@
 #include "include/OGL_Program.hpp"
 #include "include/OGL_Types.hpp"
 #include "types/classes/cubemap.hpp"
-#include <GL/glew.h>
 #include <types/classes/camera.hpp>
 #include <types/classes/light.hpp>
 #include <types/classes/material.hpp>

@@ -1,10 +1,11 @@
 #include "window.hpp"
 #include <GL/glew.h>
+#include <SDL2/SDL_keyboard.h>
 #include <cassert>
 #include <cstdio>
 
 // constructors
-Window::Window(int width, int height, uint32_t flags) {
+cm_sdl_Window::cm_sdl_Window(int width, int height, uint32_t flags) {
   // instance vars
   winShouldClose = 0;
   renderHandler = NULL;
@@ -44,7 +45,7 @@ Window::Window(int width, int height, uint32_t flags) {
 }
 
 // destructor
-Window::~Window() {
+cm_sdl_Window::~cm_sdl_Window() {
   if (rendererType == CM_SDL_RENDERER)
     SDL_DestroyRenderer(renderHandler);
 
@@ -54,28 +55,28 @@ Window::~Window() {
 }
 
 // getters
-int Window::shouldClose() { return winShouldClose; }
+int cm_sdl_Window::shouldClose() { return winShouldClose; }
 
-IVec2 Window::getWindowResolution() {
+IVec2 cm_sdl_Window::getWindowResolution() {
   int w = 0, h = 0;
   SDL_GetWindowSize(winHandler, &w, &h);
 
   return (IVec2){w, h};
 }
 
-float Window::getAspectRatio() {
+float cm_sdl_Window::getAspectRatio() {
   IVec2 wRes = getWindowResolution();
   return (float)wRes.y / (float)wRes.x;
 }
 
-IVec2 Window::getCursorPos() {
+IVec2 cm_sdl_Window::getCursorPos() {
   int x = 0, y = 0;
   SDL_GetMouseState(&x, &y);
 
   return (IVec2){x, y};
 }
 
-Vec2 Window::getCursorPosNormalized() {
+Vec2 cm_sdl_Window::getCursorPosNormalized() {
   int x = 0, y = 0, w = 0, h = 0;
   SDL_GetMouseState(&x, &y);
   SDL_GetWindowSize(winHandler, &w, &h);
@@ -83,28 +84,26 @@ Vec2 Window::getCursorPosNormalized() {
   return (Vec2){2 * ((x + 1.0f) / w) - 1, 1 - 2 * ((y + 1.0f) / h)};
 }
 
-const uint8_t* Window::getKeyboardState() { return SDL_GetKeyboardState(NULL); }
-
-uint32_t Window::getTicks() { return SDL_GetTicks(); }
-
-uint32_t Window::getTicks64() { return SDL_GetTicks64(); }
+int cm_sdl_Window::getKey(uint32_t keycode) {
+  return SDL_GetKeyboardState(NULL)[keycode];
+}
 
 // setters
-void Window::setShouldClose(int winShouldClose) {
+void cm_sdl_Window::setShouldClose(int winShouldClose) {
   this->winShouldClose = winShouldClose;
 }
 
-int Window::showCursor(int toggle) { return SDL_ShowCursor(toggle); }
+int cm_sdl_Window::showCursor(int toggle) { return SDL_ShowCursor(toggle); }
 
-void Window::setGrab(SDL_bool grabbed) {
+void cm_sdl_Window::setGrab(SDL_bool grabbed) {
   SDL_SetWindowGrab(winHandler, grabbed);
 }
 
-int Window::setRelativeMouseMode(SDL_bool enabled) {
+int cm_sdl_Window::setRelativeMouseMode(SDL_bool enabled) {
   return SDL_SetRelativeMouseMode(enabled);
 }
 
-void Window::setMousePos(float x, float y) {
+void cm_sdl_Window::setMousePos(float x, float y) {
   IVec2 res = getWindowResolution();
   int mouseX = ((x + 1.0f) / 2.0f) * res.x;
   int mouseY = ((-y + 1.0f) / 2.0f) * res.y;
@@ -113,7 +112,7 @@ void Window::setMousePos(float x, float y) {
 }
 
 // utility
-int Window::updateScreen() {
+int cm_sdl_Window::updateScreen() {
   switch (rendererType) {
   case CM_OPENGL:
     SDL_GL_SwapWindow(winHandler);
@@ -130,7 +129,7 @@ int Window::updateScreen() {
 }
 
 // event handling
-int Window::checkEvents() {
+int cm_sdl_Window::checkEvents() {
   int retOfPollEvent = SDL_PollEvent(&event);
 
   if (retOfPollEvent == 0)
@@ -156,27 +155,27 @@ int Window::checkEvents() {
 }
 
 // error control
-int Window::isFine() { return (latestError == 0); }
+int cm_sdl_Window::isFine() { return (latestError == 0); }
 
-const char* Window::getError() { return SDL_GetError(); }
+const char* cm_sdl_Window::getError() { return SDL_GetError(); }
 
 // opengl specific stuff
-void Window::setClearColor(float r, float g, float b, float a) {
+void cm_sdl_Window::setClearColor(float r, float g, float b, float a) {
   if (rendererType == CM_OPENGL)
     glClearColor(r, g, b, a);
 }
 
-void Window::clearScreen() {
+void cm_sdl_Window::clearScreen() {
   if (rendererType == CM_OPENGL)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Window::updateViewport() {
+void cm_sdl_Window::updateViewport() {
   IVec2 winRes = getWindowResolution();
   if (rendererType == CM_OPENGL)
     glViewport(0, 0, winRes.x, winRes.y);
 }
 
-int Window::setSwapInterval(int interval) {
+int cm_sdl_Window::setSwapInterval(int interval) {
   return SDL_GL_SetSwapInterval(interval);
 }

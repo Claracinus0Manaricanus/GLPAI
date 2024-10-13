@@ -1,11 +1,13 @@
+#include <GLFW/glfw3.h>
 #include <cm_math/operations.hpp>
 #include <cmath>
 #include <cstdio>
-#include <ctime>
 #include <physics/collisions.hpp>
+#include <platform/cm_time.hpp>
 #include <rendering/opengl/cm_opengl.hpp>
 #include <rendering/opengl/include/OGL_Program.hpp>
-#include <rendering/window/window.hpp>
+#include <rendering/window/glfw/window.hpp>
+#include <rendering/window/sdl/window.hpp>
 #include <types/classes/cubemap.hpp>
 #include <types/classes/gameObject.hpp>
 #include <types/classes/scene.hpp>
@@ -15,7 +17,9 @@
 
 int main(int argc, char** arg) {
   // Window
-  Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+  // cm_sdl_Window mainWin(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+  cm_glfw_Window mainWin(800, 600);
+
   if (!mainWin.isFine()) {
     printf("window has a problem!\n%s\n", mainWin.getError());
     return 1;
@@ -23,7 +27,6 @@ int main(int argc, char** arg) {
 
   mainWin.setClearColor(0, 0, 0, 1);
   mainWin.setSwapInterval(1);
-  const uint8_t* keyStates = mainWin.getKeyboardState();
   mainWin.setRelativeMouseMode(SDL_TRUE);
   mainWin.setMousePos(0, 0);
 
@@ -165,7 +168,7 @@ int main(int argc, char** arg) {
 
   // vars
   Vec2 mousePos = {0, 0};
-  uint32_t lastMiliSec = mainWin.getTicks();
+  cm_Time timer;
   float deltaTime = 0;
   int collided = 0;
   char captureMouse = 1, escA = 1;
@@ -183,19 +186,21 @@ int main(int argc, char** arg) {
   SphereHit sph_out;
   Sphere player_sphere;
 
+  timer.getDeltaTime();
+
   // main loop
   while (!mainWin.shouldClose()) {
     // get deltaTime
-    deltaTime = (mainWin.getTicks() - lastMiliSec) / 1000.0f;
-    lastMiliSec = mainWin.getTicks();
+    deltaTime = timer.getDeltaTime();
+    printf("%f\n", deltaTime);
 
     // mouse test
-    if (keyStates[SDL_SCANCODE_ESCAPE] && captureMouse && escA) {
+    if (mainWin.getKey(GLFW_KEY_ESCAPE) && captureMouse && escA) {
       captureMouse = 0;
       current_cam = 1;
       mainWin.setRelativeMouseMode(SDL_FALSE);
       escA = 0;
-    } else if (keyStates[SDL_SCANCODE_ESCAPE] && escA) {
+    } else if (mainWin.getKey(GLFW_KEY_ESCAPE) && escA) {
       captureMouse = 1;
       current_cam = 0;
       mainWin.setRelativeMouseMode(SDL_TRUE);
@@ -203,7 +208,7 @@ int main(int argc, char** arg) {
       escA = 0;
     }
 
-    if (!keyStates[SDL_SCANCODE_ESCAPE])
+    if (!mainWin.getKey(GLFW_KEY_ESCAPE))
       escA = 1;
 
     if (captureMouse) {
@@ -219,11 +224,12 @@ int main(int argc, char** arg) {
 
     // movement
     Vec3 movement = {
-        ((float)keyStates[SDL_SCANCODE_D] - (float)keyStates[SDL_SCANCODE_A]),
+        ((float)mainWin.getKey(GLFW_KEY_D) - (float)mainWin.getKey(GLFW_KEY_A)),
         0,
-        ((float)keyStates[SDL_SCANCODE_W] - (float)keyStates[SDL_SCANCODE_S])};
+        ((float)mainWin.getKey(GLFW_KEY_W) -
+         (float)mainWin.getKey(GLFW_KEY_S))};
 
-    if (keyStates[SDL_SCANCODE_LSHIFT]) {
+    if (mainWin.getKey(GLFW_KEY_LEFT_SHIFT)) {
       if (camSpeed < 4.0f) {
         camSpeed += camSpeed * 4.0f * deltaTime;
       } else {
@@ -260,7 +266,7 @@ int main(int argc, char** arg) {
     cams[0].move(Vector::Normalize(dir) * camSpeed * deltaTime);
 
     // camera reset
-    if (keyStates[SDL_SCANCODE_R] || cams[0].getPosition().y < -100.0f) {
+    if (mainWin.getKey(GLFW_KEY_R) || cams[0].getPosition().y < -100.0f) {
       cams[0].setRotation({0, 0, 0});
       cams[0].setPosition({0, camHeight, 0});
       upVel = 0;
@@ -284,14 +290,14 @@ int main(int argc, char** arg) {
       println(cams[0].getPosition());
     }*/
 
-    if (keyStates[SDL_SCANCODE_LCTRL])
+    if (mainWin.getKey(GLFW_KEY_LEFT_CONTROL))
       camHeight = 0.85f;
     else
       camHeight = 1.7f;
 
     upVel += G * deltaTime;
     if (collided && out.tConstant < camHeight &&
-        keyStates[SDL_SCANCODE_SPACE]) {
+        mainWin.getKey(GLFW_KEY_SPACE)) {
       upVel = 4.5f;
     } else if (collided && out.tConstant < camHeight) {
       upVel = 0;
