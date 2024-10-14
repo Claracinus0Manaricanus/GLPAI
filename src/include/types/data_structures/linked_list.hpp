@@ -58,17 +58,30 @@ public:
   // the next node and deletes it, if a value greater than length is given last
   // node is deleted
   void removeNode(int index) {
+    if (length == 0)
+      return;
+
     if (index == 0) {
       LinkedNode<T>* tmp = root.next;
       free(root.value);
-      root.value = tmp->value;
-      root.next = tmp->next;
-      tmp->next->previous = &root;
-      free(tmp);
+
+      if (tmp != nullptr) {
+        root.value = tmp->value;
+        root.next = tmp->next;
+        tmp->next->previous = &root;
+        free(tmp);
+      }
     } else {
       LinkedNode<T>* tmp = nth(index);
       tmp->previous->next = tmp->next;
-      tmp->next->previous = tmp->previous;
+
+      if (tmp->next != nullptr) {
+        tmp->next->previous = tmp->previous;
+      } else { // if tmp->next is nullptr then tmp->next is the last node so
+               // last node needs to be updated
+        last_node = tmp->previous;
+      }
+
       free(tmp->value);
       free(tmp);
     }
