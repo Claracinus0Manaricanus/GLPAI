@@ -119,6 +119,8 @@ public:
     return tmp;
   }
 
+  LinkedNode<T>* current() { return current_pos; }
+
   LinkedNode<T>* nth(int index) {
     LinkedNode<T>* tmp = &root;
 
@@ -131,6 +133,8 @@ public:
 
     return tmp;
   }
+
+  LinkedNode<T>* last() { return last_node; }
 
   // reverts current_pos to root node
   LinkedNode<T>* rewind() {

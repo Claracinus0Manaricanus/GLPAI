@@ -336,15 +336,23 @@ void OGL_Renderer::renderFramebuffer(int index, IVec2 screenRes) {
                     screenRes.y, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
-void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
-  OGL_Program* activePrg = programs[0];
+void recursive_render_helper(TreeNode<GameObject_Storage>* node, Camera& camera,
+                             PointLight& light,
+                             std::vector<OGL_Program*>& programs,
+                             std::vector<Material*>& materials,
+                             std::vector<OGL_Texture>& textures,
+                             std::vector<OGL_Mesh>& meshes,
+                             OGL_Program* activePrg = nullptr) {
+  for (int i = 0; i < node->childCount; i++) {
+    GameObject& obj = *(node->childs[i]->value->ptr);
 
-  // camera
-  camera.calculateOVM();
+    if (node->value != nullptr) {
+      obj.calculateOVM(&node->value->ptr->getOVM());
+    } else {
+      obj.calculateOVM();
+    }
 
-  for (PointLight light : scene.getPointLights()) {
-    for (GameObject obj : scene.getGameObjects()) {
-
+    if (obj.getMesh() != -1) {
       activePrg = programs[materials[obj.getMaterial()]->getPrgID()];
       activePrg->use();
 
@@ -353,7 +361,6 @@ void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
 
       // object
       // OVM
-      obj.calculateOVM();
       activePrg->setMat4("OVM", obj.getOVM());
 
       // material
@@ -384,6 +391,24 @@ void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
       glDrawElements(GL_TRIANGLES, meshes[obj.getMesh()].indexBufferlength,
                      GL_UNSIGNED_INT, (void*)0);
     }
+
+    recursive_render_helper(node->childs[i], camera, light, programs, materials,
+                            textures, meshes);
+  }
+}
+
+void OGL_Renderer::render(Scene& scene, Camera& camera, int fullbright) {
+  OGL_Program* activePrg = programs[0];
+
+  // camera
+  camera.calculateOVM();
+
+  cm_Tree<GameObject_Storage>* tree = scene.getGameObjects();
+  TreeNode<GameObject_Storage>* node = &tree->getRootNode();
+
+  for (PointLight light : scene.getPointLights()) {
+    recursive_render_helper(node, camera, light, programs, materials, textures,
+                            meshes);
     if (fullbright)
       break;
     glBlendFunc(GL_ONE, GL_ONE);

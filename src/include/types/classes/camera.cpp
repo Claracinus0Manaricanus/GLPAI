@@ -68,7 +68,7 @@ void Camera::calculateDirections() {
   }};
 }
 
-void Camera::calculateOVM(Transform* relativeTo) {
+void Camera::calculateOVM(Mat4* relativeTo) {
   Mat4 tra = {{
       {1, 0, 0, -position.x},
       {0, 1, 0, -position.y},
@@ -84,8 +84,7 @@ void Camera::calculateOVM(Transform* relativeTo) {
   }};
 
   if (relativeTo != nullptr) {
-    relativeTo->calculateOVM();
-    OVM = relativeTo->getOVM() * proj * rotMat * tra;
+    OVM = (*relativeTo) * proj * rotMat * tra;
   } else {
     OVM = proj * rotMat * tra;
   }

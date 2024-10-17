@@ -115,7 +115,7 @@ void Transform::calculateDirections() {
   }};
 }
 
-void Transform::calculateOVM(Transform* relativeTo) {
+void Transform::calculateOVM(Mat4* relativeTo) {
   Mat4 scMat = {{
       {scale.x, 0, 0, 0},
       {0, scale.y, 0, 0},
@@ -131,8 +131,7 @@ void Transform::calculateOVM(Transform* relativeTo) {
   }};
 
   if (relativeTo != nullptr) {
-    relativeTo->calculateOVM();
-    OVM = relativeTo->getOVM() * tra * rotMat * scMat;
+    OVM = (*relativeTo) * tra * rotMat * scMat;
   } else {
     OVM = tra * rotMat * scMat;
   }

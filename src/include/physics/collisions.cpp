@@ -81,8 +81,10 @@ int Physics::checkCollisionRayTriangle(Ray& ray, Triangle triangle,
   return 1;
 }
 
-// uses checkCollisionRayTriangle to iterate over every
-// triangle on a mesh and find the closest intersection
+// uses checkCollisionRayTriangle to iterate over every triangle on a mesh and
+// find the closest intersection. Doesn't call calculateOVM() from the given
+// transform so it should be handled beforehand, this is because this function
+// is agnostic to parent child relationships
 int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
                                    RayHit* out) {
   Triangle temp;
@@ -93,7 +95,6 @@ int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
   int collided = 0;
   int collidedGlobal = 0;
 
-  transform.calculateOVM();
   Mat4& ovm = transform.getOVM();
 
   for (int i = 0; i < vertices.size(); i++) {

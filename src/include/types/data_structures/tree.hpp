@@ -71,11 +71,11 @@ public:
     return node->childCount;
   }
 
-  TreeNode<T>** getChilds(TreeNode<T>* node, int& childCount) {
+  TreeNode<T>** getChilds(TreeNode<T>* node, int* childCount) {
     if (node == nullptr || node == NULL)
       node = &root;
 
-    childCount = node->childCount;
+    (*childCount) = node->childCount;
     return node->childs;
   } // returns all childs of a node and
     // puts the count into childCount

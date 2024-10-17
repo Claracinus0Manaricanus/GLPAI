@@ -118,6 +118,13 @@ int main(int argc, char** arg) {
 
   gData.transformD.position = {0, 0, 0};
   gData.transformD.scale = {1, 1, 1};
+  gData.meshID = -1;
+  gData.materialID = -1;
+
+  auto parentNode = mainScene.addGameObject(nullptr, gData);
+
+  gData.transformD.position = {0, 0, 0};
+  gData.transformD.scale = {1, 1, 1};
   gData.meshID = mesh_seat;
   gData.materialID = material_seat;
 
@@ -128,7 +135,7 @@ int main(int argc, char** arg) {
       gData.transformD.rotation = {0, k * PI / 2, 0};
       for (int j = 0; j < 4; j++) {
         gData.transformD.position = {(float)k, 0, i * 3.0f + 0.75f + j * 0.5f};
-        mainScene.addGameObject(gData);
+        mainScene.addGameObject(parentNode, gData, {nullptr, 2});
       }
     }
   }
@@ -139,7 +146,7 @@ int main(int argc, char** arg) {
   gData.materialID = material_gray;
   for (int i = -3; i < 3; i++) {
     gData.transformD.position = {0, 0, i * 3.0f};
-    mainScene.addGameObject(gData, {"compartment", 1});
+    mainScene.addGameObject(parentNode, gData, {"compartment", 1});
   }
 
   gData.transformD.scale = {0.1f, 0.1f, 0.1f};
@@ -147,7 +154,7 @@ int main(int argc, char** arg) {
   gData.materialID = material_white;
   for (int i = -2; i < 3; i++) {
     gData.transformD.position = {0, 2.5f, 3 * (float)i - 0.75f};
-    mainScene.addGameObject(gData);
+    mainScene.addGameObject(nullptr, gData);
   }
 
   // lights
@@ -182,7 +189,8 @@ int main(int argc, char** arg) {
 
   RayHit out = {{0, 0, 0}, {0, 0, 0}, 0};
   Ray ray = {{0, 0, 0}, {0, 0, -1}};
-  IVec2 compartments = {0, 0};
+  cm_LinkedList<TreeNode<GameObject_Storage>>* compartments =
+      mainScene.getGameObjects(1);
 
   SphereHit sph_out;
   Sphere player_sphere;
@@ -193,6 +201,7 @@ int main(int argc, char** arg) {
   while (!mainWin.shouldClose()) {
     // get deltaTime
     deltaTime = timer.getDeltaTime();
+    parentNode->value->ptr->rotate({0, deltaTime, 0});
 
     // mouse test
     if (mainWin.getKey(GLFW_KEY_ESCAPE) && captureMouse && escA) {
@@ -277,12 +286,14 @@ int main(int argc, char** arg) {
     ray.direction = {0, -1, 0};
 
     // collision test
-    compartments = mainScene.getGameObjects(1);
-    for (int i = compartments.x; i <= compartments.y; i++) {
-      collided = Physics::checkCollisionRayMesh(
-          ray, meshes[0], mainScene.getGameObject(i), &out);
-      if (collided)
-        break;
+    if (compartments != nullptr) {
+      do {
+        collided = Physics::checkCollisionRayMesh(
+            ray, meshes[0], *compartments->next()->value->value->ptr, &out);
+        if (collided)
+          break;
+      } while (compartments->current()->previous != nullptr);
+      compartments->rewind();
     }
 
     /*if (collided) {

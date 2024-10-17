@@ -8,83 +8,66 @@
 // constructors
 Scene::Scene() {}
 
-Scene::Scene(SceneData& data) {
-  //
-  this->gameObjects = data.gameObjects;
-  this->pointLights = data.pointLights;
-  this->directLights = data.directLights;
-}
-
 // destructors
-Scene::~Scene() {
-  for (Element_Data& i : gameObjectTags) {
-    free((void*)i.name);
-  }
-}
+Scene::~Scene() {}
 
 // adders
-void Scene::addGameObject(GameObject& toAdd, Element_Data tags) {
-  // needs optimization the elements are ordered so write a better algorithm
-  // here
-  int min = 0, max = gameObjects.size();
-  int indexToInsert = max / 2;
-
-  while (indexToInsert > min) {
-    if (gameObjectTags[indexToInsert].tag > tags.tag) {
-      max = indexToInsert;
-    } else if (gameObjectTags[indexToInsert].tag < tags.tag) {
-      min = indexToInsert;
-    } else if (gameObjectTags[indexToInsert].tag == tags.tag) {
+TreeNode<GameObject_Storage>* Scene::addGameObject(
+    TreeNode<GameObject_Storage>* parentNode, GameObject& toAdd,
+    Element_Data tags) {
+  int index = 0;
+  int found = 0;
+  for (GameObject_Tagged_Storage* i : gOTagList) {
+    if (i->tag == tags.tag) {
+      found = 1;
       break;
     }
-    indexToInsert = (min + max) / 2;
-  }
-  if (max > 0)
-    if (gameObjectTags[indexToInsert].tag < tags.tag)
-      indexToInsert++;
+    if (i->tag > tags.tag)
+      break;
 
-  gameObjects.insert(indexToInsert + gameObjects.begin(), toAdd);
-
-  char* copyFromTags = nullptr;
-  if (tags.name != nullptr) {
-    int length = strlen(tags.name) + 1;
-    copyFromTags = (char*)malloc(length);
-    memcpy(copyFromTags, tags.name, length);
+    index++;
   }
-  gameObjectTags.insert(indexToInsert + gameObjectTags.begin(),
-                        {copyFromTags, tags.tag});
+
+  if (!found) { // if not found
+    GameObject_Tagged_Storage* tmp_list = new GameObject_Tagged_Storage();
+    tmp_list->tag = tags.tag;
+    gOTagList.insert(gOTagList.cbegin() + index, tmp_list);
+  }
+
+  gOTagList[index]->list.addNode(gameObjects.addChildTo(
+      parentNode,
+      new GameObject_Storage({new GameObject(toAdd), {tags.name, tags.tag}})));
+
+  return gOTagList[index]->list.last()->value;
 }
 
-void Scene::addGameObject(GameObjectData& toAdd, Element_Data tags) {
-  // needs optimization the elements are ordered so write a better algorithm
-  // here
-  int min = 0, max = gameObjects.size();
-  int indexToInsert = max / 2;
-
-  while (indexToInsert > min) {
-    if (gameObjectTags[indexToInsert].tag > tags.tag) {
-      max = indexToInsert;
-    } else if (gameObjectTags[indexToInsert].tag < tags.tag) {
-      min = indexToInsert;
-    } else if (gameObjectTags[indexToInsert].tag == tags.tag) {
+TreeNode<GameObject_Storage>* Scene::addGameObject(
+    TreeNode<GameObject_Storage>* parentNode, GameObjectData& toAdd,
+    Element_Data tags) {
+  int index = 0;
+  int found = 0;
+  for (GameObject_Tagged_Storage* i : gOTagList) {
+    if (i->tag == tags.tag) {
+      found = 1;
       break;
     }
-    indexToInsert = (min + max) / 2;
-  }
-  if (max > 0)
-    if (gameObjectTags[indexToInsert].tag < tags.tag)
-      indexToInsert++;
+    if (i->tag > tags.tag)
+      break;
 
-  gameObjects.emplace(indexToInsert + gameObjects.begin(), toAdd);
-
-  char* copyFromTags = nullptr;
-  if (tags.name != nullptr) {
-    int length = strlen(tags.name) + 1;
-    copyFromTags = (char*)malloc(length);
-    memcpy(copyFromTags, tags.name, length);
+    index++;
   }
-  gameObjectTags.insert(indexToInsert + gameObjectTags.begin(),
-                        {copyFromTags, tags.tag});
+
+  if (!found) { // if not found
+    GameObject_Tagged_Storage* tmp_list = new GameObject_Tagged_Storage();
+    tmp_list->tag = tags.tag;
+    gOTagList.insert(gOTagList.cbegin() + index, tmp_list);
+  }
+
+  gOTagList[index]->list.addNode(gameObjects.addChildTo(
+      parentNode,
+      new GameObject_Storage({new GameObject(toAdd), {tags.name, tags.tag}})));
+
+  return gOTagList[index]->list.last()->value;
 }
 
 void Scene::addPointLight(PointLight& toAdd) { pointLights.push_back(toAdd); }
@@ -103,56 +86,32 @@ void Scene::addDirectLight(DirectLightData& toAdd) {
 
 // removers
 void Scene::removeGameObject(uint32_t index) {
-  assert(index < gameObjects.size());
-  gameObjects.erase(gameObjects.cbegin() + index);
-  gameObjectTags.erase(gameObjectTags.cbegin() + index);
+  // not Implemented yet
 }
 
 // getters
-GameObject& Scene::getGameObject(uint32_t index) {
-  assert(index < gameObjects.size());
-  return gameObjects[index];
-}
+cm_Tree<GameObject_Storage>* Scene::getGameObjects() { return &gameObjects; }
 
-int Scene::getGameObjectIndex(const char* name) {
-  for (int i = 0; i < gameObjects.size(); i++) {
-    if (gameObjectTags[i].name == nullptr)
-      continue;
-    if (strcmp(gameObjectTags[i].name, name) == 0)
-      return i;
-  }
-
-  return -1;
-}
-
-GameObject& Scene::getLastLoadedGameObject() {
-  return gameObjects[gameObjects.size() - 1];
-}
-
-std::vector<GameObject>& Scene::getGameObjects() { return gameObjects; }
-
-IVec2 Scene::getGameObjects(int tag) {
+cm_LinkedList<TreeNode<GameObject_Storage>>* Scene::getGameObjects(int tag) {
   // performance is good enough for now but if the program slows this search
   // function can be changed with a faster one
 
-  int min = -1, max = -1;
-  for (int i = 0; i < gameObjectTags.size(); i++) {
-    if (gameObjectTags[i].tag == tag && min == -1) {
-      min = i;
-    } else if (gameObjectTags[i].tag != tag && min != -1) {
-      break;
-    }
-    max = i;
+  for (int i = 0; i < gOTagList.size(); i++) {
+    if (gOTagList[i]->tag == tag)
+      return &gOTagList[i]->list;
   }
 
-  return {min, max};
+  return nullptr;
 }
 
-std::vector<Element_Data>& Scene::getGameObjectTags() { return gameObjectTags; }
+std::vector<GameObject_Tagged_Storage*>& Scene::getGameObjectTags() {
+  return gOTagList;
+}
 
-Element_Data Scene::getGameObjectTag(uint32_t index) {
-  assert(index < gameObjectTags.size());
-  return gameObjectTags[index];
+cm_LinkedList<TreeNode<GameObject_Storage>>* Scene::getGameObjectTag(
+    uint32_t index) {
+  assert(index < gOTagList.size());
+  return &gOTagList[index]->list;
 }
 
 PointLight& Scene::getPointLight(uint32_t index) {

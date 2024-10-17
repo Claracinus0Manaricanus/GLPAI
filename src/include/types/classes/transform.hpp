@@ -70,7 +70,7 @@ public:
   /* generates Object View Matrix (OVM) using
    * matrix multiplication.
    */
-  virtual void calculateOVM(Transform* relativeTo = nullptr);
+  virtual void calculateOVM(Mat4* relativeTo = nullptr);
 };
 
 #endif
