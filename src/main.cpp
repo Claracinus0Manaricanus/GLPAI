@@ -69,12 +69,11 @@ int main(int argc, char** arg) {
     printf("%s\n", newRen.getProgramError(prg_white));
 
   // importing meshes
-
-  std::vector<Mesh> ground = Scene::import("assets/models/plane.obj");
-  const int mesh_ground = newRen.register_meshes(ground);
-
   std::vector<Mesh> meshes = Scene::import("assets/models/train/seat.obj");
   const int mesh_seat = newRen.register_meshes(meshes);
+
+  meshes = Scene::import("assets/models/train/train_head.obj");
+  const int mesh_train_head = newRen.register_meshes(meshes);
 
   meshes = Scene::import("assets/models/train/train_compartment.obj");
   const int mesh_train_compartment = newRen.register_meshes(meshes);
@@ -123,6 +122,13 @@ int main(int argc, char** arg) {
 
   auto parentNode = mainScene.addGameObject(nullptr, gData);
 
+  gData.transformD.position = {0, 0, -12};
+  gData.transformD.scale = {1, 1, 1};
+  gData.meshID = mesh_train_head;
+  gData.materialID = material_gray;
+
+  mainScene.addGameObject(nullptr, gData);
+
   gData.transformD.position = {0, 0, 0};
   gData.transformD.scale = {1, 1, 1};
   gData.meshID = mesh_seat;
@@ -152,7 +158,7 @@ int main(int argc, char** arg) {
   gData.transformD.scale = {0.1f, 0.1f, 0.1f};
   gData.meshID = mesh_sphere;
   gData.materialID = material_white;
-  for (int i = -2; i < 3; i++) {
+  for (int i = -3; i < 3; i++) {
     gData.transformD.position = {0, 2.5f, 3 * (float)i - 0.75f};
     mainScene.addGameObject(nullptr, gData);
   }
@@ -160,7 +166,7 @@ int main(int argc, char** arg) {
   // lights
   PointLightData lData = {{0, 0, 0}, {1, 1, 1}, 1};
 
-  for (int i = -2; i < 3; i++) {
+  for (int i = -3; i < 3; i++) {
     lData.position = {0, 2.4f, 3 * (float)i - 0.75f};
     mainScene.addPointLight(lData);
   }
@@ -196,12 +202,12 @@ int main(int argc, char** arg) {
   Sphere player_sphere;
 
   timer.getDeltaTime();
+  Surface groundPlane = {{0, 1, 0}, 0};
 
   // main loop
   while (!mainWin.shouldClose()) {
     // get deltaTime
     deltaTime = timer.getDeltaTime();
-    parentNode->value->ptr->rotate({0, deltaTime, 0});
 
     // mouse test
     if (mainWin.getKey(GLFW_KEY_ESCAPE) && captureMouse && escA) {
@@ -294,6 +300,9 @@ int main(int argc, char** arg) {
           break;
       } while (compartments->current()->previous != nullptr);
       compartments->rewind();
+    }
+    if (!collided) {
+      collided = Physics::checkCollisionRaySurface(ray, groundPlane, &out);
     }
 
     /*if (collided) {
