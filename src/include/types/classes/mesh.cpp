@@ -9,6 +9,11 @@
 // constructor
 Mesh::Mesh() {}
 
+Mesh::Mesh(const Mesh& mesh) {
+  vertices = mesh.vertices;
+  indexBuffer = mesh.indexBuffer;
+}
+
 Mesh::Mesh(MeshData& data) {
   this->vertices = data.vertices;
   this->indexBuffer = data.indexBuffer;
@@ -116,6 +121,17 @@ Mesh::Mesh(Sphere data, int resolution, int invert) {
       }
     }
   }
+}
+
+// operator
+Mesh& Mesh::operator=(const Mesh& mesh) {
+  if (&mesh == this)
+    return *this;
+
+  vertices = mesh.vertices;
+  indexBuffer = mesh.indexBuffer;
+
+  return *this;
 }
 
 // setters

@@ -85,7 +85,7 @@ int Physics::checkCollisionRayTriangle(Ray& ray, Triangle triangle,
 // find the closest intersection. Doesn't call calculateOVM() from the given
 // transform so it should be handled beforehand, this is because this function
 // is agnostic to parent child relationships
-int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
+int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, Mat4& OVM,
                                    RayHit* out) {
   Triangle temp;
   std::vector<Vertex> vertices = mesh.getAllVertices();
@@ -95,16 +95,14 @@ int Physics::checkCollisionRayMesh(Ray& ray, Mesh& mesh, Transform& transform,
   int collided = 0;
   int collidedGlobal = 0;
 
-  Mat4& ovm = transform.getOVM();
-
   for (int i = 0; i < vertices.size(); i++) {
     // we do this tempVec4 thingy because translation is also important for
     // positions
-    Vec4 tempVec4 = ovm * (Vec4){vertices[i].position.x, vertices[i].position.y,
+    Vec4 tempVec4 = OVM * (Vec4){vertices[i].position.x, vertices[i].position.y,
                                  vertices[i].position.z, 1};
     vertices[i].position = (Vec3){tempVec4.x, tempVec4.y, tempVec4.z};
 
-    vertices[i].normal = Vector::Normalize(ovm * vertices[i].normal);
+    vertices[i].normal = Vector::Normalize(OVM * vertices[i].normal);
   }
 
   for (int i = 0; i < indices.size(); i += 3) {

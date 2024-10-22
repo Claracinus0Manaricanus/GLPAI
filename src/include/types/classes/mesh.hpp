@@ -19,9 +19,13 @@ protected:
 public:
   // constructor
   Mesh();
+  Mesh(const Mesh& mesh);
   Mesh(MeshData& data);
   Mesh(Box data, int invert = 0);
   Mesh(Sphere data, int resolution = 10, int invert = 0);
+
+  // operators
+  Mesh& operator=(const Mesh& mesh);
 
   // setters
   int addVertex(Vertex& toInsert);

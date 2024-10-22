@@ -2,6 +2,7 @@
 #include <cm_math/operations.hpp>
 #include <cmath>
 #include <cstdio>
+#include <physics/classes/hitVolumes.hpp>
 #include <physics/collisions.hpp>
 #include <platform/cm_time.hpp>
 #include <rendering/opengl/cm_opengl.hpp>
@@ -69,14 +70,16 @@ int main(int argc, char** arg) {
     printf("%s\n", newRen.getProgramError(prg_white));
 
   // importing meshes
+  std::vector<HitVolume*> hitVolumes;
   std::vector<Mesh> meshes = Scene::import("assets/models/train/seat.obj");
   const int mesh_seat = newRen.register_meshes(meshes);
 
-  meshes = Scene::import("assets/models/train/train_head.obj");
-  const int mesh_train_head = newRen.register_meshes(meshes);
-
   meshes = Scene::import("assets/models/train/train_compartment.obj");
   const int mesh_train_compartment = newRen.register_meshes(meshes);
+  hitVolumes.push_back(new HitMesh(meshes[0]));
+
+  meshes = Scene::import("assets/models/train/train_head.obj");
+  const int mesh_train_head = newRen.register_meshes(meshes);
 
   Sphere sph1 = {{0, 0, 0}, 1};
   Mesh sphM(sph1, 100);
@@ -294,8 +297,10 @@ int main(int argc, char** arg) {
     // collision test
     if (compartments != nullptr) {
       do {
-        collided = Physics::checkCollisionRayMesh(
-            ray, meshes[0], *compartments->next()->value->value->ptr, &out);
+        collided = (*hitVolumes[0])
+                       .checkCollisionWithRay(
+                           ray, &out,
+                           compartments->next()->value->value->ptr->getOVM());
         if (collided)
           break;
       } while (compartments->current()->previous != nullptr);
