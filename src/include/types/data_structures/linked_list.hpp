@@ -13,6 +13,7 @@ private:
   LinkedNode<T>* current_pos = &root;
   LinkedNode<T>* last_node = &root;
   int length = 0;
+  int freeEnabled = 1;
 
 public:
   // constructors
@@ -25,15 +26,19 @@ public:
   // destructors
   ~cm_LinkedList() {
     while (last_node->previous != nullptr) {
-      free(last_node->value);
+      if (freeEnabled)
+        free(last_node->value);
       last_node = last_node->previous;
       free(last_node->next);
     }
 
-    free(last_node->value);
+    if (freeEnabled)
+      free(last_node->value);
   }
 
   // setters
+  void setFreeEnabled(int set) { freeEnabled = set; }
+
   LinkedNode<T>* addNode(T* toAdd) {
     if (root.value == nullptr) {
       root.value = toAdd;
@@ -63,12 +68,15 @@ public:
 
     if (index == 0) {
       LinkedNode<T>* tmp = root.next;
-      free(root.value);
+      if (freeEnabled)
+        free(root.value);
 
       if (tmp != nullptr) {
         root.value = tmp->value;
-        root.next = tmp->next;
-        tmp->next->previous = &root;
+        if ((root.next = tmp->next) == nullptr)
+          last_node = &root;
+        else
+          tmp->next->previous = &root;
         free(tmp);
       }
     } else {
@@ -82,9 +90,38 @@ public:
         last_node = tmp->previous;
       }
 
-      free(tmp->value);
+      if (freeEnabled)
+        free(tmp->value);
       free(tmp);
     }
+
+    length--;
+  }
+
+  /**
+   * Remove the given node from the list.
+   */
+  void removeNode(LinkedNode<T>* toRemove) {
+    if (toRemove == &root) {
+      removeNode(0);
+      return;
+    }
+
+    if (toRemove == nullptr)
+      return;
+
+    toRemove->previous->next = toRemove->next;
+
+    if (toRemove->next != nullptr) {
+      toRemove->next->previous = toRemove->previous;
+    } else { // if toRemove->next is nullptr then toRemove->next is the last
+             // node so last node needs to be updated
+      last_node = toRemove->previous;
+    }
+
+    if (freeEnabled)
+      free(toRemove->value);
+    free(toRemove);
 
     length--;
   }

@@ -7,8 +7,9 @@
 
 struct GameObjectData {
   TransformData transformD;
-  int meshID;
-  int materialID;
+  int meshID = -1;
+  int materialID = -1;
+  int hitvolumeID = -1;
 };
 
 // wraps transform and mesh data to make easily renderable middle class
@@ -18,6 +19,7 @@ protected:
   // for mesh and material use registered data from renderer
   int meshID;
   int materialID;
+  int hitvolumeID;
 
 public:
   // constructor
@@ -30,10 +32,12 @@ public:
   // setters
   void setMesh(int meshID);
   void setMaterial(int materialID);
+  void setHitvolume(int hitvolumeID);
 
   // getters
   int getMesh();
   int getMaterial();
+  int getHitvolume();
 };
 
 #endif

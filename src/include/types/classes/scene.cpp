@@ -31,6 +31,7 @@ TreeNode<GameObject_Storage>* Scene::addGameObject(
   if (!found) { // if not found
     GameObject_Tagged_Storage* tmp_list = new GameObject_Tagged_Storage();
     tmp_list->tag = tags.tag;
+    tmp_list->list.setFreeEnabled(0);
     gOTagList.insert(gOTagList.cbegin() + index, tmp_list);
   }
 
@@ -60,6 +61,7 @@ TreeNode<GameObject_Storage>* Scene::addGameObject(
   if (!found) { // if not found
     GameObject_Tagged_Storage* tmp_list = new GameObject_Tagged_Storage();
     tmp_list->tag = tags.tag;
+    tmp_list->list.setFreeEnabled(0);
     gOTagList.insert(gOTagList.cbegin() + index, tmp_list);
   }
 
@@ -85,8 +87,27 @@ void Scene::addDirectLight(DirectLightData& toAdd) {
 }
 
 // removers
-void Scene::removeGameObject(uint32_t index) {
-  // not Implemented yet
+void removeGameObjectHelper(Scene* scene, TreeNode<GameObject_Storage>* node) {
+  for (int i = 0; i < node->childCount; i++) {
+    removeGameObjectHelper(scene, node->childs[i]);
+  }
+
+  cm_LinkedList<TreeNode<GameObject_Storage>>* tmp_list =
+      scene->getGameObjects(node->value->metaData.tag);
+
+  tmp_list->rewind();
+  for (int i = 0; i < tmp_list->size(); i++) {
+    if (node == tmp_list->next()->value)
+      break;
+  }
+
+  tmp_list->previous();
+  tmp_list->removeNode(tmp_list->current());
+}
+
+void Scene::removeGameObject(TreeNode<GameObject_Storage>* toRemove) {
+  removeGameObjectHelper(this, toRemove);
+  gameObjects.deleteNode(toRemove);
 }
 
 // getters

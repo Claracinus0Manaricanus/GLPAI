@@ -295,7 +295,8 @@ int main(int argc, char** arg) {
     ray.direction = {0, -1, 0};
 
     // collision test
-    if (compartments != nullptr) {
+    collided = 0;
+    if (compartments != nullptr && compartments->size() > 0) {
       do {
         collided = (*hitVolumes[0])
                        .checkCollisionWithRay(

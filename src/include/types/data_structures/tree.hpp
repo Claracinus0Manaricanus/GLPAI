@@ -15,6 +15,10 @@ template <class T> struct TreeNode {
 template <class T> class cm_Tree {
 protected:
   TreeNode<T> root;
+  /**
+   * if freeEnabled is not 0 the tree also calls free on values
+   */
+  int freeEnabled = 1;
 
 public:
   // constructors
@@ -32,12 +36,16 @@ public:
       free(node.childs[i]);
     }
 
+    if (freeEnabled)
+      free(node.value);
     free(node.childs);
   }
 
   ~cm_Tree() { helperFreeFunc(root); }
 
   // setters, for node variable if nullptr is given it means root node
+
+  void setFreeEnabled(int set) { freeEnabled = set; }
 
   TreeNode<T>* addChildTo(TreeNode<T>* node, T* toAddAsChild) {
     if (node == nullptr || node == NULL)
@@ -59,6 +67,48 @@ public:
 
     return childNode;
   } // returns a pointer to the newly created node
+
+  /**
+   * deletes the node from its parent
+   */
+  void deleteChild(TreeNode<T>* node) {
+    TreeNode<T>* parent = node->parent;
+    if (parent == nullptr)
+      return;
+
+    int index = 0;
+    for (int i = 0; i < parent->childCount; i++) {
+      if (parent->childs[i] == node) {
+        index = i;
+        break;
+      }
+    }
+
+    for (int i = index; i < parent->childCount - 1; i++) {
+      parent->childs[i] = parent->childs[i + 1];
+    }
+
+    parent->childCount--;
+    if (parent->childCount > 0) {
+      parent->childs = (TreeNode<T>**)realloc(parent->childs,
+                                              parent->childCount * sizeof(T*));
+    } else {
+      free(parent->childs);
+      parent->childs = nullptr;
+    }
+  }
+
+  /**
+   * deletes a node with all its childs can't take a nullptr
+   */
+  void deleteNode(TreeNode<T>* node) {
+    if (node != nullptr) {
+      deleteChild(node);
+      helperFreeFunc(*node);
+    }
+
+    free(node);
+  }
 
   // getters, for node variable if nullptr is given it means root node
 

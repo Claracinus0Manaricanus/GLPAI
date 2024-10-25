@@ -57,7 +57,7 @@ public:
   void addDirectLight(DirectLightData& toAdd);
 
   // removers
-  void removeGameObject(uint32_t index); // WIP
+  void removeGameObject(TreeNode<GameObject_Storage>* toRemove); // WIP
 
   // getters
   cm_Tree<GameObject_Storage>* getGameObjects();
