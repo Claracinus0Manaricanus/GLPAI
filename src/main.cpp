@@ -64,115 +64,48 @@ int main(int argc, char** arg) {
   if (newRen.getProgramError(prg_texture) != NULL)
     printf("%s\n", newRen.getProgramError(prg_texture));
 
-  const int prg_white = newRen.register_program(
-      {"shaders/white/vert.glsl", "shaders/white/frag.glsl", NULL});
-  if (newRen.getProgramError(prg_white) != NULL)
-    printf("%s\n", newRen.getProgramError(prg_white));
-
   // importing meshes
-  std::vector<HitVolume*> hitVolumes;
-  std::vector<Mesh> meshes = Scene::import("assets/models/train/seat.obj");
-  const int mesh_seat = newRen.register_meshes(meshes);
+  Box b0 = {{0, 0, 0}, {1, 1, 1}};
+  Mesh mesh0(b0);
+  mesh0.calculateNormals();
+  const int mesh_box = newRen.register_mesh(mesh0);
 
-  meshes = Scene::import("assets/models/train/train_compartment.obj");
-  const int mesh_train_compartment = newRen.register_meshes(meshes);
-  hitVolumes.push_back(new HitMesh(meshes[0]));
+  Sphere sph0 = {{0, 0, 0}, 0.5f};
+  Mesh mesh1(sph0);
+  mesh1.calculateNormals();
+  const int mesh_sphere = newRen.register_mesh(mesh1);
 
-  meshes = Scene::import("assets/models/train/train_head.obj");
-  const int mesh_train_head = newRen.register_meshes(meshes);
-
-  Sphere sph1 = {{0, 0, 0}, 1};
-  Mesh sphM(sph1, 100);
-
-  const int mesh_sphere = newRen.register_mesh(sphM);
+  std::vector<Mesh> meshes = Scene::import("assets/models/sopa.obj");
+  const int mesh_sopa = newRen.register_mesh(meshes[0]);
 
   // materials
-  MaterialData mData;
-  mData.color = {1, 1, 1, 1};
-  mData.metallic = 0.95f;
-  mData.prg_ID = prg_texture;
-  Material tmpMat(mData);
-  if (tmpMat.loadTexture("assets/images/arkKnightsChars.jpg") != 0) {
-    printf("no tex!\n");
-    return -1;
-  }
-  const int material_arkTex = newRen.register_material(tmpMat);
-
-  tmpMat.loadTexture("assets/images/train/seat_color.png");
-  const int material_seat = newRen.register_material(tmpMat);
-
-  tmpMat.setColor({1, 1, 1, 1});
-  tmpMat.setMetalness(1.0f);
-  tmpMat.setPrgID(prg_white);
-  tmpMat.resetTexture();
-  const int material_white = newRen.register_material(tmpMat);
-
-  tmpMat.setColor({0.6f, 0.6f, 0.6f, 1.0f});
-  tmpMat.setPrgID(prg_basic);
-  tmpMat.setMetalness(0);
-  const int material_gray = newRen.register_material(tmpMat);
+  MaterialData matData;
+  matData.color = {1, 1, 1, 1};
+  matData.metallic = 0;
+  matData.prg_ID = prg_basic;
+  Material mat0(matData);
+  const int material_basic = newRen.register_material(mat0);
 
   // Scene
   Scene mainScene;
 
   // game objects
   GameObjectData gData;
-
-  gData.transformD.position = {0, 0, 0};
-  gData.transformD.scale = {1, 1, 1};
-  gData.meshID = -1;
-  gData.materialID = -1;
-
-  auto parentNode = mainScene.addGameObject(nullptr, gData);
-
-  gData.transformD.position = {0, 0, -12};
-  gData.transformD.scale = {1, 1, 1};
-  gData.meshID = mesh_train_head;
-  gData.materialID = material_gray;
+  gData.meshID = mesh_box;
+  gData.materialID = material_basic;
 
   mainScene.addGameObject(nullptr, gData);
 
-  gData.transformD.position = {0, 0, 0};
-  gData.transformD.scale = {1, 1, 1};
-  gData.meshID = mesh_seat;
-  gData.materialID = material_seat;
-
-  for (int i = -3; i < 3; i++) {
-    for (int k = -1; k < 2; k++) {
-      if (k == 0)
-        continue;
-      gData.transformD.rotation = {0, k * PI / 2, 0};
-      for (int j = 0; j < 4; j++) {
-        gData.transformD.position = {(float)k, 0, i * 3.0f + 0.75f + j * 0.5f};
-        mainScene.addGameObject(parentNode, gData, {nullptr, 2});
-      }
-    }
-  }
-
-  gData.transformD.position = {0, 0, 0};
-  gData.transformD.rotation = {0, 0, 0};
-  gData.meshID = mesh_train_compartment;
-  gData.materialID = material_gray;
-  for (int i = -3; i < 3; i++) {
-    gData.transformD.position = {0, 0, i * 3.0f};
-    mainScene.addGameObject(parentNode, gData, {"compartment", 1});
-  }
-
-  gData.transformD.scale = {0.1f, 0.1f, 0.1f};
   gData.meshID = mesh_sphere;
-  gData.materialID = material_white;
-  for (int i = -3; i < 3; i++) {
-    gData.transformD.position = {0, 2.5f, 3 * (float)i - 0.75f};
-    mainScene.addGameObject(nullptr, gData);
-  }
+  auto playerNode = mainScene.addGameObject(nullptr, gData);
+
+  gData.meshID = mesh_sopa;
+  gData.transformD.position = {0, 1, 0};
+  mainScene.addGameObject(playerNode, gData);
 
   // lights
-  PointLightData lData = {{0, 0, 0}, {1, 1, 1}, 1};
-
-  for (int i = -3; i < 3; i++) {
-    lData.position = {0, 2.4f, 3 * (float)i - 0.75f};
-    mainScene.addPointLight(lData);
-  }
+  PointLightData lData = {{0, 2, 0}, {1, 1, 1}, 1};
+  mainScene.addPointLight(lData);
 
   // skybox
   const char* skyFiles[6] = {
@@ -201,11 +134,8 @@ int main(int argc, char** arg) {
   cm_LinkedList<TreeNode<GameObject_Storage>>* compartments =
       mainScene.getGameObjects(1);
 
-  SphereHit sph_out;
-  Sphere player_sphere;
-
-  timer.getDeltaTime();
   Surface groundPlane = {{0, 1, 0}, 0};
+  timer.getDeltaTime();
 
   // main loop
   while (!mainWin.shouldClose()) {
@@ -296,25 +226,10 @@ int main(int argc, char** arg) {
 
     // collision test
     collided = 0;
-    if (compartments != nullptr && compartments->size() > 0) {
-      do {
-        collided = (*hitVolumes[0])
-                       .checkCollisionWithRay(
-                           ray, &out,
-                           compartments->next()->value->value->ptr->getOVM());
-        if (collided)
-          break;
-      } while (compartments->current()->previous != nullptr);
-      compartments->rewind();
-    }
-    if (!collided) {
-      collided = Physics::checkCollisionRaySurface(ray, groundPlane, &out);
-    }
+    collided = Physics::checkCollisionRaySurface(ray, groundPlane, &out);
 
-    /*if (collided) {
-      print(out);
-      println(cams[0].getPosition());
-    }*/
+    playerNode->value->ptr->setPosition(cams[0].getPosition());
+    playerNode->value->ptr->setRotation(cams[0].getRotation());
 
     if (mainWin.getKey(GLFW_KEY_LEFT_CONTROL))
       camHeight = 0.85f;

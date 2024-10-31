@@ -27,7 +27,7 @@ public:
 };
 
 class HitSphere : public HitVolume {
-private:
+protected:
   /**
    * its position value is relative to origin so the position also gets
    * processed with OVM
@@ -52,7 +52,7 @@ public:
 };
 
 class HitMesh : public HitVolume {
-private:
+protected:
   Mesh hitMesh;
 
 public:

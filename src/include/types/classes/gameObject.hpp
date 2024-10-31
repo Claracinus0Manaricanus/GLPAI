@@ -3,8 +3,6 @@
 
 #include <types/classes/transform.hpp>
 
-// After the addition of material class it will be added here as well
-
 struct GameObjectData {
   TransformData transformD;
   int meshID = -1;
@@ -12,8 +10,6 @@ struct GameObjectData {
   int hitvolumeID = -1;
 };
 
-// wraps transform and mesh data to make easily renderable middle class
-// Used for rendering processes data storage
 class GameObject : public Transform {
 protected:
   // for mesh and material use registered data from renderer
