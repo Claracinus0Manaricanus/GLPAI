@@ -1,3 +1,6 @@
+# NOTICE
+It is not legally binding to reference the author of this project but I would appreciate it if you did. Thanks. :)
+
 # GLPAI
 GLPAI is a simple game engine that is still in it's early stages of development. It aims to be a library style engine. The goal for this project is to be modular. To be able to change any part of the engine you want without affecting others.
 
